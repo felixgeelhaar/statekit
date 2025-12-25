@@ -1,0 +1,22 @@
+version: 1
+
+policy:
+  default:
+    min: 80
+  domains:
+    - name: core
+      match:
+        - ./
+      exclude:
+        - ./internal/...
+        - ./export/...
+        - ./examples/...
+      min: 85
+    - name: ir
+      match:
+        - ./internal/ir/...
+      min: 80
+    - name: export
+      match:
+        - ./export/...
+      min: 75
