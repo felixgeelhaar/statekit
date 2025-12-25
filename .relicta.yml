@@ -1,0 +1,57 @@
+# Relicta Release Configuration
+# https://github.com/felixgeelhaar/relicta
+
+version: 1
+
+# Versioning strategy
+versioning:
+  scheme: semver
+  tag_prefix: v
+
+# Changelog configuration
+changelog:
+  file: CHANGELOG.md
+  format: keepachangelog
+
+# Commit analysis for version bumps
+commits:
+  types:
+    - type: feat
+      bump: minor
+      heading: Added
+    - type: fix
+      bump: patch
+      heading: Fixed
+    - type: perf
+      bump: patch
+      heading: Performance
+    - type: refactor
+      bump: patch
+      heading: Changed
+    - type: docs
+      bump: none
+      heading: Documentation
+    - type: test
+      bump: none
+      heading: Tests
+    - type: chore
+      bump: none
+      heading: Maintenance
+
+# Breaking change detection
+breaking:
+  keywords:
+    - BREAKING CHANGE
+    - BREAKING-CHANGE
+  bump: major
+
+# GitHub release
+github:
+  release: true
+  draft: false
+  prerelease: false
+
+# Git configuration
+git:
+  sign_tags: true
+  push: true
