@@ -81,14 +81,14 @@ func (b *MachineBuilder[C]) State(id StateID) *StateBuilder[C] {
 
 // Build constructs the final MachineConfig from the builder
 func (b *MachineBuilder[C]) Build() (*ir.MachineConfig[C], error) {
-	machine := ir.NewMachineConfig(b.id, ir.StateID(b.initial), b.context)
+	machine := ir.NewMachineConfig(b.id, b.initial, b.context)
 
 	// Copy actions and guards
 	for name, action := range b.actions {
-		machine.Actions[ir.ActionType(name)] = ir.Action[C](action)
+		machine.Actions[name] = action
 	}
 	for name, guard := range b.guards {
-		machine.Guards[ir.GuardType(name)] = ir.Guard[C](guard)
+		machine.Guards[name] = guard
 	}
 
 	// Build states recursively
@@ -107,46 +107,39 @@ func (b *MachineBuilder[C]) Build() (*ir.MachineConfig[C], error) {
 // buildStateRecursive adds a state and its children to the machine config
 func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machine *ir.MachineConfig[C]) {
 	// Determine state type
-	stateType := ir.StateType(sb.stateType)
+	stateType := sb.stateType
 	if len(sb.children) > 0 && sb.stateType == StateTypeAtomic {
 		stateType = ir.StateTypeCompound
 	}
 
-	state := ir.NewStateConfig(ir.StateID(sb.id), stateType)
+	state := ir.NewStateConfig(sb.id, stateType)
 	state.Parent = parentID
 
 	// Set initial for compound states
 	if len(sb.children) > 0 {
-		state.Initial = ir.StateID(sb.initial)
+		state.Initial = sb.initial
 		for _, child := range sb.children {
-			state.Children = append(state.Children, ir.StateID(child.id))
+			state.Children = append(state.Children, child.id)
 		}
 	}
 
-	// Convert entry actions
-	for _, a := range sb.entry {
-		state.Entry = append(state.Entry, ir.ActionType(a))
-	}
-	// Convert exit actions
-	for _, a := range sb.exit {
-		state.Exit = append(state.Exit, ir.ActionType(a))
-	}
+	// Convert entry/exit actions
+	state.Entry = append(state.Entry, sb.entry...)
+	state.Exit = append(state.Exit, sb.exit...)
 
 	// Build transitions
 	for _, tb := range sb.transitions {
-		trans := ir.NewTransitionConfig(ir.EventType(tb.event), ir.StateID(tb.target))
-		trans.Guard = ir.GuardType(tb.guard)
-		for _, a := range tb.actions {
-			trans.Actions = append(trans.Actions, ir.ActionType(a))
-		}
+		trans := ir.NewTransitionConfig(tb.event, tb.target)
+		trans.Guard = tb.guard
+		trans.Actions = append(trans.Actions, tb.actions...)
 		state.Transitions = append(state.Transitions, trans)
 	}
 
-	machine.States[ir.StateID(sb.id)] = state
+	machine.States[sb.id] = state
 
 	// Recursively build children
 	for _, child := range sb.children {
-		buildStateRecursive(child, ir.StateID(sb.id), machine)
+		buildStateRecursive(child, sb.id, machine)
 	}
 }
 

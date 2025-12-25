@@ -41,14 +41,14 @@ func TestInterpreter_Send_BasicTransition(t *testing.T) {
 	machine, err := NewMachine[counterContext]("trafficLight").
 		WithInitial("green").
 		State("green").
-			On("TIMER").Target("yellow").
-			Done().
+		On("TIMER").Target("yellow").
+		Done().
 		State("yellow").
-			On("TIMER").Target("red").
-			Done().
+		On("TIMER").Target("red").
+		Done().
 		State("red").
-			On("TIMER").Target("green").
-			Done().
+		On("TIMER").Target("green").
+		Done().
 		Build()
 
 	if err != nil {
@@ -86,8 +86,8 @@ func TestInterpreter_Send_UnknownEvent(t *testing.T) {
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").
-			On("START").Target("running").
-			Done().
+		On("START").Target("running").
+		Done().
 		State("running").Done().
 		Build()
 
@@ -112,8 +112,8 @@ func TestInterpreter_Send_WithGuard(t *testing.T) {
 			return ctx.Count > 0
 		}).
 		State("idle").
-			On("START").Target("running").Guard("hasCount").
-			Done().
+		On("START").Target("running").Guard("hasCount").
+		Done().
 		State("running").Done().
 		Build()
 
@@ -146,7 +146,7 @@ func TestInterpreter_Send_WithActions(t *testing.T) {
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		WithAction("logEntry", func(ctx *counterContext, e Event) {
-			entryLog = append(entryLog, string(ctx.Transitions[len(ctx.Transitions)-1])+"_entry")
+			entryLog = append(entryLog, ctx.Transitions[len(ctx.Transitions)-1]+"_entry")
 		}).
 		WithAction("logExit", func(ctx *counterContext, e Event) {
 			exitLog = append(exitLog, "exit")
@@ -161,13 +161,13 @@ func TestInterpreter_Send_WithActions(t *testing.T) {
 			ctx.Transitions = append(ctx.Transitions, "running")
 		}).
 		State("idle").
-			OnEntry("recordState").
-			OnExit("logExit").
-			On("START").Target("running").Do("logTransition").
-			Done().
+		OnEntry("recordState").
+		OnExit("logExit").
+		On("START").Target("running").Do("logTransition").
+		Done().
 		State("running").
-			OnEntry("recordRunning").
-			Done().
+		OnEntry("recordRunning").
+		Done().
 		Build()
 
 	if err != nil {
@@ -207,8 +207,8 @@ func TestInterpreter_Matches(t *testing.T) {
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").
-			On("START").Target("running").
-			Done().
+		On("START").Target("running").
+		Done().
 		State("running").Done().
 		Build()
 
@@ -240,8 +240,8 @@ func TestInterpreter_Done(t *testing.T) {
 	machine, err := NewMachine[counterContext]("workflow").
 		WithInitial("active").
 		State("active").
-			On("COMPLETE").Target("done").
-			Done().
+		On("COMPLETE").Target("done").
+		Done().
 		State("done").Final().Done().
 		Build()
 
@@ -287,9 +287,9 @@ func TestInterpreter_MultipleTransitionsOnState(t *testing.T) {
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").
-			On("GO_A").Target("stateA").
-			On("GO_B").Target("stateB").
-			Done().
+		On("GO_A").Target("stateA").
+		On("GO_B").Target("stateB").
+		Done().
 		State("stateA").Done().
 		State("stateB").Done().
 		Build()

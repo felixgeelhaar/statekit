@@ -2,6 +2,7 @@ package ir
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -169,7 +170,7 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 
 		// Validate transitions
 		for i, trans := range state.Transitions {
-			transPath := append(statePath, "transitions", fmt.Sprintf("%d", i))
+			transPath := slices.Concat(statePath, []string{"transitions", fmt.Sprintf("%d", i)})
 
 			// Check target state exists
 			if _, ok := m.States[trans.Target]; !ok {

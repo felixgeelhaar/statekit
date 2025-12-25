@@ -50,7 +50,7 @@ func (i *Interpreter[C]) Matches(id StateID) bool {
 		return true
 	}
 	// Check if current state is a descendant of the given state
-	return i.machine.IsDescendantOf(ir.StateID(i.state.Value), ir.StateID(id))
+	return i.machine.IsDescendantOf(i.state.Value, id)
 }
 
 // Done returns true if the machine is in a final state
@@ -58,7 +58,7 @@ func (i *Interpreter[C]) Done() bool {
 	if !i.started {
 		return false
 	}
-	stateConfig := i.machine.GetState(ir.StateID(i.state.Value))
+	stateConfig := i.machine.GetState(i.state.Value)
 	if stateConfig == nil {
 		return false
 	}
@@ -72,7 +72,7 @@ func (i *Interpreter[C]) Send(event Event) {
 	}
 
 	// Get current state config
-	currentState := i.machine.GetState(ir.StateID(i.state.Value))
+	currentState := i.machine.GetState(i.state.Value)
 	if currentState == nil {
 		return
 	}
@@ -95,14 +95,14 @@ func (i *Interpreter[C]) UpdateContext(fn func(ctx *C)) {
 // findMatchingTransition finds the first transition that matches the event and passes guards
 func (i *Interpreter[C]) findMatchingTransition(state *ir.StateConfig, event Event) *ir.TransitionConfig {
 	for _, t := range state.Transitions {
-		if t.Event != ir.EventType(event.Type) {
+		if t.Event != event.Type {
 			continue
 		}
 
 		// Check guard if present
 		if t.Guard != "" {
 			guard := i.machine.GetGuard(t.Guard)
-			if guard != nil && !guard(i.state.Context, ir.Event(event)) {
+			if guard != nil && !guard(i.state.Context, event) {
 				continue // Guard failed, try next transition
 			}
 		}
@@ -146,7 +146,7 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 	resolvedTarget := i.machine.GetInitialLeaf(targetStateID)
 
 	// Get the current leaf state (what we're actually in)
-	currentLeaf := ir.StateID(i.state.Value)
+	currentLeaf := i.state.Value
 
 	// Find the Lowest Common Ancestor (LCA)
 	// The LCA determines which states to exit and enter
@@ -162,11 +162,11 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 
 	if isSelfTransition {
 		// Self-transition: exit and re-enter the state (and any descendants)
-		statesToExit = i.getStatesToExit(currentLeaf, sourceStateID, source.state.Parent)
+		statesToExit = i.getStatesToExit(currentLeaf, source.state.Parent)
 		statesToEnter = i.getStatesToEnter(resolvedTarget, source.state.Parent)
 	} else {
 		// Calculate states to exit: from current leaf up to (but not including) LCA
-		statesToExit = i.getStatesToExit(currentLeaf, sourceStateID, lca)
+		statesToExit = i.getStatesToExit(currentLeaf, lca)
 
 		// Calculate states to enter: from below LCA down to target
 		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
@@ -192,12 +192,12 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 	}
 
 	// 4. Update current state to the leaf
-	i.state.Value = StateID(resolvedTarget)
+	i.state.Value = resolvedTarget
 }
 
 // getStatesToExit returns states to exit in leaf-to-root order
 // from currentLeaf up to (but not including) LCA
-func (i *Interpreter[C]) getStatesToExit(currentLeaf, sourceState, lca ir.StateID) []ir.StateID {
+func (i *Interpreter[C]) getStatesToExit(currentLeaf, lca ir.StateID) []ir.StateID {
 	var statesToExit []ir.StateID
 
 	// Start from current leaf and go up
@@ -259,7 +259,7 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 	}
 
 	// Set current state to the leaf
-	i.state.Value = StateID(leaf)
+	i.state.Value = leaf
 }
 
 // getEntryPath returns the states to enter from start to leaf (inclusive)
@@ -291,7 +291,7 @@ func (i *Interpreter[C]) executeActions(actions []ir.ActionType, event Event) {
 	for _, actionName := range actions {
 		action := i.machine.GetAction(actionName)
 		if action != nil {
-			action(&i.state.Context, ir.Event(event))
+			action(&i.state.Context, event)
 		}
 	}
 }

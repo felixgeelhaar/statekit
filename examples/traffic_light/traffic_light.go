@@ -46,20 +46,17 @@ func NewTrafficLight() (*ir.MachineConfig[Context], error) {
 
 		// States
 		State(StateGreen).
-			OnEntry("logGreen").
-			On(EventTimer).Target(StateYellow).
-			On(EventReset).Target(StateGreen).
-			Done().
-
+		OnEntry("logGreen").
+		On(EventTimer).Target(StateYellow).
+		On(EventReset).Target(StateGreen).
+		Done().
 		State(StateYellow).
-			OnEntry("logYellow").
-			On(EventTimer).Target(StateRed).
-			Done().
-
+		OnEntry("logYellow").
+		On(EventTimer).Target(StateRed).
+		Done().
 		State(StateRed).
-			OnEntry("logRed").
-			On(EventTimer).Target(StateGreen).Do("incrementCycle").
-			Done().
-
+		OnEntry("logRed").
+		On(EventTimer).Target(StateGreen).Do("incrementCycle").
+		Done().
 		Build()
 }
