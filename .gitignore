@@ -10,6 +10,7 @@
 
 # Output of go coverage tool
 *.out
+.cover/
 
 # Dependency directories
 vendor/
