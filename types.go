@@ -20,6 +20,8 @@ type (
 	Action[C any] = ir.Action[C]
 	// Guard is a predicate that determines if a transition should occur
 	Guard[C any] = ir.Guard[C]
+	// MachineConfig represents the complete machine definition
+	MachineConfig[C any] = ir.MachineConfig[C]
 )
 
 // Re-export constants
