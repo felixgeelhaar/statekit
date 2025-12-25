@@ -149,13 +149,13 @@ func buildMachineFromSchema[C any](schema *parser.MachineSchema, registry *Actio
 	var ctx C
 	machine := ir.NewMachineConfig[C](schema.ID, ir.StateID(schema.Initial), ctx)
 
-	// Copy actions and guards from registry
+	// Copy actions and guards from registry (convert from statekit types to ir types)
 	if registry != nil {
 		for name, action := range registry.actions {
-			machine.Actions[name] = action
+			machine.Actions[name] = ir.Action[C](action)
 		}
 		for name, guard := range registry.guards {
-			machine.Guards[name] = guard
+			machine.Guards[name] = ir.Guard[C](guard)
 		}
 	}
 

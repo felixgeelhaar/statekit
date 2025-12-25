@@ -2,7 +2,7 @@ package statekit
 
 import "github.com/felixgeelhaar/statekit/internal/ir"
 
-// Re-export types from internal/ir for public API
+// Re-export non-generic types from internal/ir for public API
 type (
 	// StateType represents the kind of state node
 	StateType = ir.StateType
@@ -16,13 +16,15 @@ type (
 	GuardType = ir.GuardType
 	// Event represents a runtime event with optional payload
 	Event = ir.Event
-	// Action is a side-effect function executed during transitions
-	Action[C any] = ir.Action[C]
-	// Guard is a predicate that determines if a transition should occur
-	Guard[C any] = ir.Guard[C]
-	// MachineConfig represents the complete machine definition
-	MachineConfig[C any] = ir.MachineConfig[C]
 )
+
+// Action is a side-effect function executed during transitions.
+// It receives a pointer to the context for modification and the triggering event.
+type Action[C any] func(ctx *C, event Event)
+
+// Guard is a predicate that determines if a transition should occur.
+// It receives the current context (by value) and the triggering event.
+type Guard[C any] func(ctx C, event Event) bool
 
 // Re-export constants
 const (
