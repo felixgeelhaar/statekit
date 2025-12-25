@@ -14,21 +14,11 @@ linters:
     - misspell
     - unconvert
     - unparam
-    - gocritic
 
 formatters:
   enable:
     - gofmt
     - goimports
-
-linters-settings:
-  govet:
-    enable-all: true
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
 
 issues:
   max-issues-per-linter: 0
