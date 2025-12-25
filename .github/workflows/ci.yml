@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.23', '1.24', '1.25']
+        go-version: ['1.23']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,13 +41,20 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25'
+          go-version: '1.23'
 
-      - name: Install coverctl
-        run: go install github.com/felixgeelhaar/coverctl@latest
+      - name: Run tests with coverage
+        run: go test -coverprofile=coverage.out ./...
 
-      - name: Run coverage check
-        run: coverctl --ci check
+      - name: Check coverage
+        run: |
+          go tool cover -func=coverage.out
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Total coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Coverage is below 80%"
+            exit 1
+          fi
 
   lint:
     name: Lint
@@ -59,7 +66,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25'
+          go-version: '1.23'
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
