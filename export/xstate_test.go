@@ -12,13 +12,13 @@ func TestXStateExporter_SimpleMachine(t *testing.T) {
 	machine, err := statekit.NewMachine[struct{}]("traffic_light").
 		WithInitial("green").
 		State("green").
-			On("TIMER").Target("yellow").
+		On("TIMER").Target("yellow").
 		Done().
 		State("yellow").
-			On("TIMER").Target("red").
+		On("TIMER").Target("red").
 		Done().
 		State("red").
-			On("TIMER").Target("green").
+		On("TIMER").Target("green").
 		Done().
 		Build()
 
@@ -60,9 +60,9 @@ func TestXStateExporter_WithEntryExitActions(t *testing.T) {
 		WithAction("onEnter", func(ctx *struct{}, e statekit.Event) {}).
 		WithAction("onExit", func(ctx *struct{}, e statekit.Event) {}).
 		State("idle").
-			OnEntry("onEnter").
-			OnExit("onExit").
-			On("ACTIVATE").Target("active").
+		OnEntry("onEnter").
+		OnExit("onExit").
+		On("ACTIVATE").Target("active").
 		Done().
 		State("active").
 		Done().
@@ -92,7 +92,7 @@ func TestXStateExporter_WithTransitionActions(t *testing.T) {
 		WithInitial("idle").
 		WithAction("doAction", func(ctx *struct{}, e statekit.Event) {}).
 		State("idle").
-			On("GO").Target("active").Do("doAction").
+		On("GO").Target("active").Do("doAction").
 		Done().
 		State("active").
 		Done().
@@ -122,7 +122,7 @@ func TestXStateExporter_WithGuard(t *testing.T) {
 		WithInitial("idle").
 		WithGuard("canGo", func(ctx struct{}, e ir.Event) bool { return true }).
 		State("idle").
-			On("GO").Target("active").Guard("canGo").
+		On("GO").Target("active").Guard("canGo").
 		Done().
 		State("active").
 		Done().
@@ -148,7 +148,7 @@ func TestXStateExporter_FinalState(t *testing.T) {
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("running").
 		State("running").
-			On("COMPLETE").Target("done").
+		On("COMPLETE").Target("done").
 		Done().
 		State("done").Final().
 		Done().
@@ -174,14 +174,14 @@ func TestXStateExporter_HierarchicalStates(t *testing.T) {
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			State("idle").
-				On("START").Target("working").
-			End().
-			End().
-			State("working").
-				On("STOP").Target("idle").
-			End().
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("working").
+		End().
+		End().
+		State("working").
+		On("STOP").Target("idle").
+		End().
 		End().
 		Done().
 		Build()
@@ -221,11 +221,11 @@ func TestXStateExporter_DeepHierarchy(t *testing.T) {
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("level1").
 		State("level1").
-			WithInitial("level2").
-			State("level2").
-				WithInitial("level3").
-				State("level3").End().
-			End().
+		WithInitial("level2").
+		State("level2").
+		WithInitial("level3").
+		State("level3").End().
+		End().
 		Done().
 		Build()
 
@@ -260,7 +260,7 @@ func TestXStateExporter_JSONOutput(t *testing.T) {
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
-			On("GO").Target("active").
+		On("GO").Target("active").
 		Done().
 		State("active").
 		Done().
@@ -307,32 +307,32 @@ func TestXStateExporter_ComplexMachine(t *testing.T) {
 		WithAction("enterActive", func(ctx *struct{}, e statekit.Event) {}).
 		WithAction("enterDontWalk", func(ctx *struct{}, e statekit.Event) {}).
 		State("active").
-			WithInitial("dont_walk").
-			OnEntry("enterActive").
-			On("MAINTENANCE").Target("maintenance").End().
-			State("dont_walk").
-				OnEntry("enterDontWalk").
-				On("BUTTON").Target("walk").
-			End().
-			End().
-			State("walk").
-				On("TIMER").Target("countdown").
-			End().
-			End().
-			State("countdown").
-				WithInitial("flashing").
-				State("flashing").
-					On("TIMER").Target("warning").
-				End().
-				End().
-				State("warning").
-					On("TIMER").Target("dont_walk").
-				End().
-			End().
+		WithInitial("dont_walk").
+		OnEntry("enterActive").
+		On("MAINTENANCE").Target("maintenance").End().
+		State("dont_walk").
+		OnEntry("enterDontWalk").
+		On("BUTTON").Target("walk").
+		End().
+		End().
+		State("walk").
+		On("TIMER").Target("countdown").
+		End().
+		End().
+		State("countdown").
+		WithInitial("flashing").
+		State("flashing").
+		On("TIMER").Target("warning").
+		End().
+		End().
+		State("warning").
+		On("TIMER").Target("dont_walk").
+		End().
+		End().
 		End().
 		Done().
 		State("maintenance").
-			On("RESUME").Target("active").
+		On("RESUME").Target("active").
 		Done().
 		Build()
 

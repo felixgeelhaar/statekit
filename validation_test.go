@@ -50,8 +50,8 @@ func TestBuild_Validation_InvalidTransitionTarget(t *testing.T) {
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
-			On("GO").Target("nonexistent").
-			Done().
+		On("GO").Target("nonexistent").
+		Done().
 		Build()
 
 	if err == nil {
@@ -72,8 +72,8 @@ func TestBuild_Validation_MissingAction(t *testing.T) {
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
-			OnEntry("nonexistentAction").
-			Done().
+		OnEntry("nonexistentAction").
+		Done().
 		Build()
 
 	if err == nil {
@@ -94,8 +94,8 @@ func TestBuild_Validation_MissingGuard(t *testing.T) {
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
-			On("GO").Target("running").Guard("nonexistentGuard").
-			Done().
+		On("GO").Target("running").Guard("nonexistentGuard").
+		Done().
 		State("running").Done().
 		Build()
 

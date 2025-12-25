@@ -123,46 +123,46 @@ func NewPedestrianLight() (*ir.MachineConfig[Context], error) {
 		}).
 		// Define the active compound state with children
 		State(StateActive).
-			WithInitial(StateDontWalk).
-			OnEntry(ActionEnterActive).
-			OnExit(ActionExitActive).
-			On(EventEnterMaintenance).Target(StateMaintenance).Do(ActionLogTransition).End().
-			// Don't Walk state
-			State(StateDontWalk).
-				OnEntry(ActionEnterDontWalk).
-				OnExit(ActionExitDontWalk).
-				On(EventPedestrianButton).Target(StateWalk).
-			End().
-			End().
-			// Walk state
-			State(StateWalk).
-				OnEntry(ActionEnterWalk).
-				OnExit(ActionExitWalk).
-				On(EventTimer).Target(StateCountdown).
-			End().
-			End().
-			// Countdown compound state
-			State(StateCountdown).
-				WithInitial(StateFlashing).
-				OnEntry(ActionEnterCountdown).
-				OnExit(ActionExitCountdown).
-				State(StateFlashing).
-					OnEntry(ActionEnterFlashing).
-					On(EventTimer).Target(StateWarning).
-				End().
-				End().
-				State(StateWarning).
-					OnEntry(ActionEnterWarning).
-					On(EventTimer).Target(StateDontWalk).
-				End().
-			End().
+		WithInitial(StateDontWalk).
+		OnEntry(ActionEnterActive).
+		OnExit(ActionExitActive).
+		On(EventEnterMaintenance).Target(StateMaintenance).Do(ActionLogTransition).End().
+		// Don't Walk state
+		State(StateDontWalk).
+		OnEntry(ActionEnterDontWalk).
+		OnExit(ActionExitDontWalk).
+		On(EventPedestrianButton).Target(StateWalk).
+		End().
+		End().
+		// Walk state
+		State(StateWalk).
+		OnEntry(ActionEnterWalk).
+		OnExit(ActionExitWalk).
+		On(EventTimer).Target(StateCountdown).
+		End().
+		End().
+		// Countdown compound state
+		State(StateCountdown).
+		WithInitial(StateFlashing).
+		OnEntry(ActionEnterCountdown).
+		OnExit(ActionExitCountdown).
+		State(StateFlashing).
+		OnEntry(ActionEnterFlashing).
+		On(EventTimer).Target(StateWarning).
+		End().
+		End().
+		State(StateWarning).
+		OnEntry(ActionEnterWarning).
+		On(EventTimer).Target(StateDontWalk).
+		End().
+		End().
 		End().
 		Done().
 		// Maintenance state (sibling of active)
 		State(StateMaintenance).
-			OnEntry(ActionEnterMaintenance).
-			OnExit(ActionExitMaintenance).
-			On(EventExitMaintenance).Target(StateActive).
+		OnEntry(ActionEnterMaintenance).
+		OnExit(ActionExitMaintenance).
+		On(EventExitMaintenance).Target(StateActive).
 		Done().
 		Build()
 }

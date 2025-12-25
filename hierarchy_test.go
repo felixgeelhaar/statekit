@@ -16,22 +16,22 @@ func TestHierarchical_BuildNestedStates(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			State("idle").
-				On("START").Target("working").
-			End(). // Returns to idle StateBuilder
-			End(). // Returns to active StateBuilder (idle's parent)
-			State("working").
-				WithInitial("loading").
-				State("loading").
-					On("LOADED").Target("processing").
-				End(). // Returns to loading StateBuilder
-				End(). // Returns to working StateBuilder
-				State("processing").
-					On("DONE").Target("idle").
-				End(). // Returns to processing StateBuilder
-			End(). // Returns to working StateBuilder
-		End(). // Returns to active StateBuilder
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("working").
+		End(). // Returns to idle StateBuilder
+		End(). // Returns to active StateBuilder (idle's parent)
+		State("working").
+		WithInitial("loading").
+		State("loading").
+		On("LOADED").Target("processing").
+		End(). // Returns to loading StateBuilder
+		End(). // Returns to working StateBuilder
+		State("processing").
+		On("DONE").Target("idle").
+		End().  // Returns to processing StateBuilder
+		End().  // Returns to working StateBuilder
+		End().  // Returns to active StateBuilder
 		Done(). // Returns to MachineBuilder
 		State("done").Final().
 		Done().
@@ -65,9 +65,9 @@ func TestHierarchical_StartEntersLeaf(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			State("idle").End().
-			State("working").End().
+		WithInitial("idle").
+		State("idle").End().
+		State("working").End().
 		Done().
 		Build()
 
@@ -89,11 +89,11 @@ func TestHierarchical_StartEntersDeepLeaf(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("level1").
 		State("level1").
-			WithInitial("level2").
-			State("level2").
-				WithInitial("level3").
-				State("level3").End().
-			End().
+		WithInitial("level2").
+		State("level2").
+		WithInitial("level3").
+		State("level3").End().
+		End().
 		Done().
 		Build()
 
@@ -114,12 +114,12 @@ func TestHierarchical_MatchesAncestors(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
-			WithInitial("working").
-			State("working").
-				WithInitial("loading").
-				State("loading").End().
-				State("processing").End().
-			End().
+		WithInitial("working").
+		State("working").
+		WithInitial("loading").
+		State("loading").End().
+		State("processing").End().
+		End().
 		Done().
 		Build()
 
@@ -153,14 +153,14 @@ func TestHierarchical_TransitionWithinCompound(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			State("idle").
-				On("START").Target("working").
-			End(). // TransitionBuilder.End() → StateBuilder[idle]
-			End(). // StateBuilder[idle].End() → StateBuilder[active]
-			State("working").
-				On("STOP").Target("idle").
-			End(). // TransitionBuilder.End() → StateBuilder[working]
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("working").
+		End(). // TransitionBuilder.End() → StateBuilder[idle]
+		End(). // StateBuilder[idle].End() → StateBuilder[active]
+		State("working").
+		On("STOP").Target("idle").
+		End(). // TransitionBuilder.End() → StateBuilder[working]
 		End(). // StateBuilder[working].End() → StateBuilder[active]
 		Done().
 		Build()
@@ -192,15 +192,15 @@ func TestHierarchical_TransitionToCompoundEntersLeaf(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
-			On("START").Target("active").
+		On("START").Target("active").
 		Done().
 		State("active").
-			WithInitial("working").
-			State("working").
-				WithInitial("loading").
-				State("loading").End().
-				State("processing").End().
-			End().
+		WithInitial("working").
+		State("working").
+		WithInitial("loading").
+		State("loading").End().
+		State("processing").End().
+		End().
 		Done().
 		Build()
 
@@ -264,24 +264,24 @@ func TestHierarchical_EntryExitOrder(t *testing.T) {
 			ctx.Actions = append(ctx.Actions, "exit:loading")
 		}).
 		State("idle").
-			OnEntry("enterIdle").
-			OnExit("exitIdle").
-			On("START").Target("active").
+		OnEntry("enterIdle").
+		OnExit("exitIdle").
+		On("START").Target("active").
 		Done().
 		State("active").
-			WithInitial("working").
-			OnEntry("enterActive").
-			OnExit("exitActive").
-			State("working").
-				WithInitial("loading").
-				OnEntry("enterWorking").
-				OnExit("exitWorking").
-				State("loading").
-					OnEntry("enterLoading").
-					OnExit("exitLoading").
-					On("STOP").Target("idle").
-				End().
-			End().
+		WithInitial("working").
+		OnEntry("enterActive").
+		OnExit("exitActive").
+		State("working").
+		WithInitial("loading").
+		OnEntry("enterWorking").
+		OnExit("exitWorking").
+		State("loading").
+		OnEntry("enterLoading").
+		OnExit("exitLoading").
+		On("STOP").Target("idle").
+		End().
+		End().
 		End().
 		Done().
 		Build()
@@ -343,13 +343,13 @@ func TestHierarchical_EventBubblesUp(t *testing.T) {
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			On("GLOBAL_RESET").Target("done").End(). // TransitionBuilder.End() → StateBuilder[active]
-			State("idle").
-				On("START").Target("working").
-			End(). // TransitionBuilder.End() → StateBuilder[idle]
-			End(). // StateBuilder[idle].End() → StateBuilder[active]
-			State("working").End().
+		WithInitial("idle").
+		On("GLOBAL_RESET").Target("done").End(). // TransitionBuilder.End() → StateBuilder[active]
+		State("idle").
+		On("START").Target("working").
+		End(). // TransitionBuilder.End() → StateBuilder[idle]
+		End(). // StateBuilder[idle].End() → StateBuilder[active]
+		State("working").End().
 		Done().
 		State("done").Final().
 		Done().
@@ -394,11 +394,11 @@ func TestHierarchical_ChildTransitionTakesPriority(t *testing.T) {
 			handled = "child"
 		}).
 		State("parent").
-			WithInitial("child").
-			On("EVENT").Target("parent").Do("parentHandled").End(). // Parent handles EVENT
-			State("child").
-				On("EVENT").Target("child").Do("childHandled"). // Child also handles EVENT
-			End().
+		WithInitial("child").
+		On("EVENT").Target("parent").Do("parentHandled").End(). // Parent handles EVENT
+		State("child").
+		On("EVENT").Target("child").Do("childHandled"). // Child also handles EVENT
+		End().
 		End().
 		Done().
 		Build()
@@ -442,20 +442,20 @@ func TestHierarchical_TransitionToSibling(t *testing.T) {
 			ctx.Actions = append(ctx.Actions, "exit:working")
 		}).
 		State("active").
-			WithInitial("idle").
-			OnEntry("enterActive").
-			OnExit("exitActive").
-			State("idle").
-				OnEntry("enterIdle").
-				OnExit("exitIdle").
-				On("START").Target("working").
-			End(). // TransitionBuilder.End() → StateBuilder[idle]
-			End(). // StateBuilder[idle].End() → StateBuilder[active]
-			State("working").
-				OnEntry("enterWorking").
-				OnExit("exitWorking").
-				On("STOP").Target("idle").
-			End(). // TransitionBuilder.End() → StateBuilder[working]
+		WithInitial("idle").
+		OnEntry("enterActive").
+		OnExit("exitActive").
+		State("idle").
+		OnEntry("enterIdle").
+		OnExit("exitIdle").
+		On("START").Target("working").
+		End(). // TransitionBuilder.End() → StateBuilder[idle]
+		End(). // StateBuilder[idle].End() → StateBuilder[active]
+		State("working").
+		OnEntry("enterWorking").
+		OnExit("exitWorking").
+		On("STOP").Target("idle").
+		End(). // TransitionBuilder.End() → StateBuilder[working]
 		End(). // StateBuilder[working].End() → StateBuilder[active]
 		Done().
 		Build()

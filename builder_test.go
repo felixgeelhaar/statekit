@@ -47,14 +47,14 @@ func TestMachineBuilder_WithStates(t *testing.T) {
 	machine, err := NewMachine[testContext]("trafficLight").
 		WithInitial("green").
 		State("green").
-			On("TIMER").Target("yellow").
-			Done().
+		On("TIMER").Target("yellow").
+		Done().
 		State("yellow").
-			On("TIMER").Target("red").
-			Done().
+		On("TIMER").Target("red").
+		Done().
 		State("red").
-			On("TIMER").Target("green").
-			Done().
+		On("TIMER").Target("green").
+		Done().
 		Build()
 
 	if err != nil {
@@ -86,10 +86,10 @@ func TestMachineBuilder_FinalState(t *testing.T) {
 	machine, err := NewMachine[testContext]("workflow").
 		WithInitial("active").
 		State("active").
-			On("COMPLETE").Target("done").
-			Done().
+		On("COMPLETE").Target("done").
+		Done().
 		State("done").Final().
-			Done().
+		Done().
 		Build()
 
 	if err != nil {
@@ -113,10 +113,10 @@ func TestMachineBuilder_WithActions(t *testing.T) {
 		WithInitial("idle").
 		WithAction("increment", action).
 		State("idle").
-			OnEntry("increment").
-			OnExit("increment").
-			On("NEXT").Target("active").Do("increment").
-			Done().
+		OnEntry("increment").
+		OnExit("increment").
+		On("NEXT").Target("active").Do("increment").
+		Done().
 		State("active").Done().
 		Build()
 
@@ -164,8 +164,8 @@ func TestMachineBuilder_WithGuards(t *testing.T) {
 		WithInitial("idle").
 		WithGuard("hasCount", guard).
 		State("idle").
-			On("NEXT").Target("active").Guard("hasCount").
-			Done().
+		On("NEXT").Target("active").Guard("hasCount").
+		Done().
 		State("active").Done().
 		Build()
 
@@ -198,12 +198,12 @@ func TestMachineBuilder_MultipleTransitions(t *testing.T) {
 	machine, err := NewMachine[testContext]("test").
 		WithInitial("idle").
 		State("idle").
-			On("START").Target("running").
-			On("SKIP").Target("done").
-			Done().
+		On("START").Target("running").
+		On("SKIP").Target("done").
+		Done().
 		State("running").
-			On("STOP").Target("done").
-			Done().
+		On("STOP").Target("done").
+		Done().
 		State("done").Final().Done().
 		Build()
 

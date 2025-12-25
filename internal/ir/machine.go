@@ -14,9 +14,9 @@ type MachineConfig[C any] struct {
 type StateConfig struct {
 	ID          StateID
 	Type        StateType
-	Parent      StateID      // Parent state ID (empty for root-level states)
-	Initial     StateID      // Initial child state (for compound states only)
-	Children    []StateID    // Child state IDs (for compound states only)
+	Parent      StateID   // Parent state ID (empty for root-level states)
+	Initial     StateID   // Initial child state (for compound states only)
+	Children    []StateID // Child state IDs (for compound states only)
 	Entry       []ActionType
 	Exit        []ActionType
 	Transitions []*TransitionConfig
