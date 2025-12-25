@@ -37,19 +37,27 @@ statekit/
 ├── types.go              # Public types (Event, State, StateID, etc.)
 ├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder)
 ├── interpreter.go        # Runtime execution (Start, Send, State, Matches, Done)
+├── reflect.go            # Reflection DSL (FromStruct, MachineDef, ActionRegistry)
 ├── hierarchy_test.go     # Comprehensive hierarchical state tests
 ├── internal/
-│   └── ir/
-│       ├── types.go      # Core type definitions
-│       ├── machine.go    # MachineConfig, StateConfig, TransitionConfig
-│       └── validate.go   # Build-time validation
+│   ├── ir/
+│   │   ├── types.go      # Core type definitions
+│   │   ├── machine.go    # MachineConfig, StateConfig, TransitionConfig
+│   │   └── validate.go   # Build-time validation
+│   └── parser/
+│       ├── parser.go     # Struct tag parsing for reflection DSL
+│       └── parser_test.go
 ├── export/
 │   ├── xstate.go         # XState JSON exporter
 │   └── xstate_test.go    # Exporter tests
 ├── examples/
 │   ├── traffic_light/    # Simple FSM example
-│   └── pedestrian_light/ # Hierarchical states example
+│   ├── pedestrian_light/ # Hierarchical states example
+│   ├── order_workflow/   # Reflection DSL example
+│   └── incident_lifecycle/ # Complex workflow example
 └── docs/
+    ├── reflection-dsl.md # Reflection DSL guide
+    ├── api-reference.md  # Complete API reference
     ├── prd.md            # Product Requirements Document
     └── tdd.md            # Technical Design Document
 ```
@@ -83,7 +91,13 @@ statekit/
    - `.ExportJSON()` returns compact JSON string
    - `.ExportJSONIndent()` returns formatted JSON
 
-5. **Internal IR** (`internal/ir/`) - Immutable machine representation
+5. **Reflection DSL** (`reflect.go`) - Struct-based machine definitions
+   - `MachineDef`, `StateNode`, `CompoundNode`, `FinalNode` marker types
+   - `ActionRegistry[C]` for named actions and guards
+   - `FromStruct[M, C](registry)` builds machine from struct tags
+   - `FromStructWithContext[M, C](registry, ctx)` with initial context
+
+6. **Internal IR** (`internal/ir/`) - Immutable machine representation
    - `MachineConfig[C]` - Complete machine definition
    - `StateConfig` - State with transitions
    - `TransitionConfig` - Event → target mapping
@@ -180,6 +194,44 @@ fmt.Println(jsonStr)
 // Use with stately.ai/viz or XState Inspector
 ```
 
+### Reflection DSL Example
+
+```go
+// Define machine using struct tags
+type OrderMachine struct {
+    statekit.MachineDef `id:"order" initial:"pending"`
+    Pending   statekit.StateNode `on:"SUBMIT->validating:hasItems" entry:"logPending"`
+    Validating statekit.StateNode `on:"VALID->payment,INVALID->pending"`
+    Payment   statekit.StateNode `on:"PAID->completed/recordPayment"`
+    Completed statekit.FinalNode
+}
+
+type OrderContext struct {
+    Items []string
+}
+
+// Register actions and guards
+registry := statekit.NewActionRegistry[OrderContext]().
+    WithAction("logPending", func(ctx *OrderContext, e statekit.Event) {
+        fmt.Println("Order pending")
+    }).
+    WithAction("recordPayment", func(ctx *OrderContext, e statekit.Event) {
+        fmt.Println("Payment recorded")
+    }).
+    WithGuard("hasItems", func(ctx OrderContext, e statekit.Event) bool {
+        return len(ctx.Items) > 0
+    })
+
+// Build machine from struct
+machine, err := statekit.FromStruct[OrderMachine, OrderContext](registry)
+if err != nil {
+    panic(err)
+}
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+```
+
 ## Design Principles
 
 - **Go-first execution** - Explicit, deterministic, testable
@@ -187,7 +239,7 @@ fmt.Println(jsonStr)
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.2)
+## Current Status (v0.3)
 
 Implemented:
 - ✅ Core types
@@ -200,6 +252,8 @@ Implemented:
 - ✅ Event bubbling to ancestors
 - ✅ Proper entry/exit ordering
 - ✅ XState JSON exporter
+- ✅ Reflection DSL for struct-based definitions (v0.3)
+- ✅ ActionRegistry for named actions/guards (v0.3)
 
 ## Scope Constraints (v1)
 
