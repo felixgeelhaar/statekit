@@ -24,7 +24,7 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 go get github.com/felixgeelhaar/statekit
 ```
 
-Requires Go 1.21 or later.
+Requires Go 1.23 or later.
 
 ## Quick Start
 
