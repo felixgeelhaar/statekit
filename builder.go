@@ -83,12 +83,12 @@ func (b *MachineBuilder[C]) State(id StateID) *StateBuilder[C] {
 func (b *MachineBuilder[C]) Build() (*ir.MachineConfig[C], error) {
 	machine := ir.NewMachineConfig(b.id, b.initial, b.context)
 
-	// Copy actions and guards
+	// Copy actions and guards (convert from statekit types to ir types)
 	for name, action := range b.actions {
-		machine.Actions[name] = action
+		machine.Actions[name] = ir.Action[C](action)
 	}
 	for name, guard := range b.guards {
-		machine.Guards[name] = guard
+		machine.Guards[name] = ir.Guard[C](guard)
 	}
 
 	// Build states recursively
