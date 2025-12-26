@@ -4,6 +4,7 @@ package export
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/felixgeelhaar/statekit/internal/ir"
 )
@@ -41,6 +42,9 @@ type XStateNode struct {
 	// History state fields (v2.0)
 	History string `json:"history,omitempty"` // "shallow" or "deep" (only for type="history")
 	Target  string `json:"target,omitempty"`  // Default target for history states
+
+	// Delayed transition fields (v2.0)
+	After map[string]XStateTransition `json:"after,omitempty"` // Key is delay in milliseconds
 }
 
 // XStateTransition represents a transition in XState format
@@ -162,9 +166,8 @@ func (e *XStateExporter[C]) buildStateNode(stateID ir.StateID) XStateNode {
 		}
 	}
 
-	// Transitions
+	// Transitions (separate event-based and delayed)
 	if len(state.Transitions) > 0 {
-		node.On = make(map[string]XStateTransition)
 		for _, trans := range state.Transitions {
 			transition := XStateTransition{
 				Target: string(trans.Target),
@@ -181,7 +184,20 @@ func (e *XStateExporter[C]) buildStateNode(stateID ir.StateID) XStateNode {
 				transition.Guard = string(trans.Guard)
 			}
 
-			node.On[string(trans.Event)] = transition
+			// Delayed transitions go in "after", event-based go in "on"
+			if trans.IsDelayed() {
+				if node.After == nil {
+					node.After = make(map[string]XStateTransition)
+				}
+				// Convert duration to milliseconds string
+				delayMs := strconv.FormatInt(trans.Delay.Milliseconds(), 10)
+				node.After[delayMs] = transition
+			} else {
+				if node.On == nil {
+					node.On = make(map[string]XStateTransition)
+				}
+				node.On[string(trans.Event)] = transition
+			}
 		}
 	}
 

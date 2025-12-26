@@ -1,5 +1,7 @@
 package ir
 
+import "time"
+
 // MachineConfig is the immutable internal representation of a statechart
 type MachineConfig[C any] struct {
 	ID      string
@@ -32,6 +34,15 @@ type TransitionConfig struct {
 	Target  StateID
 	Guard   GuardType // Optional, empty string means no guard
 	Actions []ActionType
+
+	// Delayed transition fields (v2.0)
+	// When Delay > 0, this is a delayed (after) transition
+	Delay time.Duration
+}
+
+// IsDelayed returns true if this is a delayed transition
+func (t *TransitionConfig) IsDelayed() bool {
+	return t.Delay > 0
 }
 
 // NewMachineConfig creates a new MachineConfig with initialized maps
@@ -119,6 +130,17 @@ func (s *StateConfig) IsHistory() bool {
 // IsParallel returns true if this is a parallel state
 func (s *StateConfig) IsParallel() bool {
 	return s.Type == StateTypeParallel
+}
+
+// GetDelayedTransitions returns all delayed transitions for this state
+func (s *StateConfig) GetDelayedTransitions() []*TransitionConfig {
+	var delayed []*TransitionConfig
+	for _, t := range s.Transitions {
+		if t.IsDelayed() {
+			delayed = append(delayed, t)
+		}
+	}
+	return delayed
 }
 
 // GetAncestors returns all ancestor state IDs from immediate parent to root

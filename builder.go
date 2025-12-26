@@ -1,6 +1,10 @@
 package statekit
 
-import "github.com/felixgeelhaar/statekit/internal/ir"
+import (
+	"time"
+
+	"github.com/felixgeelhaar/statekit/internal/ir"
+)
 
 // MachineBuilder provides a fluent API for constructing state machines
 type MachineBuilder[C any] struct {
@@ -44,6 +48,9 @@ type TransitionBuilder[C any] struct {
 	target  StateID
 	guard   GuardType
 	actions []ActionType
+
+	// Delayed transition fields (v2.0)
+	delay time.Duration
 }
 
 // NewMachine creates a new MachineBuilder with the given ID
@@ -150,6 +157,7 @@ func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machin
 		trans := ir.NewTransitionConfig(tb.event, tb.target)
 		trans.Guard = tb.guard
 		trans.Actions = append(trans.Actions, tb.actions...)
+		trans.Delay = tb.delay // Delayed transitions (v2.0)
 		state.Transitions = append(state.Transitions, trans)
 	}
 
@@ -238,6 +246,17 @@ func (b *StateBuilder[C]) History(id StateID) *HistoryBuilder[C] {
 	}
 }
 
+// After starts building a delayed transition that triggers automatically
+// after the specified duration (v2.0)
+func (b *StateBuilder[C]) After(d time.Duration) *TransitionBuilder[C] {
+	tb := &TransitionBuilder[C]{
+		state: b,
+		delay: d,
+	}
+	b.transitions = append(b.transitions, tb)
+	return tb
+}
+
 // --- HistoryBuilder methods (v2.0) ---
 
 // Shallow sets the history type to shallow (remembers immediate child)
@@ -296,6 +315,11 @@ func (b *TransitionBuilder[C]) Do(action ActionType) *TransitionBuilder[C] {
 // On starts a new transition on the same state (chainable)
 func (b *TransitionBuilder[C]) On(event EventType) *TransitionBuilder[C] {
 	return b.state.On(event)
+}
+
+// After starts a new delayed transition on the same state (chainable) (v2.0)
+func (b *TransitionBuilder[C]) After(d time.Duration) *TransitionBuilder[C] {
+	return b.state.After(d)
 }
 
 // Done completes the state definition and returns to the machine builder

@@ -40,6 +40,7 @@ statekit/
 ├── reflect.go            # Reflection DSL (FromStruct, MachineDef, ActionRegistry)
 ├── hierarchy_test.go     # Comprehensive hierarchical state tests
 ├── history_test.go       # History state tests (shallow and deep)
+├── delayed_test.go       # Delayed transition tests
 ├── internal/
 │   ├── ir/
 │   │   ├── types.go      # Core type definitions
@@ -256,6 +257,7 @@ Implemented:
 - ✅ Reflection DSL for struct-based definitions (v0.3)
 - ✅ ActionRegistry for named actions/guards (v0.3)
 - ✅ History states (shallow and deep) (v2.0)
+- ✅ Delayed transitions with timers (v2.0)
 
 ## History States
 
@@ -282,10 +284,47 @@ machine, _ := statekit.NewMachine[struct{}]("history_example").
 - **Shallow history**: Remembers immediate child of compound state
 - **Deep history**: Remembers exact leaf state (full path)
 
+## Delayed Transitions
+
+Delayed transitions trigger automatically after a specified duration:
+
+```go
+machine, _ := statekit.NewMachine[struct{}]("timeout_example").
+    WithInitial("loading").
+    State("loading").
+        After(time.Second).Target("timeout").        // Timeout after 1s
+        After(5*time.Second).Target("error").        // Error after 5s
+        On("LOADED").Target("ready").                // Event cancels timers
+    Done().
+    State("timeout").Done().
+    State("error").Done().
+    State("ready").Done().
+    Build()
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+// Timer starts automatically
+
+// Option 1: Wait for timeout
+// time.Sleep(2*time.Second) → state becomes "timeout"
+
+// Option 2: Cancel via event
+interp.Send(statekit.Event{Type: "LOADED"}) // → state becomes "ready", timer canceled
+
+// Always call Stop() to clean up timers
+interp.Stop()
+```
+
+Key behaviors:
+- Timers are scheduled on state entry
+- Timers are canceled on state exit (including via event transitions)
+- Guards are evaluated when timer fires
+- Multiple delayed transitions are supported (first to fire wins)
+- `interp.Stop()` cancels all active timers
+
 ## Scope Constraints (v1)
 
 Explicitly **out of scope** for v1:
 - Parallel/orthogonal states
-- Delayed/timed transitions
 - Invoked actors/services
 - Persistence/durability
