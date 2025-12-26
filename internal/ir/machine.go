@@ -20,6 +20,10 @@ type StateConfig struct {
 	Entry       []ActionType
 	Exit        []ActionType
 	Transitions []*TransitionConfig
+
+	// History state fields (v2.0)
+	HistoryType    HistoryType // Shallow or Deep (only for StateTypeHistory)
+	HistoryDefault StateID     // Default target if no history recorded
 }
 
 // TransitionConfig represents a single transition
@@ -105,6 +109,16 @@ func (s *StateConfig) IsAtomic() bool {
 // IsFinal returns true if this is a final state
 func (s *StateConfig) IsFinal() bool {
 	return s.Type == StateTypeFinal
+}
+
+// IsHistory returns true if this is a history state
+func (s *StateConfig) IsHistory() bool {
+	return s.Type == StateTypeHistory
+}
+
+// IsParallel returns true if this is a parallel state
+func (s *StateConfig) IsParallel() bool {
+	return s.Type == StateTypeParallel
 }
 
 // GetAncestors returns all ancestor state IDs from immediate parent to root

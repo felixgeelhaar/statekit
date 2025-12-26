@@ -7,6 +7,12 @@ type Interpreter[C any] struct {
 	machine *ir.MachineConfig[C]
 	state   State[C]
 	started bool
+
+	// History tracking (v2.0)
+	// Maps compound state ID to the last immediate child that was active (shallow)
+	shallowHistory map[ir.StateID]ir.StateID
+	// Maps compound state ID to the last leaf state that was active (deep)
+	deepHistory map[ir.StateID]ir.StateID
 }
 
 // transitionSource holds the state that owns the transition and the transition itself
@@ -23,7 +29,9 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 			Value:   "",
 			Context: machine.Context,
 		},
-		started: false,
+		started:        false,
+		shallowHistory: make(map[ir.StateID]ir.StateID),
+		deepHistory:    make(map[ir.StateID]ir.StateID),
 	}
 }
 
@@ -142,8 +150,8 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 	sourceStateID := source.state.ID
 	targetStateID := transition.Target
 
-	// Resolve target to leaf state if it's a compound state
-	resolvedTarget := i.machine.GetInitialLeaf(targetStateID)
+	// Resolve target: handle history states or resolve to leaf state
+	resolvedTarget := i.resolveTarget(targetStateID)
 
 	// Get the current leaf state (what we're actually in)
 	currentLeaf := i.state.Value
@@ -172,11 +180,22 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
 	}
 
-	// 1. Execute exit actions (leaf to root order)
+	// 1. Execute exit actions (leaf to root order) and record history
 	for _, stateID := range statesToExit {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Exit, event)
+
+			// Record history for parent compound states when exiting
+			if stateConfig.Parent != "" {
+				parent := i.machine.GetState(stateConfig.Parent)
+				if parent != nil && parent.IsCompound() {
+					// Record shallow history: immediate child that was active
+					i.shallowHistory[parent.ID] = stateID
+					// Record deep history: the current leaf state
+					i.deepHistory[parent.ID] = currentLeaf
+				}
+			}
 		}
 	}
 
@@ -294,4 +313,50 @@ func (i *Interpreter[C]) executeActions(actions []ir.ActionType, event Event) {
 			action(&i.state.Context, event)
 		}
 	}
+}
+
+// resolveTarget resolves the target state, handling history states and compound states
+func (i *Interpreter[C]) resolveTarget(targetID ir.StateID) ir.StateID {
+	targetState := i.machine.GetState(targetID)
+	if targetState == nil {
+		return targetID
+	}
+
+	// Handle history states
+	if targetState.IsHistory() {
+		return i.resolveHistoryTarget(targetState)
+	}
+
+	// For compound states, resolve to initial leaf
+	return i.machine.GetInitialLeaf(targetID)
+}
+
+// resolveHistoryTarget resolves a history state to the appropriate target
+func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.StateID {
+	parentID := historyState.Parent
+	if parentID == "" {
+		// Fallback to default
+		return i.machine.GetInitialLeaf(historyState.HistoryDefault)
+	}
+
+	// Check if we have recorded history for the parent
+	var recordedHistory ir.StateID
+	if historyState.HistoryType == ir.HistoryTypeDeep {
+		recordedHistory = i.deepHistory[parentID]
+	} else {
+		recordedHistory = i.shallowHistory[parentID]
+	}
+
+	// If we have history, use it; otherwise use default
+	if recordedHistory != "" {
+		// For deep history, the recorded state is already the leaf
+		if historyState.HistoryType == ir.HistoryTypeDeep {
+			return recordedHistory
+		}
+		// For shallow history, we need to resolve to the initial leaf of the recorded child
+		return i.machine.GetInitialLeaf(recordedHistory)
+	}
+
+	// No history recorded, use default
+	return i.machine.GetInitialLeaf(historyState.HistoryDefault)
 }

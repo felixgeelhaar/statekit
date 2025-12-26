@@ -23,6 +23,18 @@ type StateBuilder[C any] struct {
 	entry       []ActionType
 	exit        []ActionType
 	transitions []*TransitionBuilder[C]
+
+	// History state fields (v2.0)
+	historyType    HistoryType
+	historyDefault StateID
+}
+
+// HistoryBuilder provides a fluent API for constructing history states
+type HistoryBuilder[C any] struct {
+	parent      *StateBuilder[C] // Parent compound state
+	id          StateID
+	historyType HistoryType
+	defaultID   StateID
 }
 
 // TransitionBuilder provides a fluent API for constructing transitions
@@ -123,6 +135,12 @@ func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machin
 		}
 	}
 
+	// Set history state fields (v2.0)
+	if stateType == ir.StateTypeHistory {
+		state.HistoryType = sb.historyType
+		state.HistoryDefault = sb.historyDefault
+	}
+
 	// Convert entry/exit actions
 	state.Entry = append(state.Entry, sb.entry...)
 	state.Exit = append(state.Exit, sb.exit...)
@@ -208,6 +226,51 @@ func (b *StateBuilder[C]) End() *StateBuilder[C] {
 	}
 	// If no parent, this is a programming error, but we'll return nil
 	return nil
+}
+
+// History starts building a history state within this compound state (v2.0)
+// History states remember the last active child and transition back to it
+func (b *StateBuilder[C]) History(id StateID) *HistoryBuilder[C] {
+	return &HistoryBuilder[C]{
+		parent:      b,
+		id:          id,
+		historyType: HistoryTypeShallow,
+	}
+}
+
+// --- HistoryBuilder methods (v2.0) ---
+
+// Shallow sets the history type to shallow (remembers immediate child)
+func (b *HistoryBuilder[C]) Shallow() *HistoryBuilder[C] {
+	b.historyType = HistoryTypeShallow
+	return b
+}
+
+// Deep sets the history type to deep (remembers full leaf path)
+func (b *HistoryBuilder[C]) Deep() *HistoryBuilder[C] {
+	b.historyType = HistoryTypeDeep
+	return b
+}
+
+// Default sets the default target state if no history is recorded
+func (b *HistoryBuilder[C]) Default(target StateID) *HistoryBuilder[C] {
+	b.defaultID = target
+	return b
+}
+
+// End completes the history state definition and returns to the parent StateBuilder
+func (b *HistoryBuilder[C]) End() *StateBuilder[C] {
+	// Create a StateBuilder for the history state
+	historyState := &StateBuilder[C]{
+		machine:        b.parent.machine,
+		parent:         b.parent,
+		id:             b.id,
+		stateType:      StateTypeHistory,
+		historyType:    b.historyType,
+		historyDefault: b.defaultID,
+	}
+	b.parent.children = append(b.parent.children, historyState)
+	return b.parent
 }
 
 // --- TransitionBuilder methods ---

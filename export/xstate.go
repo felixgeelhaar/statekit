@@ -31,12 +31,16 @@ type XStateMachine struct {
 
 // XStateNode represents a single state in XState format
 type XStateNode struct {
-	Type    string                      `json:"type,omitempty"`    // "final", "compound", "atomic"
+	Type    string                      `json:"type,omitempty"`    // "final", "compound", "atomic", "history"
 	Initial string                      `json:"initial,omitempty"` // For compound states
 	States  map[string]XStateNode       `json:"states,omitempty"`  // For compound states
 	Entry   []string                    `json:"entry,omitempty"`
 	Exit    []string                    `json:"exit,omitempty"`
 	On      map[string]XStateTransition `json:"on,omitempty"`
+
+	// History state fields (v2.0)
+	History string `json:"history,omitempty"` // "shallow" or "deep" (only for type="history")
+	Target  string `json:"target,omitempty"`  // Default target for history states
 }
 
 // XStateTransition represents a transition in XState format
@@ -128,6 +132,16 @@ func (e *XStateExporter[C]) buildStateNode(stateID ir.StateID) XStateNode {
 			for _, childID := range state.Children {
 				node.States[string(childID)] = e.buildStateNode(childID)
 			}
+		}
+	case ir.StateTypeHistory:
+		node.Type = "history"
+		if state.HistoryType == ir.HistoryTypeDeep {
+			node.History = "deep"
+		} else {
+			node.History = "shallow"
+		}
+		if state.HistoryDefault != "" {
+			node.Target = string(state.HistoryDefault)
 		}
 	}
 	// StateTypeAtomic is the default, no need to set type

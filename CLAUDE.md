@@ -35,10 +35,11 @@ go fmt ./...
 ```
 statekit/
 ├── types.go              # Public types (Event, State, StateID, etc.)
-├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder)
+├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder, HistoryBuilder)
 ├── interpreter.go        # Runtime execution (Start, Send, State, Matches, Done)
 ├── reflect.go            # Reflection DSL (FromStruct, MachineDef, ActionRegistry)
 ├── hierarchy_test.go     # Comprehensive hierarchical state tests
+├── history_test.go       # History state tests (shallow and deep)
 ├── internal/
 │   ├── ir/
 │   │   ├── types.go      # Core type definitions
@@ -239,7 +240,7 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.3)
+## Current Status (v2.0)
 
 Implemented:
 - ✅ Core types
@@ -254,12 +255,37 @@ Implemented:
 - ✅ XState JSON exporter
 - ✅ Reflection DSL for struct-based definitions (v0.3)
 - ✅ ActionRegistry for named actions/guards (v0.3)
+- ✅ History states (shallow and deep) (v2.0)
+
+## History States
+
+History states remember the last active child when re-entering a compound state:
+
+```go
+machine, _ := statekit.NewMachine[struct{}]("history_example").
+    WithInitial("active").
+    State("active").
+        WithInitial("idle").
+        On("PAUSE").Target("paused").End().
+        History("hist").Shallow().Default("idle").End().  // Shallow history
+        History("deepHist").Deep().Default("idle").End(). // Deep history
+        State("idle").On("START").Target("working").End().End().
+        State("working").On("NEXT").Target("done").End().End().
+        State("done").End().
+    Done().
+    State("paused").
+        On("RESUME").Target("hist").  // Resume to last child
+    Done().
+    Build()
+```
+
+- **Shallow history**: Remembers immediate child of compound state
+- **Deep history**: Remembers exact leaf state (full path)
 
 ## Scope Constraints (v1)
 
-Explicitly **out of scope**:
+Explicitly **out of scope** for v1:
 - Parallel/orthogonal states
-- History states
 - Delayed/timed transitions
 - Invoked actors/services
 - Persistence/durability
