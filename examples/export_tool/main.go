@@ -39,8 +39,8 @@ func main() {
 
 	// Create exporters
 	machines := map[string]export.MachineExporter{
-		"traffic":  export.NewXStateExporter(trafficMachine),
-		"order":    export.NewXStateExporter(orderMachine),
+		"traffic": export.NewXStateExporter(trafficMachine),
+		"order":   export.NewXStateExporter(orderMachine),
 	}
 
 	// Run CLI
@@ -56,17 +56,16 @@ func buildTrafficLightMachine() *ir.MachineConfig[TrafficLightContext] {
 			ctx.CycleCount++
 		}).
 		State("green").
-			OnEntry("incrementCycle").
-			On("TIMER").Target("yellow").
+		OnEntry("incrementCycle").
+		On("TIMER").Target("yellow").
 		Done().
 		State("yellow").
-			On("TIMER").Target("red").
+		On("TIMER").Target("red").
 		Done().
 		State("red").
-			On("TIMER").Target("green").
+		On("TIMER").Target("green").
 		Done().
 		Build()
-
 	if err != nil {
 		log.Fatalf("failed to build traffic light machine: %v", err)
 	}
@@ -84,29 +83,28 @@ func buildOrderMachine() *ir.MachineConfig[OrderContext] {
 			// Notification logic here
 		}).
 		State("pending").
-			On("SUBMIT").Target("payment").Guard("hasItems").
-			On("CANCEL").Target("cancelled").
+		On("SUBMIT").Target("payment").Guard("hasItems").
+		On("CANCEL").Target("cancelled").
 		Done().
 		State("payment").
-			On("PAYMENT_SUCCESS").Target("fulfillment").
-			On("PAYMENT_FAILED").Target("payment_error").
+		On("PAYMENT_SUCCESS").Target("fulfillment").
+		On("PAYMENT_FAILED").Target("payment_error").
 		Done().
 		State("payment_error").
-			On("RETRY").Target("payment").
-			On("CANCEL").Target("cancelled").
+		On("RETRY").Target("payment").
+		On("CANCEL").Target("cancelled").
 		Done().
 		State("fulfillment").
-			On("SHIPPED").Target("completed").
-			On("REFUND").Target("refunded").
+		On("SHIPPED").Target("completed").
+		On("REFUND").Target("refunded").
 		Done().
 		State("completed").
-			OnEntry("notifyCustomer").
-			Final().
+		OnEntry("notifyCustomer").
+		Final().
 		Done().
 		State("cancelled").Final().Done().
 		State("refunded").Final().Done().
 		Build()
-
 	if err != nil {
 		log.Fatalf("failed to build order machine: %v", err)
 	}

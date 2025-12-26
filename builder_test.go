@@ -15,7 +15,6 @@ func TestMachineBuilder_Basic(t *testing.T) {
 		WithInitial("green").
 		State("green").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -34,7 +33,6 @@ func TestMachineBuilder_WithContext(t *testing.T) {
 		WithContext(ctx).
 		State("idle").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -56,7 +54,6 @@ func TestMachineBuilder_WithStates(t *testing.T) {
 		On("TIMER").Target("green").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -91,7 +88,6 @@ func TestMachineBuilder_FinalState(t *testing.T) {
 		State("done").Final().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -119,7 +115,6 @@ func TestMachineBuilder_WithActions(t *testing.T) {
 		Done().
 		State("active").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -168,7 +163,6 @@ func TestMachineBuilder_WithGuards(t *testing.T) {
 		Done().
 		State("active").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -206,7 +200,6 @@ func TestMachineBuilder_MultipleTransitions(t *testing.T) {
 		Done().
 		State("done").Final().Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

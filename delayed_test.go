@@ -19,7 +19,6 @@ func TestDelayedTransition_Basic(t *testing.T) {
 		State("ready").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -56,7 +55,6 @@ func TestDelayedTransition_CancelOnExit(t *testing.T) {
 		State("cancelled").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -107,7 +105,6 @@ func TestDelayedTransition_WithGuard(t *testing.T) {
 		State("proceeded").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -143,7 +140,6 @@ func TestDelayedTransition_WithAction(t *testing.T) {
 		State("end").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -180,7 +176,6 @@ func TestDelayedTransition_Multiple(t *testing.T) {
 		State("second").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -221,7 +216,6 @@ func TestDelayedTransition_InHierarchy(t *testing.T) {
 		State("done").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -260,7 +254,6 @@ func TestDelayedTransition_Stop(t *testing.T) {
 		State("done").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -296,7 +289,6 @@ func TestDelayedTransition_XStateExport(t *testing.T) {
 		State("ready").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -373,7 +365,6 @@ func TestDelayedTransition_Validation(t *testing.T) {
 			State("end").
 			Done().
 			Build()
-
 		if err != nil {
 			t.Errorf("Expected zero delay to be valid, got error: %v", err)
 		}
@@ -388,7 +379,6 @@ func TestDelayedTransition_Validation(t *testing.T) {
 			State("end").
 			Done().
 			Build()
-
 		if err != nil {
 			t.Errorf("Expected positive delay to be valid, got error: %v", err)
 		}
@@ -412,7 +402,6 @@ func TestDelayedTransition_ChainedBuilder(t *testing.T) {
 		State("end").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
