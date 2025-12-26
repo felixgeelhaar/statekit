@@ -21,7 +21,6 @@ func TestXStateExporter_SimpleMachine(t *testing.T) {
 		On("TIMER").Target("green").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -67,7 +66,6 @@ func TestXStateExporter_WithEntryExitActions(t *testing.T) {
 		State("active").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -97,7 +95,6 @@ func TestXStateExporter_WithTransitionActions(t *testing.T) {
 		State("active").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -127,7 +124,6 @@ func TestXStateExporter_WithGuard(t *testing.T) {
 		State("active").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -153,7 +149,6 @@ func TestXStateExporter_FinalState(t *testing.T) {
 		State("done").Final().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -185,7 +180,6 @@ func TestXStateExporter_HierarchicalStates(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -228,7 +222,6 @@ func TestXStateExporter_DeepHierarchy(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -265,7 +258,6 @@ func TestXStateExporter_JSONOutput(t *testing.T) {
 		State("active").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -335,7 +327,6 @@ func TestXStateExporter_ComplexMachine(t *testing.T) {
 		On("RESUME").Target("active").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}

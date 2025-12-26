@@ -122,7 +122,6 @@ func buildMachine() *ir.MachineConfig[IncidentContext] {
 		Final().
 		Done().
 		Build()
-
 	if err != nil {
 		panic(fmt.Sprintf("Failed to build machine: %v", err))
 	}

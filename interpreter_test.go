@@ -14,7 +14,6 @@ func TestInterpreter_Start(t *testing.T) {
 		WithInitial("idle").
 		State("idle").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -50,7 +49,6 @@ func TestInterpreter_Send_BasicTransition(t *testing.T) {
 		On("TIMER").Target("green").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -90,7 +88,6 @@ func TestInterpreter_Send_UnknownEvent(t *testing.T) {
 		Done().
 		State("running").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -116,7 +113,6 @@ func TestInterpreter_Send_WithGuard(t *testing.T) {
 		Done().
 		State("running").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -169,7 +165,6 @@ func TestInterpreter_Send_WithActions(t *testing.T) {
 		OnEntry("recordRunning").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -211,7 +206,6 @@ func TestInterpreter_Matches(t *testing.T) {
 		Done().
 		State("running").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -244,7 +238,6 @@ func TestInterpreter_Done(t *testing.T) {
 		Done().
 		State("done").Final().Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -269,7 +262,6 @@ func TestInterpreter_Context(t *testing.T) {
 		WithContext(counterContext{Count: 5}).
 		State("idle").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -293,7 +285,6 @@ func TestInterpreter_MultipleTransitionsOnState(t *testing.T) {
 		State("stateA").Done().
 		State("stateB").Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

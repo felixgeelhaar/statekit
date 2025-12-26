@@ -36,7 +36,6 @@ func TestHierarchical_BuildNestedStates(t *testing.T) {
 		State("done").Final().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -70,7 +69,6 @@ func TestHierarchical_StartEntersLeaf(t *testing.T) {
 		State("working").End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -96,7 +94,6 @@ func TestHierarchical_StartEntersDeepLeaf(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -122,7 +119,6 @@ func TestHierarchical_MatchesAncestors(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -164,7 +160,6 @@ func TestHierarchical_TransitionWithinCompound(t *testing.T) {
 		End(). // StateBuilder[working].End() → StateBuilder[active]
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -203,7 +198,6 @@ func TestHierarchical_TransitionToCompoundEntersLeaf(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -285,7 +279,6 @@ func TestHierarchical_EntryExitOrder(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -354,7 +347,6 @@ func TestHierarchical_EventBubblesUp(t *testing.T) {
 		State("done").Final().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -402,7 +394,6 @@ func TestHierarchical_ChildTransitionTakesPriority(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}
@@ -459,7 +450,6 @@ func TestHierarchical_TransitionToSibling(t *testing.T) {
 		End(). // StateBuilder[working].End() → StateBuilder[active]
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("failed to build machine: %v", err)
 	}

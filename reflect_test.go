@@ -330,7 +330,6 @@ func TestFromStruct_ParityWithBuilder(t *testing.T) {
 		On("TIMER").Target("green").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("builder error: %v", err)
 	}
