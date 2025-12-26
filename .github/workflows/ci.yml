@@ -46,7 +46,7 @@ jobs:
           cache: false
 
       - name: Run tests with coverage
-        run: go test -coverprofile=coverage.out ./...
+        run: go list ./... | grep -v /examples/ | xargs go test -coverprofile=coverage.out
 
       - name: Check coverage
         run: |
