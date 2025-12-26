@@ -137,6 +137,15 @@ func (e *XStateExporter[C]) buildStateNode(stateID ir.StateID) XStateNode {
 				node.States[string(childID)] = e.buildStateNode(childID)
 			}
 		}
+	case ir.StateTypeParallel:
+		// Parallel states have type "parallel" and nested states (regions)
+		node.Type = "parallel"
+		if len(state.Children) > 0 {
+			node.States = make(map[string]XStateNode)
+			for _, childID := range state.Children {
+				node.States[string(childID)] = e.buildStateNode(childID)
+			}
+		}
 	case ir.StateTypeHistory:
 		node.Type = "history"
 		if state.HistoryType == ir.HistoryTypeDeep {
