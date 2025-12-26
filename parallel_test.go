@@ -24,7 +24,6 @@ func TestParallelState_Basic(t *testing.T) {
 		State("done").Final().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -69,7 +68,6 @@ func TestParallelState_Matches(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -130,7 +128,6 @@ func TestParallelState_EventBroadcast(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -189,7 +186,6 @@ func TestParallelState_IndependentTransitions(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -259,7 +255,6 @@ func TestParallelState_ExitOnParentTransition(t *testing.T) {
 		State("cancelled").Final().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -331,7 +326,6 @@ func TestParallelState_EntryOrder(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -370,7 +364,6 @@ func TestParallelState_XStateExport(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -450,7 +443,6 @@ func TestParallelState_Validation(t *testing.T) {
 			EndRegion().
 			Done().
 			Build()
-
 		if err != nil {
 			t.Errorf("Expected no error, got: %v", err)
 		}
@@ -475,7 +467,6 @@ func TestParallelState_TransitionToParallel(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -521,7 +512,6 @@ func TestParallelState_SimpleWithTransitions(t *testing.T) {
 		EndRegion().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}

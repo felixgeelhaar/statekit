@@ -31,7 +31,6 @@ func TestHistoryState_ShallowWithTransition(t *testing.T) {
 		On("RESUME").Target("hist").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -82,7 +81,6 @@ func TestHistoryState_ShallowDefault(t *testing.T) {
 		On("RESUME").Target("hist").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -128,7 +126,6 @@ func TestHistoryState_DeepBasic(t *testing.T) {
 		On("RESUME").Target("hist").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -258,7 +255,6 @@ func TestHistoryState_XStateExport(t *testing.T) {
 		End().
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -345,7 +341,6 @@ func TestHistoryState_MultipleExitsAndReturns(t *testing.T) {
 		On("RESUME").Target("hist").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
@@ -414,7 +409,6 @@ func TestHistoryState_ShallowVsDeep(t *testing.T) {
 		On("DEEP_RESUME").Target("deepHist").
 		Done().
 		Build()
-
 	if err != nil {
 		t.Fatalf("Failed to build machine: %v", err)
 	}

@@ -6,10 +6,12 @@ import (
 )
 
 // Mock marker types for testing (must match the constant names in parser.go)
-type MachineDef struct{}
-type StateNode struct{}
-type CompoundNode struct{}
-type FinalNode struct{}
+type (
+	MachineDef   struct{}
+	StateNode    struct{}
+	CompoundNode struct{}
+	FinalNode    struct{}
+)
 
 func TestParseMachineStruct_Simple(t *testing.T) {
 	type SimpleMachine struct {
