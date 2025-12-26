@@ -76,6 +76,9 @@ const (
 	ErrCodeHistoryMissingDefault    = "HISTORY_MISSING_DEFAULT"
 	ErrCodeHistoryInvalidDefault    = "HISTORY_INVALID_DEFAULT"
 	ErrCodeHistoryDefaultNotSibling = "HISTORY_DEFAULT_NOT_SIBLING"
+
+	// Delayed transition errors (v2.0)
+	ErrCodeDelayNegative = "DELAY_NEGATIVE"
 )
 
 // Validate checks the machine configuration for errors
@@ -233,6 +236,13 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 						fmt.Sprintf("transition action '%s' is not defined", actionName),
 						append(transPath, "actions", fmt.Sprintf("%d", j))...)
 				}
+			}
+
+			// Validate delayed transition (v2.0)
+			if trans.Delay < 0 {
+				errs.AddIssue(ErrCodeDelayNegative,
+					"delay cannot be negative",
+					transPath...)
 			}
 		}
 	}

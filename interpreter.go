@@ -1,6 +1,12 @@
 package statekit
 
-import "github.com/felixgeelhaar/statekit/internal/ir"
+import (
+	"fmt"
+	"sync"
+	"time"
+
+	"github.com/felixgeelhaar/statekit/internal/ir"
+)
 
 // Interpreter is the statechart runtime that processes events and manages state
 type Interpreter[C any] struct {
@@ -13,6 +19,11 @@ type Interpreter[C any] struct {
 	shallowHistory map[ir.StateID]ir.StateID
 	// Maps compound state ID to the last leaf state that was active (deep)
 	deepHistory map[ir.StateID]ir.StateID
+
+	// Timer management for delayed transitions (v2.0)
+	// Maps timer key (stateID:index) to active timer
+	timers   map[string]*time.Timer
+	timersMu sync.Mutex
 }
 
 // transitionSource holds the state that owns the transition and the transition itself
@@ -32,6 +43,7 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 		started:        false,
 		shallowHistory: make(map[ir.StateID]ir.StateID),
 		deepHistory:    make(map[ir.StateID]ir.StateID),
+		timers:         make(map[string]*time.Timer),
 	}
 }
 
@@ -180,10 +192,13 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
 	}
 
-	// 1. Execute exit actions (leaf to root order) and record history
+	// 1. Execute exit actions (leaf to root order), cancel timers, and record history
 	for _, stateID := range statesToExit {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
+			// Cancel any active delayed transitions (v2.0)
+			i.cancelDelayedTransitions(stateID)
+
 			i.executeActions(stateConfig.Exit, event)
 
 			// Record history for parent compound states when exiting
@@ -202,11 +217,13 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 	// 2. Execute transition actions
 	i.executeActions(transition.Actions, event)
 
-	// 3. Execute entry actions (root to leaf order)
+	// 3. Execute entry actions (root to leaf order) and schedule delayed transitions
 	for _, stateID := range statesToEnter {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, event)
+			// Schedule delayed transitions (v2.0)
+			i.scheduleDelayedTransitions(stateID)
 		}
 	}
 
@@ -274,6 +291,8 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 		stateConfig := i.machine.GetState(id)
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, Event{})
+			// Schedule delayed transitions (v2.0)
+			i.scheduleDelayedTransitions(id)
 		}
 	}
 
@@ -359,4 +378,89 @@ func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.S
 
 	// No history recorded, use default
 	return i.machine.GetInitialLeaf(historyState.HistoryDefault)
+}
+
+// --- Timer management for delayed transitions (v2.0) ---
+
+// Stop cancels all active timers and stops the interpreter
+func (i *Interpreter[C]) Stop() {
+	i.timersMu.Lock()
+	defer i.timersMu.Unlock()
+
+	for key, timer := range i.timers {
+		timer.Stop()
+		delete(i.timers, key)
+	}
+	i.started = false
+}
+
+// scheduleDelayedTransitions schedules timers for all delayed transitions in the given state
+func (i *Interpreter[C]) scheduleDelayedTransitions(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil {
+		return
+	}
+
+	for idx, trans := range stateConfig.Transitions {
+		if !trans.IsDelayed() {
+			continue
+		}
+
+		// Create timer key: stateID:transitionIndex
+		timerKey := fmt.Sprintf("%s:%d", stateID, idx)
+
+		// Capture transition for closure
+		capturedTrans := trans
+
+		i.timersMu.Lock()
+		timer := time.AfterFunc(trans.Delay, func() {
+			i.timersMu.Lock()
+			// Remove timer from map before executing
+			delete(i.timers, timerKey)
+			i.timersMu.Unlock()
+
+			// Execute the delayed transition if still in the originating state
+			if i.started && i.Matches(stateID) {
+				i.executeDelayedTransition(stateConfig, capturedTrans)
+			}
+		})
+		i.timers[timerKey] = timer
+		i.timersMu.Unlock()
+	}
+}
+
+// cancelDelayedTransitions cancels all timers for the given state
+func (i *Interpreter[C]) cancelDelayedTransitions(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil {
+		return
+	}
+
+	i.timersMu.Lock()
+	defer i.timersMu.Unlock()
+
+	for idx := range stateConfig.Transitions {
+		timerKey := fmt.Sprintf("%s:%d", stateID, idx)
+		if timer, ok := i.timers[timerKey]; ok {
+			timer.Stop()
+			delete(i.timers, timerKey)
+		}
+	}
+}
+
+// executeDelayedTransition executes a delayed transition
+func (i *Interpreter[C]) executeDelayedTransition(sourceState *ir.StateConfig, trans *ir.TransitionConfig) {
+	// Check guard if present
+	if trans.Guard != "" {
+		guard := i.machine.GetGuard(trans.Guard)
+		if guard != nil && !guard(i.state.Context, Event{}) {
+			return // Guard failed, don't execute
+		}
+	}
+
+	source := &transitionSource[C]{
+		state:      sourceState,
+		transition: trans,
+	}
+	i.executeTransitionHierarchical(source, Event{})
 }
