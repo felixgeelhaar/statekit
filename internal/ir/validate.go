@@ -79,6 +79,10 @@ const (
 
 	// Delayed transition errors (v2.0)
 	ErrCodeDelayNegative = "DELAY_NEGATIVE"
+
+	// Parallel state errors (v2.0)
+	ErrCodeParallelNoRegions       = "PARALLEL_NO_REGIONS"
+	ErrCodeParallelRegionNoInitial = "PARALLEL_REGION_NO_INITIAL"
 )
 
 // Validate checks the machine configuration for errors
@@ -145,6 +149,38 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 			}
 		}
 
+		// Validate parallel state requirements (v2.0)
+		if state.Type == StateTypeParallel {
+			// Parallel states must have at least one child (region)
+			if len(state.Children) == 0 {
+				errs.AddIssue(ErrCodeParallelNoRegions,
+					fmt.Sprintf("parallel state '%s' must have at least one region", stateID),
+					statePath...)
+			}
+
+			// Each region must be a compound state with an initial
+			for i, childID := range state.Children {
+				child, ok := m.States[childID]
+				if !ok {
+					errs.AddIssue(ErrCodeInvalidChild,
+						fmt.Sprintf("region '%s' not found", childID),
+						append(statePath, "children", fmt.Sprintf("%d", i))...)
+				} else {
+					if child.Parent != stateID {
+						errs.AddIssue(ErrCodeInvalidChild,
+							fmt.Sprintf("region '%s' has incorrect parent '%s', expected '%s'", childID, child.Parent, stateID),
+							append(statePath, "children", fmt.Sprintf("%d", i))...)
+					}
+					// Regions should be compound states with initials, or atomic states
+					if child.Type == StateTypeCompound && child.Initial == "" {
+						errs.AddIssue(ErrCodeParallelRegionNoInitial,
+							fmt.Sprintf("region '%s' must have an initial state", childID),
+							append(statePath, "children", fmt.Sprintf("%d", i))...)
+					}
+				}
+			}
+		}
+
 		// Validate parent exists if set
 		if state.Parent != "" {
 			parent, ok := m.States[state.Parent]
@@ -152,9 +188,9 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 				errs.AddIssue(ErrCodeInvalidParent,
 					fmt.Sprintf("parent state '%s' not found", state.Parent),
 					statePath...)
-			} else if parent.Type != StateTypeCompound {
+			} else if parent.Type != StateTypeCompound && parent.Type != StateTypeParallel {
 				errs.AddIssue(ErrCodeInvalidParent,
-					fmt.Sprintf("parent state '%s' is not a compound state", state.Parent),
+					fmt.Sprintf("parent state '%s' is not a compound or parallel state", state.Parent),
 					statePath...)
 			}
 		}

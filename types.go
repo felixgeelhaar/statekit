@@ -42,11 +42,26 @@ const (
 
 // State represents the current runtime state of an interpreter
 type State[C any] struct {
-	Value   StateID // Current state ID (leaf state)
+	Value   StateID // Current state ID (leaf state, or parallel state when in parallel)
 	Context C       // Current context
+
+	// Parallel state tracking (v2.0)
+	// When inside a parallel state, maps region ID to its current leaf state
+	// Empty when not in a parallel state
+	ActiveInParallel map[StateID]StateID
 }
 
 // Matches checks if the current state matches the given state ID
+// For parallel states, also checks if any region's current state matches
 func (s State[C]) Matches(id StateID) bool {
-	return s.Value == id
+	if s.Value == id {
+		return true
+	}
+	// Check parallel regions
+	for _, leafID := range s.ActiveInParallel {
+		if leafID == id {
+			return true
+		}
+	}
+	return false
 }

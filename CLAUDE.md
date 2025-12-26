@@ -258,6 +258,7 @@ Implemented:
 - ✅ ActionRegistry for named actions/guards (v0.3)
 - ✅ History states (shallow and deep) (v2.0)
 - ✅ Delayed transitions with timers (v2.0)
+- ✅ Parallel/orthogonal states (v2.0)
 
 ## History States
 

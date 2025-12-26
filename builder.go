@@ -19,7 +19,8 @@ type MachineBuilder[C any] struct {
 // StateBuilder provides a fluent API for constructing states
 type StateBuilder[C any] struct {
 	machine     *MachineBuilder[C]
-	parent      *StateBuilder[C] // Parent state for nested states
+	parent      *StateBuilder[C]  // Parent state for nested states
+	region      *RegionBuilder[C] // Parent region for states in parallel regions (v2.0)
 	id          StateID
 	stateType   StateType
 	initial     StateID // Initial child state (for compound states)
@@ -39,6 +40,14 @@ type HistoryBuilder[C any] struct {
 	id          StateID
 	historyType HistoryType
 	defaultID   StateID
+}
+
+// RegionBuilder provides a fluent API for constructing parallel regions (v2.0)
+type RegionBuilder[C any] struct {
+	parallel *StateBuilder[C] // Parent parallel state
+	id       StateID
+	initial  StateID
+	children []*StateBuilder[C]
 }
 
 // TransitionBuilder provides a fluent API for constructing transitions
@@ -236,6 +245,12 @@ func (b *StateBuilder[C]) End() *StateBuilder[C] {
 	return nil
 }
 
+// EndState completes a state within a region and returns to the RegionBuilder (v2.0)
+// Use this instead of End() when building states inside parallel regions
+func (b *StateBuilder[C]) EndState() *RegionBuilder[C] {
+	return b.region
+}
+
 // History starts building a history state within this compound state (v2.0)
 // History states remember the last active child and transition back to it
 func (b *StateBuilder[C]) History(id StateID) *HistoryBuilder[C] {
@@ -243,6 +258,21 @@ func (b *StateBuilder[C]) History(id StateID) *HistoryBuilder[C] {
 		parent:      b,
 		id:          id,
 		historyType: HistoryTypeShallow,
+	}
+}
+
+// Parallel marks this state as a parallel state (v2.0)
+// Use Region() to add orthogonal regions that execute simultaneously
+func (b *StateBuilder[C]) Parallel() *StateBuilder[C] {
+	b.stateType = StateTypeParallel
+	return b
+}
+
+// Region starts building a new region within this parallel state (v2.0)
+func (b *StateBuilder[C]) Region(id StateID) *RegionBuilder[C] {
+	return &RegionBuilder[C]{
+		parallel: b,
+		id:       id,
 	}
 }
 
@@ -292,6 +322,48 @@ func (b *HistoryBuilder[C]) End() *StateBuilder[C] {
 	return b.parent
 }
 
+// --- RegionBuilder methods (v2.0) ---
+
+// WithInitial sets the initial state for this region
+func (b *RegionBuilder[C]) WithInitial(initial StateID) *RegionBuilder[C] {
+	b.initial = initial
+	return b
+}
+
+// State starts building a state within this region
+func (b *RegionBuilder[C]) State(id StateID) *StateBuilder[C] {
+	child := &StateBuilder[C]{
+		machine:   b.parallel.machine,
+		parent:    nil,
+		region:    b, // Set region reference so End() returns to region
+		id:        id,
+		stateType: StateTypeAtomic,
+	}
+	b.children = append(b.children, child)
+	return child
+}
+
+// EndRegion completes the region and returns to the parent parallel state
+func (b *RegionBuilder[C]) EndRegion() *StateBuilder[C] {
+	// Create a StateBuilder for the region (as a compound state)
+	regionState := &StateBuilder[C]{
+		machine:   b.parallel.machine,
+		parent:    b.parallel,
+		id:        b.id,
+		stateType: StateTypeCompound,
+		initial:   b.initial,
+		children:  b.children,
+	}
+
+	// Fix the parent references for all children
+	for _, child := range b.children {
+		child.parent = regionState
+	}
+
+	b.parallel.children = append(b.parallel.children, regionState)
+	return b.parallel
+}
+
 // --- TransitionBuilder methods ---
 
 // Target sets the target state for the transition
@@ -331,4 +403,10 @@ func (b *TransitionBuilder[C]) Done() *MachineBuilder[C] {
 // Use this instead of Done() when building transitions in nested states
 func (b *TransitionBuilder[C]) End() *StateBuilder[C] {
 	return b.state
+}
+
+// EndState completes the transition and returns to the RegionBuilder (v2.0)
+// Use this when building transitions in states inside parallel regions
+func (b *TransitionBuilder[C]) EndState() *RegionBuilder[C] {
+	return b.state.region
 }

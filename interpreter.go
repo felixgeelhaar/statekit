@@ -24,6 +24,11 @@ type Interpreter[C any] struct {
 	// Maps timer key (stateID:index) to active timer
 	timers   map[string]*time.Timer
 	timersMu sync.Mutex
+
+	// Parallel state tracking (v2.0)
+	// When inside a parallel state, this holds the parallel state ID
+	// The actual region states are tracked in state.ActiveInParallel
+	currentParallel ir.StateID
 }
 
 // transitionSource holds the state that owns the transition and the transition itself
@@ -37,13 +42,15 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 	return &Interpreter[C]{
 		machine: machine,
 		state: State[C]{
-			Value:   "",
-			Context: machine.Context,
+			Value:            "",
+			Context:          machine.Context,
+			ActiveInParallel: make(map[ir.StateID]ir.StateID),
 		},
-		started:        false,
-		shallowHistory: make(map[ir.StateID]ir.StateID),
-		deepHistory:    make(map[ir.StateID]ir.StateID),
-		timers:         make(map[string]*time.Timer),
+		started:         false,
+		shallowHistory:  make(map[ir.StateID]ir.StateID),
+		deepHistory:     make(map[ir.StateID]ir.StateID),
+		timers:          make(map[string]*time.Timer),
+		currentParallel: "",
 	}
 }
 
@@ -65,12 +72,22 @@ func (i *Interpreter[C]) State() State[C] {
 
 // Matches checks if the current state matches the given state ID
 // For hierarchical states, returns true if current state equals id or is a descendant of id
+// For parallel states, also checks all active region states
 func (i *Interpreter[C]) Matches(id StateID) bool {
 	if i.state.Value == id {
 		return true
 	}
 	// Check if current state is a descendant of the given state
-	return i.machine.IsDescendantOf(i.state.Value, id)
+	if i.machine.IsDescendantOf(i.state.Value, id) {
+		return true
+	}
+	// Check parallel regions (v2.0)
+	for _, leafID := range i.state.ActiveInParallel {
+		if leafID == id || i.machine.IsDescendantOf(leafID, id) {
+			return true
+		}
+	}
+	return false
 }
 
 // Done returns true if the machine is in a final state
@@ -88,6 +105,12 @@ func (i *Interpreter[C]) Done() bool {
 // Send processes an event and potentially transitions to a new state
 func (i *Interpreter[C]) Send(event Event) {
 	if !i.started {
+		return
+	}
+
+	// Handle parallel states: broadcast event to all regions (v2.0)
+	if i.currentParallel != "" {
+		i.sendToParallelRegions(event)
 		return
 	}
 
@@ -217,17 +240,30 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 	// 2. Execute transition actions
 	i.executeActions(transition.Actions, event)
 
-	// 3. Execute entry actions (root to leaf order) and schedule delayed transitions
+	// 3. Check if target is a parallel state (v2.0)
+	targetConfig := i.machine.GetState(resolvedTarget)
+	if targetConfig != nil && targetConfig.IsParallel() {
+		// Enter the parallel state (handles all regions)
+		i.enterParallelState(resolvedTarget, event)
+		return
+	}
+
+	// 4. Execute entry actions (root to leaf order) and schedule delayed transitions
 	for _, stateID := range statesToEnter {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
+			// Check if this is a parallel state within the entry path
+			if stateConfig.IsParallel() {
+				i.enterParallelState(stateID, event)
+				return
+			}
 			i.executeActions(stateConfig.Entry, event)
 			// Schedule delayed transitions (v2.0)
 			i.scheduleDelayedTransitions(stateID)
 		}
 	}
 
-	// 4. Update current state to the leaf
+	// 5. Update current state to the leaf
 	i.state.Value = resolvedTarget
 }
 
@@ -282,9 +318,38 @@ func (i *Interpreter[C]) getStatesToEnter(target, lca ir.StateID) []ir.StateID {
 
 // enterStateHierarchy enters a state and all its descendants to the initial leaf
 func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil {
+		return
+	}
+
+	// Handle parallel states (v2.0)
+	if stateConfig.IsParallel() {
+		i.enterParallelState(stateID, Event{})
+		return
+	}
+
 	// Get the path from this state to its initial leaf
 	leaf := i.machine.GetInitialLeaf(stateID)
 	path := i.getEntryPath(stateID, leaf)
+
+	// Check if any state in the path is a parallel state
+	for _, id := range path {
+		sc := i.machine.GetState(id)
+		if sc != nil && sc.IsParallel() {
+			// Enter states up to the parallel state, then handle parallel
+			prePath := i.getEntryPath(stateID, id)
+			for _, preID := range prePath[:len(prePath)-1] {
+				preConfig := i.machine.GetState(preID)
+				if preConfig != nil {
+					i.executeActions(preConfig.Entry, Event{})
+					i.scheduleDelayedTransitions(preID)
+				}
+			}
+			i.enterParallelState(id, Event{})
+			return
+		}
+	}
 
 	// Enter each state in root-to-leaf order
 	for _, id := range path {
@@ -334,7 +399,7 @@ func (i *Interpreter[C]) executeActions(actions []ir.ActionType, event Event) {
 	}
 }
 
-// resolveTarget resolves the target state, handling history states and compound states
+// resolveTarget resolves the target state, handling history states, compound states, and parallel states
 func (i *Interpreter[C]) resolveTarget(targetID ir.StateID) ir.StateID {
 	targetState := i.machine.GetState(targetID)
 	if targetState == nil {
@@ -344,6 +409,12 @@ func (i *Interpreter[C]) resolveTarget(targetID ir.StateID) ir.StateID {
 	// Handle history states
 	if targetState.IsHistory() {
 		return i.resolveHistoryTarget(targetState)
+	}
+
+	// For parallel states, return the parallel state itself (don't resolve to leaf)
+	// The parallel state entry will handle entering all regions
+	if targetState.IsParallel() {
+		return targetID
 	}
 
 	// For compound states, resolve to initial leaf
@@ -463,4 +534,224 @@ func (i *Interpreter[C]) executeDelayedTransition(sourceState *ir.StateConfig, t
 		transition: trans,
 	}
 	i.executeTransitionHierarchical(source, Event{})
+}
+
+// --- Parallel state management (v2.0) ---
+
+// sendToParallelRegions broadcasts an event to all active parallel regions
+func (i *Interpreter[C]) sendToParallelRegions(event Event) {
+	parallelState := i.machine.GetState(i.currentParallel)
+	if parallelState == nil {
+		return
+	}
+
+	// Try to find a transition on the parallel state itself first (exits parallel)
+	source := i.findMatchingTransition(parallelState, event)
+	if source != nil {
+		// Transition exits the parallel state entirely
+		i.exitParallelState(event)
+		transSource := &transitionSource[C]{
+			state:      parallelState,
+			transition: source,
+		}
+		i.executeTransitionHierarchical(transSource, event)
+		return
+	}
+
+	// Broadcast event to each region independently
+	for regionID, leafID := range i.state.ActiveInParallel {
+		regionState := i.machine.GetState(leafID)
+		if regionState == nil {
+			continue
+		}
+
+		// Find matching transition in this region's hierarchy
+		transSource := i.findMatchingTransitionInRegion(regionState, regionID, event)
+		if transSource != nil {
+			// Execute transition within the region
+			i.executeTransitionInRegion(regionID, transSource, event)
+		}
+	}
+}
+
+// findMatchingTransitionInRegion finds a transition bubbling up within a region
+func (i *Interpreter[C]) findMatchingTransitionInRegion(state *ir.StateConfig, regionID ir.StateID, event Event) *transitionSource[C] {
+	current := state
+	for current != nil {
+		transition := i.findMatchingTransition(current, event)
+		if transition != nil {
+			return &transitionSource[C]{
+				state:      current,
+				transition: transition,
+			}
+		}
+
+		// Stop at region boundary (don't bubble to parallel state)
+		if current.ID == regionID {
+			break
+		}
+		if current.Parent == "" {
+			break
+		}
+		current = i.machine.GetState(current.Parent)
+	}
+	return nil
+}
+
+// executeTransitionInRegion executes a transition within a parallel region
+func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *transitionSource[C], event Event) {
+	transition := source.transition
+	sourceStateID := source.state.ID
+	targetStateID := transition.Target
+
+	// Resolve target to leaf
+	resolvedTarget := i.resolveTarget(targetStateID)
+
+	// Get current leaf in this region
+	currentLeaf := i.state.ActiveInParallel[regionID]
+
+	// Find LCA within the region
+	lca := i.machine.FindLCA(sourceStateID, resolvedTarget)
+
+	// Ensure we don't exit beyond the region
+	if !i.machine.IsDescendantOf(lca, regionID) && lca != regionID {
+		lca = regionID
+	}
+
+	isSelfTransition := sourceStateID == targetStateID
+
+	var statesToExit []ir.StateID
+	var statesToEnter []ir.StateID
+
+	if isSelfTransition {
+		statesToExit = i.getStatesToExit(currentLeaf, source.state.Parent)
+		statesToEnter = i.getStatesToEnter(resolvedTarget, source.state.Parent)
+	} else {
+		statesToExit = i.getStatesToExit(currentLeaf, lca)
+		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
+	}
+
+	// Execute exit actions
+	for _, stateID := range statesToExit {
+		stateConfig := i.machine.GetState(stateID)
+		if stateConfig != nil {
+			i.cancelDelayedTransitions(stateID)
+			i.executeActions(stateConfig.Exit, event)
+		}
+	}
+
+	// Execute transition actions
+	i.executeActions(transition.Actions, event)
+
+	// Execute entry actions
+	for _, stateID := range statesToEnter {
+		stateConfig := i.machine.GetState(stateID)
+		if stateConfig != nil {
+			i.executeActions(stateConfig.Entry, event)
+			i.scheduleDelayedTransitions(stateID)
+		}
+	}
+
+	// Update the region's active state
+	i.state.ActiveInParallel[regionID] = resolvedTarget
+}
+
+// enterParallelState enters a parallel state and all its regions
+func (i *Interpreter[C]) enterParallelState(parallelID ir.StateID, event Event) {
+	parallelState := i.machine.GetState(parallelID)
+	if parallelState == nil || !parallelState.IsParallel() {
+		return
+	}
+
+	// Set current parallel state
+	i.currentParallel = parallelID
+	i.state.Value = parallelID
+
+	// Execute entry actions for parallel state
+	i.executeActions(parallelState.Entry, event)
+	i.scheduleDelayedTransitions(parallelID)
+
+	// Enter each region (child of parallel state)
+	for _, regionID := range parallelState.Children {
+		i.enterRegion(regionID, event)
+	}
+}
+
+// enterRegion enters a single parallel region
+func (i *Interpreter[C]) enterRegion(regionID ir.StateID, event Event) {
+	regionState := i.machine.GetState(regionID)
+	if regionState == nil {
+		return
+	}
+
+	// Get the initial leaf for this region
+	var leafID ir.StateID
+	if regionState.IsCompound() {
+		leafID = i.machine.GetInitialLeaf(regionID)
+	} else {
+		leafID = regionID
+	}
+
+	// Get path from region to leaf
+	path := i.getEntryPath(regionID, leafID)
+
+	// Enter each state in the path
+	for _, stateID := range path {
+		stateConfig := i.machine.GetState(stateID)
+		if stateConfig != nil {
+			i.executeActions(stateConfig.Entry, event)
+			i.scheduleDelayedTransitions(stateID)
+		}
+	}
+
+	// Track the leaf state for this region
+	i.state.ActiveInParallel[regionID] = leafID
+}
+
+// exitParallelState exits a parallel state and all its regions
+func (i *Interpreter[C]) exitParallelState(event Event) {
+	if i.currentParallel == "" {
+		return
+	}
+
+	parallelState := i.machine.GetState(i.currentParallel)
+	if parallelState == nil {
+		return
+	}
+
+	// Exit each region
+	for regionID, leafID := range i.state.ActiveInParallel {
+		i.exitRegion(regionID, leafID, event)
+	}
+
+	// Execute exit actions for parallel state
+	i.cancelDelayedTransitions(i.currentParallel)
+	i.executeActions(parallelState.Exit, event)
+
+	// Clear parallel state tracking
+	i.currentParallel = ""
+	i.state.ActiveInParallel = make(map[ir.StateID]ir.StateID)
+}
+
+// exitRegion exits all states in a region from leaf up to region boundary
+func (i *Interpreter[C]) exitRegion(regionID, leafID ir.StateID, event Event) {
+	// Get states to exit (leaf up to and including region)
+	statesToExit := i.getStatesToExit(leafID, "")
+
+	// Filter to only include states within or equal to the region
+	var filtered []ir.StateID
+	for _, stateID := range statesToExit {
+		if stateID == regionID || i.machine.IsDescendantOf(stateID, regionID) {
+			filtered = append(filtered, stateID)
+		}
+	}
+
+	// Execute exit actions
+	for _, stateID := range filtered {
+		stateConfig := i.machine.GetState(stateID)
+		if stateConfig != nil {
+			i.cancelDelayedTransitions(stateID)
+			i.executeActions(stateConfig.Exit, event)
+		}
+	}
 }
