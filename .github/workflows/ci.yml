@@ -45,18 +45,11 @@ jobs:
           go-version: '1.24'
           cache: false
 
-      - name: Run tests with coverage
-        run: go list ./... | grep -v /examples/ | xargs go test -coverprofile=coverage.out
+      - name: Install coverctl
+        run: go install github.com/felixgeelhaar/coverctl@latest
 
       - name: Check coverage
-        run: |
-          go tool cover -func=coverage.out
-          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
-          echo "Total coverage: ${COVERAGE}%"
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "Coverage is below 80%"
-            exit 1
-          fi
+        run: coverctl check
 
   lint:
     name: Lint
