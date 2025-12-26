@@ -70,6 +70,12 @@ const (
 	ErrCodeCompoundInvalidInitial = "COMPOUND_INVALID_INITIAL"
 	ErrCodeInvalidParent          = "INVALID_PARENT"
 	ErrCodeInvalidChild           = "INVALID_CHILD"
+
+	// History state errors (v2.0)
+	ErrCodeHistoryNotInCompound     = "HISTORY_NOT_IN_COMPOUND"
+	ErrCodeHistoryMissingDefault    = "HISTORY_MISSING_DEFAULT"
+	ErrCodeHistoryInvalidDefault    = "HISTORY_INVALID_DEFAULT"
+	ErrCodeHistoryDefaultNotSibling = "HISTORY_DEFAULT_NOT_SIBLING"
 )
 
 // Validate checks the machine configuration for errors
@@ -147,6 +153,38 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 				errs.AddIssue(ErrCodeInvalidParent,
 					fmt.Sprintf("parent state '%s' is not a compound state", state.Parent),
 					statePath...)
+			}
+		}
+
+		// Validate history state requirements (v2.0)
+		if state.Type == StateTypeHistory {
+			// History states must be inside a compound state
+			if state.Parent == "" {
+				errs.AddIssue(ErrCodeHistoryNotInCompound,
+					fmt.Sprintf("history state '%s' must be inside a compound state", stateID),
+					statePath...)
+			}
+
+			// History states must have a default target
+			if state.HistoryDefault == "" {
+				errs.AddIssue(ErrCodeHistoryMissingDefault,
+					fmt.Sprintf("history state '%s' must have a default target", stateID),
+					statePath...)
+			} else {
+				// Default target must exist
+				defaultState, ok := m.States[state.HistoryDefault]
+				if !ok {
+					errs.AddIssue(ErrCodeHistoryInvalidDefault,
+						fmt.Sprintf("history default target '%s' not found", state.HistoryDefault),
+						statePath...)
+				} else if state.Parent != "" {
+					// Default target must be a sibling (same parent)
+					if defaultState.Parent != state.Parent {
+						errs.AddIssue(ErrCodeHistoryDefaultNotSibling,
+							fmt.Sprintf("history default target '%s' must be a sibling state (child of '%s')", state.HistoryDefault, state.Parent),
+							statePath...)
+					}
+				}
 			}
 		}
 

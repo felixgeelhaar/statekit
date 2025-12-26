@@ -16,6 +16,8 @@ type (
 	GuardType = ir.GuardType
 	// Event represents a runtime event with optional payload
 	Event = ir.Event
+	// HistoryType specifies how history states remember previous states (v2.0)
+	HistoryType = ir.HistoryType
 )
 
 // Action is a side-effect function executed during transitions.
@@ -31,6 +33,11 @@ const (
 	StateTypeAtomic   = ir.StateTypeAtomic
 	StateTypeCompound = ir.StateTypeCompound
 	StateTypeFinal    = ir.StateTypeFinal
+	StateTypeHistory  = ir.StateTypeHistory  // v2.0
+	StateTypeParallel = ir.StateTypeParallel // v2.0
+
+	HistoryTypeShallow = ir.HistoryTypeShallow // v2.0
+	HistoryTypeDeep    = ir.HistoryTypeDeep    // v2.0
 )
 
 // State represents the current runtime state of an interpreter
