@@ -14,6 +14,9 @@ type Interpreter[C any] struct {
 	state   State[C]
 	started bool
 
+	// Mutex to protect interpreter state from concurrent access (e.g., timer goroutines)
+	mu sync.Mutex
+
 	// History tracking (v2.0)
 	// Maps compound state ID to the last immediate child that was active (shallow)
 	shallowHistory map[ir.StateID]ir.StateID
@@ -56,6 +59,9 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 
 // Start initializes the interpreter and enters the initial state
 func (i *Interpreter[C]) Start() {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
 	if i.started {
 		return
 	}
@@ -67,6 +73,8 @@ func (i *Interpreter[C]) Start() {
 
 // State returns the current state of the interpreter
 func (i *Interpreter[C]) State() State[C] {
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	return i.state
 }
 
@@ -74,6 +82,13 @@ func (i *Interpreter[C]) State() State[C] {
 // For hierarchical states, returns true if current state equals id or is a descendant of id
 // For parallel states, also checks all active region states
 func (i *Interpreter[C]) Matches(id StateID) bool {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	return i.matchesUnlocked(id)
+}
+
+// matchesUnlocked is the internal version without locking (caller must hold mu)
+func (i *Interpreter[C]) matchesUnlocked(id StateID) bool {
 	if i.state.Value == id {
 		return true
 	}
@@ -92,6 +107,9 @@ func (i *Interpreter[C]) Matches(id StateID) bool {
 
 // Done returns true if the machine is in a final state
 func (i *Interpreter[C]) Done() bool {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
 	if !i.started {
 		return false
 	}
@@ -104,6 +122,9 @@ func (i *Interpreter[C]) Done() bool {
 
 // Send processes an event and potentially transitions to a new state
 func (i *Interpreter[C]) Send(event Event) {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
 	if !i.started {
 		return
 	}
@@ -132,6 +153,8 @@ func (i *Interpreter[C]) Send(event Event) {
 
 // UpdateContext allows updating the context with a function
 func (i *Interpreter[C]) UpdateContext(fn func(ctx *C)) {
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	fn(&i.state.Context)
 }
 
@@ -455,13 +478,16 @@ func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.S
 
 // Stop cancels all active timers and stops the interpreter
 func (i *Interpreter[C]) Stop() {
-	i.timersMu.Lock()
-	defer i.timersMu.Unlock()
+	i.mu.Lock()
+	defer i.mu.Unlock()
 
+	i.timersMu.Lock()
 	for key, timer := range i.timers {
 		timer.Stop()
 		delete(i.timers, key)
 	}
+	i.timersMu.Unlock()
+
 	i.started = false
 }
 
@@ -485,13 +511,17 @@ func (i *Interpreter[C]) scheduleDelayedTransitions(stateID ir.StateID) {
 
 		i.timersMu.Lock()
 		timer := time.AfterFunc(trans.Delay, func() {
+			// Acquire main mutex first to protect state access
+			i.mu.Lock()
+			defer i.mu.Unlock()
+
 			i.timersMu.Lock()
 			// Remove timer from map before executing
 			delete(i.timers, timerKey)
 			i.timersMu.Unlock()
 
 			// Execute the delayed transition if still in the originating state
-			if i.started && i.Matches(stateID) {
+			if i.started && i.matchesUnlocked(stateID) {
 				i.executeDelayedTransition(stateConfig, capturedTrans)
 			}
 		})
