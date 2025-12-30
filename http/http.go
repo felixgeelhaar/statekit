@@ -60,7 +60,7 @@ func (h *MachineHandler[C]) HandleGetState(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 // HandleSendEvent processes an event and returns the new state.
@@ -97,7 +97,7 @@ func (h *MachineHandler[C]) HandleSendEvent(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 // HandleGetContext returns the current context (as JSON).
@@ -107,7 +107,7 @@ func (h *MachineHandler[C]) HandleGetContext(w http.ResponseWriter, r *http.Requ
 	h.mu.RUnlock()
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(ctx)
+	_ = json.NewEncoder(w).Encode(ctx)
 }
 
 // ServeHTTP implements http.Handler for basic routing.

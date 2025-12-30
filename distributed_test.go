@@ -24,7 +24,7 @@ func TestDistributedInterpreter_Basic(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer di.Stop(ctx)
+	defer func() { _ = di.Stop(ctx) }()
 
 	// Check initial state
 	if di.State().Value != "idle" {
@@ -67,7 +67,7 @@ func TestDistributedInterpreter_LockContention(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer di1.Stop(ctx)
+	defer func() { _ = di1.Stop(ctx) }()
 
 	// Second node should fail to acquire (with timeout)
 	ctx2, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
@@ -99,16 +99,16 @@ func TestDistributedInterpreter_LockRelease(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	di1.Send(Event{Type: "NOOP"}) // Won't match but exercises code
-	di1.Commit(ctx)
-	di1.Stop(ctx)
+	_ = di1.Send(Event{Type: "NOOP"}) // Won't match but exercises code
+	_, _ = di1.Commit(ctx)
+	_ = di1.Stop(ctx)
 
 	// Second node should now be able to acquire
 	di2, err := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
 	if err != nil {
 		t.Fatalf("expected success after release, got %v", err)
 	}
-	defer di2.Stop(ctx)
+	defer func() { _ = di2.Stop(ctx) }()
 }
 
 func TestDistributedInterpreter_Hydration(t *testing.T) {
@@ -135,20 +135,20 @@ func TestDistributedInterpreter_Hydration(t *testing.T) {
 
 	// First node processes some events
 	di1, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
-	di1.Send(Event{Type: "INC"})
-	di1.Send(Event{Type: "INC"})
-	di1.Send(Event{Type: "INC"})
-	di1.Commit(ctx)
+	_ = di1.Send(Event{Type: "INC"})
+	_ = di1.Send(Event{Type: "INC"})
+	_ = di1.Send(Event{Type: "INC"})
+	_, _ = di1.Commit(ctx)
 
 	if di1.Context().Count != 3 {
 		t.Errorf("expected count 3, got %d", di1.Context().Count)
 	}
 
-	di1.Stop(ctx)
+	_ = di1.Stop(ctx)
 
 	// Second node should hydrate the state
 	di2, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
-	defer di2.Stop(ctx)
+	defer func() { _ = di2.Stop(ctx) }()
 
 	if di2.Context().Count != 3 {
 		t.Errorf("expected count 3 after hydration, got %d", di2.Context().Count)
@@ -188,7 +188,7 @@ func TestDistributedInterpreter_LockExpiry(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected success after expiry, got %v", err)
 	}
-	defer di2.Stop(ctx)
+	defer func() { _ = di2.Stop(ctx) }()
 
 	// First node should fail on send
 	err = di1.Send(Event{Type: "TEST"})
@@ -246,14 +246,14 @@ func TestDistributedInterpreter_ConcurrentNodes(t *testing.T) {
 
 			// Process some events (hold the lock for a bit)
 			for j := 0; j < 3; j++ {
-				di.Send(Event{Type: "NEXT", Payload: nodeID*10 + j})
+				_ = di.Send(Event{Type: "NEXT", Payload: nodeID*10 + j})
 			}
-			di.Commit(ctx)
+			_, _ = di.Commit(ctx)
 			acquired <- nodeID
 
 			// Hold lock for remainder of timeout period
 			time.Sleep(200 * time.Millisecond)
-			di.Stop(ctx)
+			_ = di.Stop(ctx)
 		}(i)
 	}
 
@@ -298,13 +298,13 @@ func TestMemoryStreamLock_TryAcquire(t *testing.T) {
 	}
 
 	// Release and try again
-	l1.Release(ctx)
+	_ = l1.Release(ctx)
 
 	l2, err := lock.TryAcquire(ctx, "stream-1", time.Second)
 	if err != nil {
 		t.Fatalf("expected success after release, got %v", err)
 	}
-	defer l2.Release(ctx)
+	defer func() { _ = l2.Release(ctx) }()
 }
 
 func TestMemoryStreamLock_Renew(t *testing.T) {
@@ -331,7 +331,7 @@ func TestMemoryStreamLock_Renew(t *testing.T) {
 		t.Errorf("expected lock to still be held after renewal")
 	}
 
-	l.Release(ctx)
+	_ = l.Release(ctx)
 }
 
 func TestMemoryStreamLock_Done(t *testing.T) {
@@ -348,7 +348,7 @@ func TestMemoryStreamLock_Done(t *testing.T) {
 	}
 
 	// Release
-	l.Release(ctx)
+	_ = l.Release(ctx)
 
 	// Done should be closed
 	select {
@@ -453,16 +453,16 @@ func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
 
 	// Send 3 events and commit - should trigger snapshot
 	for i := 0; i < 3; i++ {
-		di1.Send(Event{Type: "INC"})
+		_ = di1.Send(Event{Type: "INC"})
 	}
-	di1.Commit(ctx)
+	_, _ = di1.Commit(ctx)
 
 	// Send 2 more events and commit
 	for i := 0; i < 2; i++ {
-		di1.Send(Event{Type: "INC"})
+		_ = di1.Send(Event{Type: "INC"})
 	}
-	di1.Commit(ctx)
-	di1.Stop(ctx)
+	_, _ = di1.Commit(ctx)
+	_ = di1.Stop(ctx)
 
 	// Verify snapshot was created at version 3
 	snap, version, _ := snapshotStore.LoadSnapshot(ctx, "stream-1", 1000)
@@ -477,7 +477,7 @@ func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
 	di2, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock,
 		WithDistributedSnapshotStore[Context](snapshotStore),
 	)
-	defer di2.Stop(ctx)
+	defer func() { _ = di2.Stop(ctx) }()
 
 	if di2.Context().Count != 5 {
 		t.Errorf("expected count 5, got %d", di2.Context().Count)
@@ -501,7 +501,7 @@ func TestDistributedInterpreter_LockHeld(t *testing.T) {
 		t.Error("expected lock to be held")
 	}
 
-	di.Stop(ctx)
+	_ = di.Stop(ctx)
 
 	if di.LockHeld() {
 		t.Error("expected lock to not be held after stop")
@@ -528,7 +528,7 @@ func TestDistributedInterpreter_SendAll(t *testing.T) {
 	streamLock := NewMemoryStreamLock()
 
 	di, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
-	defer di.Stop(ctx)
+	defer func() { _ = di.Stop(ctx) }()
 
 	events := []Event{
 		{Type: "NEXT"},
@@ -560,7 +560,7 @@ func TestDistributedInterpreter_ForceSnapshot(t *testing.T) {
 	di, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock,
 		WithDistributedSnapshotStore[struct{}](snapshotStore),
 	)
-	defer di.Stop(ctx)
+	defer func() { _ = di.Stop(ctx) }()
 
 	err := di.ForceSnapshot(ctx)
 	if err != nil {

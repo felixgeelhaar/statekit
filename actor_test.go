@@ -174,7 +174,7 @@ func TestSendTo(t *testing.T) {
 	parent := NewInterpreter(parentMachine)
 	parent.Start()
 
-	Spawn(parent, "worker", childMachine)
+	_, _ = Spawn(parent, "worker", childMachine)
 
 	// Send via parent's SendTo
 	err := parent.SendTo("worker", Event{Type: "TASK"})
@@ -282,7 +282,7 @@ func TestAutoForward(t *testing.T) {
 	parent.Start()
 
 	// Spawn with auto-forward for FORWARD_ME only
-	Spawn(parent, "worker", childMachine,
+	_, _ = Spawn(parent, "worker", childMachine,
 		WithAutoForward("FORWARD_ME"),
 	)
 
@@ -425,7 +425,7 @@ func TestActorDone_NotifiesParent(t *testing.T) {
 	)
 
 	// Complete the child
-	ref.Send(Event{Type: "COMPLETE"})
+	_ = ref.Send(Event{Type: "COMPLETE"})
 
 	// Wait for child to finish and parent to transition
 	time.Sleep(50 * time.Millisecond)

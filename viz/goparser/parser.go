@@ -315,6 +315,8 @@ func (p *Parser) parseFinalState(stateID, tag string) (*viz.VizState, error) {
 }
 
 // parseCompoundState parses a compound state.
+//
+//nolint:unparam // pkg reserved for future package-level analysis
 func (p *Parser) parseCompoundState(pkg *packages.Package, stateID, tag string, childFields []*types.Var) (*viz.VizState, error) {
 	state := &viz.VizState{
 		ID:   stateID,

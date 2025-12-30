@@ -33,7 +33,7 @@ func TestMachineHandler_GetState(t *testing.T) {
 	}
 
 	var resp StateResponse
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
 
 	if resp.CurrentState != "idle" {
 		t.Errorf("expected idle, got %s", resp.CurrentState)
@@ -66,7 +66,7 @@ func TestMachineHandler_SendEvent(t *testing.T) {
 	}
 
 	var resp EventResponse
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
 
 	if resp.PreviousState != "idle" {
 		t.Errorf("expected prev=idle, got %s", resp.PreviousState)
@@ -98,7 +98,7 @@ func TestMachineHandler_SendEvent_NoTransition(t *testing.T) {
 	handler.HandleSendEvent(w, req)
 
 	var resp EventResponse
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
 
 	if resp.Transitioned {
 		t.Error("expected Transitioned=false")
@@ -179,7 +179,7 @@ func TestMachineHandler_GetContext(t *testing.T) {
 	}
 
 	var ctx Context
-	json.Unmarshal(w.Body.Bytes(), &ctx)
+	_ = json.Unmarshal(w.Body.Bytes(), &ctx)
 
 	if ctx.Count != 42 {
 		t.Errorf("expected count=42, got %d", ctx.Count)
@@ -424,7 +424,7 @@ func TestMachineHandler_FinalState(t *testing.T) {
 	handler.HandleSendEvent(w, req)
 
 	var resp EventResponse
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
 
 	if !resp.Done {
 		t.Error("expected Done=true after reaching final state")
@@ -468,7 +468,7 @@ func TestMachineHandler_WithPayload(t *testing.T) {
 	handler.HandleGetContext(w, req)
 
 	var ctx Context
-	json.Unmarshal(w.Body.Bytes(), &ctx)
+	_ = json.Unmarshal(w.Body.Bytes(), &ctx)
 
 	if ctx.Value != "hello" {
 		t.Errorf("expected value=hello, got %s", ctx.Value)

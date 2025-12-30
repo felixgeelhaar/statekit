@@ -138,7 +138,7 @@ func NewDistributedInterpreter[C any](
 
 	di.persistent, err = NewPersistentInterpreter(ctx, streamID, machine, eventStore, piOpts...)
 	if err != nil {
-		lock.Release(ctx)
+		_ = lock.Release(ctx)
 		di.renewStop()
 		return nil, fmt.Errorf("create persistent interpreter: %w", err)
 	}

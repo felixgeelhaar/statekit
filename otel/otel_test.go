@@ -331,6 +331,7 @@ func checkAttribute(t *testing.T, attrs []attribute.KeyValue, key, expected stri
 	t.Errorf("attribute %s not found", key)
 }
 
+//nolint:unparam // key is parameterized for reuse
 func checkAttributeBool(t *testing.T, attrs []attribute.KeyValue, key string, expected bool) {
 	t.Helper()
 	for _, attr := range attrs {

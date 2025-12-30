@@ -364,7 +364,7 @@ func TestMemoryEventStore_LoadFromVersion(t *testing.T) {
 		{ID: "2", StreamID: "s1", Version: 2, Type: "B"},
 		{ID: "3", StreamID: "s1", Version: 3, Type: "C"},
 	}
-	store.AppendEvents(ctx, "s1", 0, events)
+	_ = store.AppendEvents(ctx, "s1", 0, events)
 
 	// Load from version 2
 	loaded, _ := store.LoadEvents(ctx, "s1", 2)
@@ -381,9 +381,9 @@ func TestMemorySnapshotStore_LoadLatest(t *testing.T) {
 	store := NewMemorySnapshotStore[struct{}]()
 
 	// Save multiple snapshots
-	store.SaveSnapshot(ctx, "s1", 5, &MachineSnapshot[struct{}]{StateValue: "state5"})
-	store.SaveSnapshot(ctx, "s1", 10, &MachineSnapshot[struct{}]{StateValue: "state10"})
-	store.SaveSnapshot(ctx, "s1", 15, &MachineSnapshot[struct{}]{StateValue: "state15"})
+	_ = store.SaveSnapshot(ctx, "s1", 5, &MachineSnapshot[struct{}]{StateValue: "state5"})
+	_ = store.SaveSnapshot(ctx, "s1", 10, &MachineSnapshot[struct{}]{StateValue: "state10"})
+	_ = store.SaveSnapshot(ctx, "s1", 15, &MachineSnapshot[struct{}]{StateValue: "state15"})
 
 	// Load latest at version 12
 	snap, version, _ := store.LoadSnapshot(ctx, "s1", 12)
@@ -395,7 +395,7 @@ func TestMemorySnapshotStore_LoadLatest(t *testing.T) {
 	}
 
 	// Load latest at version 100
-	snap, version, _ = store.LoadSnapshot(ctx, "s1", 100)
+	_, version, _ = store.LoadSnapshot(ctx, "s1", 100)
 	if version != 15 {
 		t.Errorf("expected snapshot version 15, got %d", version)
 	}

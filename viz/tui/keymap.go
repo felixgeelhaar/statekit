@@ -1,8 +1,6 @@
 package tui
 
-import (
-	"github.com/charmbracelet/bubbletea"
-)
+import tea "github.com/charmbracelet/bubbletea"
 
 // KeyMap defines keyboard bindings for the TUI.
 type KeyMap struct {

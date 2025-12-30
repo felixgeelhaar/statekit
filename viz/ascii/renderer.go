@@ -226,10 +226,10 @@ func (r *Renderer) renderStateTree(b *strings.Builder, m *viz.VizMachine, s *viz
 	// Entry/Exit actions
 	if r.ShowActions {
 		if len(s.Entry) > 0 {
-			b.WriteString(fmt.Sprintf(" entry:%s", strings.Join(s.Entry, ",")))
+			_, _ = fmt.Fprintf(b, " entry:%s", strings.Join(s.Entry, ","))
 		}
 		if len(s.Exit) > 0 {
-			b.WriteString(fmt.Sprintf(" exit:%s", strings.Join(s.Exit, ",")))
+			_, _ = fmt.Fprintf(b, " exit:%s", strings.Join(s.Exit, ","))
 		}
 	}
 

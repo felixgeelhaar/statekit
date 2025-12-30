@@ -199,7 +199,10 @@ func (i *Interpreter[C]) handleActorDone(entry *actorEntry) {
 	}
 }
 
-// handleActorError is called when a child actor encounters an error
+// handleActorError is called when a child actor encounters an error.
+// Currently reserved for future actor supervision enhancements.
+//
+//nolint:unused // Reserved for actor supervision pattern
 func (i *Interpreter[C]) handleActorError(entry *actorEntry, err error) {
 	i.mu.Lock()
 	if !i.started {
