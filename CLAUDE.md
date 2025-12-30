@@ -38,7 +38,10 @@ statekit/
 ├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder, InvokeBuilder)
 ├── interpreter.go        # Runtime execution (Start, Send, State, Matches, Done, Stop)
 ├── actor.go              # Actor model (Spawn, ActorRef, supervision strategies)
-├── snapshot.go           # Persistence (Snapshot, Restore)
+├── snapshot.go           # Snapshot/Restore (interpreter state persistence)
+├── eventstore.go         # Event sourcing interfaces (EventStore, SnapshotStore)
+├── persist.go            # PersistentInterpreter (event sourcing wrapper)
+├── distributed.go        # Distributed execution (StreamLock, DistributedInterpreter)
 ├── reflect.go            # Reflection DSL (FromStruct, MachineDef, ActionRegistry)
 ├── *_test.go             # Comprehensive tests for all features
 ├── cmd/
@@ -246,7 +249,7 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.6)
+## Current Status (v0.8)
 
 All planned features implemented:
 
@@ -285,6 +288,25 @@ All planned features implemented:
 - ✅ Mermaid stateDiagram-v2 markdown output
 - ✅ Interactive TUI with keyboard navigation
 - ✅ Go package parser for extracting machine definitions
+
+**Event Persistence (v0.7)**
+- ✅ Event sourcing with `PersistentInterpreter`
+- ✅ `EventStore` interface for pluggable storage backends
+- ✅ `SnapshotStore` interface for periodic snapshots
+- ✅ Optimistic concurrency control (version-based conflict detection)
+- ✅ Automatic state hydration from events + snapshots
+- ✅ Configurable snapshot strategies (by interval, on final, by time)
+- ✅ Event replay for debugging and read models
+- ✅ In-memory implementations for testing
+
+**Distributed Execution (v0.8)**
+- ✅ `StreamLock` interface for distributed locking (Redis, etcd, PostgreSQL, etc.)
+- ✅ `DistributedInterpreter` with automatic lock management
+- ✅ Lock TTL with automatic renewal
+- ✅ Graceful lock release and failover detection
+- ✅ `ClusterMembership` interface for cluster coordination
+- ✅ `StreamRouter` with consistent hashing for load distribution
+- ✅ In-memory implementations for testing
 
 ## History States
 
@@ -527,11 +549,196 @@ Output formats:
 - `mermaid`: Mermaid stateDiagram-v2 markdown
 - `tui`: Interactive terminal UI with keyboard navigation
 
-## Scope Constraints
+## Event Persistence
 
-Explicitly **out of scope** for v1:
-- Distributed/clustered execution
-- Built-in event persistence/event sourcing
+Event sourcing for durable state machine execution:
+
+```go
+// Create event and snapshot stores
+eventStore := statekit.NewMemoryEventStore()
+snapshotStore := statekit.NewMemorySnapshotStore[MyContext]()
+
+// Create persistent interpreter
+pi, err := statekit.NewPersistentInterpreter(
+    ctx,
+    "order-123",  // Stream ID (identifies this instance)
+    machine,
+    eventStore,
+    statekit.WithSnapshotStore[MyContext](snapshotStore),
+    statekit.WithSnapshotConfig[MyContext](statekit.SnapshotConfig{
+        Strategy: statekit.SnapshotByInterval,
+        Interval: 10,  // Snapshot every 10 events
+    }),
+)
+if err != nil {
+    return err
+}
+defer pi.Stop()
+
+// Send events (recorded but not yet persisted)
+pi.Send(statekit.Event{Type: "SUBMIT"})
+pi.Send(statekit.Event{Type: "PAY", Payload: 99.99})
+
+// Persist uncommitted events
+committed, err := pi.Commit(ctx)
+if err != nil {
+    if _, ok := err.(*statekit.ErrConcurrencyConflict); ok {
+        // Handle concurrent modification
+    }
+}
+
+// State is automatically hydrated on restart
+pi2, _ := statekit.NewPersistentInterpreter(ctx, "order-123", machine, eventStore,
+    statekit.WithSnapshotStore[MyContext](snapshotStore),
+)
+// pi2 is now in the same state as pi was after Commit
+```
+
+Key behaviors:
+- **Event sourcing**: All state-changing events are recorded
+- **Optimistic concurrency**: Version-based conflict detection prevents lost updates
+- **Automatic hydration**: State is reconstructed from snapshot + events on startup
+- **Snapshot strategies**:
+  - `SnapshotNever`: Manual snapshots only
+  - `SnapshotByInterval`: Snapshot every N events
+  - `SnapshotOnFinal`: Snapshot when reaching a final state
+  - `SnapshotByTime`: Snapshot after a time duration
+- **Replay functions**: `ReplayEvents` and `ReplayToVersion` for debugging/read models
+
+Implementing custom stores:
+```go
+type EventStore interface {
+    AppendEvents(ctx context.Context, streamID string, expectedVersion int, events []PersistedEvent) error
+    LoadEvents(ctx context.Context, streamID string, fromVersion int) ([]PersistedEvent, error)
+    GetStreamVersion(ctx context.Context, streamID string) (int, error)
+}
+
+type SnapshotStore[C any] interface {
+    SaveSnapshot(ctx context.Context, streamID string, version int, snapshot *MachineSnapshot[C]) error
+    LoadSnapshot(ctx context.Context, streamID string, maxVersion int) (*MachineSnapshot[C], int, error)
+}
+```
+
+## Distributed Execution
+
+Run state machines across multiple nodes with distributed locking and coordination:
+
+```go
+// Create stores and lock
+eventStore := statekit.NewMemoryEventStore()
+snapshotStore := statekit.NewMemorySnapshotStore[MyContext]()
+streamLock := statekit.NewMemoryStreamLock()  // In production: use Redis, etcd, etc.
+
+// Create distributed interpreter
+// Automatically acquires lock and hydrates state
+di, err := statekit.NewDistributedInterpreter(
+    ctx,
+    "order-123",  // Stream ID
+    machine,
+    eventStore,
+    streamLock,
+    statekit.WithDistributedSnapshotStore[MyContext](snapshotStore),
+    statekit.WithDistributedSnapshotConfig[MyContext](statekit.SnapshotConfig{
+        Strategy: statekit.SnapshotByInterval,
+        Interval: 10,
+    }),
+    statekit.WithLockTTL[MyContext](30*time.Second),  // Lock TTL with auto-renewal
+)
+if err != nil {
+    if errors.Is(err, context.DeadlineExceeded) {
+        // Another node holds the lock
+    }
+    return err
+}
+defer di.Stop(ctx)
+
+// Process events (lock is automatically renewed)
+if err := di.Send(statekit.Event{Type: "SUBMIT"}); err != nil {
+    if err == statekit.ErrLockLost {
+        // Lock was lost - stop processing
+    }
+}
+
+// Commit persists events
+committed, err := di.Commit(ctx)
+
+// Monitor lock health
+select {
+case <-di.LockLost():
+    // Lock was lost - handle failover
+default:
+    // Lock still held
+}
+```
+
+Key behaviors:
+- **Exclusive access**: Only one node can process a stream at a time
+- **Automatic renewal**: Lock TTL is renewed periodically (default: every 1/3 of TTL)
+- **Lock loss detection**: `LockLost()` channel and `ErrLockLost` error for failover
+- **Graceful release**: `Stop()` releases lock and cleans up resources
+
+### Implementing Custom Lock Backends
+
+```go
+type StreamLock interface {
+    // Acquire blocks until lock is acquired or context cancelled
+    Acquire(ctx context.Context, streamID string, ttl time.Duration) (Lock, error)
+
+    // TryAcquire returns immediately with ErrLockHeld if lock is unavailable
+    TryAcquire(ctx context.Context, streamID string, ttl time.Duration) (Lock, error)
+}
+
+type Lock interface {
+    Renew(ctx context.Context, ttl time.Duration) error
+    Release(ctx context.Context) error
+    Done() <-chan struct{}  // Closed when lock is lost
+}
+```
+
+Example Redis implementation (pseudocode):
+```go
+type RedisStreamLock struct {
+    client *redis.Client
+}
+
+func (r *RedisStreamLock) TryAcquire(ctx context.Context, streamID string, ttl time.Duration) (Lock, error) {
+    ok, err := r.client.SetNX(ctx, "lock:"+streamID, nodeID, ttl).Result()
+    if err != nil {
+        return nil, err
+    }
+    if !ok {
+        return nil, statekit.ErrLockHeld
+    }
+    return &redisLock{client: r.client, streamID: streamID, nodeID: nodeID}, nil
+}
+```
+
+### Cluster Coordination
+
+For advanced use cases, implement `ClusterMembership` for node discovery:
+
+```go
+type ClusterMembership interface {
+    Join(ctx context.Context, node ClusterNode) error
+    Leave(ctx context.Context) error
+    Members(ctx context.Context) ([]ClusterNode, error)
+    Watch(ctx context.Context) (<-chan MembershipEvent, error)
+}
+```
+
+Use `StreamRouter` for consistent hashing to distribute streams across nodes:
+
+```go
+router := statekit.NewConsistentHashRouter(100)  // 100 virtual nodes per physical node
+members := getMemberList()
+
+// Check if this node should handle the stream
+if router.IsLocal(streamID, members, localNodeID) {
+    // Acquire lock and process
+    di, _ := statekit.NewDistributedInterpreter(ctx, streamID, machine, eventStore, streamLock)
+    // ...
+}
+```
 
 ## Future Enhancements
 
