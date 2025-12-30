@@ -2,6 +2,18 @@ package ir
 
 import "time"
 
+// ChildMachineFactory creates a child interpreter from parent context (v0.14).
+// The factory returns an interface that allows interaction without knowing the child's context type.
+type ChildMachineFactory[C any] func(parentCtx C, parentSend func(Event) error) ChildInterpreter
+
+// ChildInterpreter is a type-erased interface for interacting with child machine interpreters (v0.14).
+type ChildInterpreter interface {
+	Start()
+	Send(Event)
+	Stop()
+	Done() bool
+}
+
 // MachineConfig is the immutable internal representation of a statechart
 type MachineConfig[C any] struct {
 	ID       string
@@ -11,6 +23,9 @@ type MachineConfig[C any] struct {
 	Actions  map[ActionType]Action[C]
 	Guards   map[GuardType]Guard[C]
 	Services map[ServiceType]Service[C] // v3.0: Invoked services
+
+	// Child machine factories for machine composition (v0.14)
+	ChildMachines map[string]ChildMachineFactory[C]
 }
 
 // StateConfig represents a single state node
@@ -30,6 +45,9 @@ type StateConfig struct {
 
 	// Invoked services (v3.0)
 	Invocations []*InvokeConfig
+
+	// Invoked child machines (v0.14)
+	MachineInvocations []*MachineInvokeConfig
 }
 
 // InvokeConfig defines a service to be invoked when entering a state
@@ -45,6 +63,25 @@ type InvokeConfig struct {
 
 	// OnError transition when service fails
 	OnError *TransitionConfig
+}
+
+// MachineInvokeConfig defines a child machine to be invoked when entering a state (v0.14)
+type MachineInvokeConfig struct {
+	// ID uniquely identifies this machine invocation within the state
+	// This becomes the actor ID when spawned
+	ID string
+
+	// MachineRef references the registered child machine by name
+	MachineRef string
+
+	// OnDone transition when child machine reaches a final state
+	OnDone *TransitionConfig
+
+	// OnError transition when child machine encounters an error
+	OnError *TransitionConfig
+
+	// AutoForward is a list of event types that should be auto-forwarded to the child
+	AutoForward []EventType
 }
 
 // TransitionConfig represents a single transition
@@ -67,13 +104,14 @@ func (t *TransitionConfig) IsDelayed() bool {
 // NewMachineConfig creates a new MachineConfig with initialized maps
 func NewMachineConfig[C any](id string, initial StateID, ctx C) *MachineConfig[C] {
 	return &MachineConfig[C]{
-		ID:       id,
-		Initial:  initial,
-		Context:  ctx,
-		States:   make(map[StateID]*StateConfig),
-		Actions:  make(map[ActionType]Action[C]),
-		Guards:   make(map[GuardType]Guard[C]),
-		Services: make(map[ServiceType]Service[C]),
+		ID:            id,
+		Initial:       initial,
+		Context:       ctx,
+		States:        make(map[StateID]*StateConfig),
+		Actions:       make(map[ActionType]Action[C]),
+		Guards:        make(map[GuardType]Guard[C]),
+		Services:      make(map[ServiceType]Service[C]),
+		ChildMachines: make(map[string]ChildMachineFactory[C]),
 	}
 }
 
@@ -229,12 +267,18 @@ func (m *MachineConfig[C]) FindLCA(stateA, stateB StateID) StateID {
 // This is useful for initializing child actors with a derived context.
 func (m *MachineConfig[C]) WithContext(ctx C) *MachineConfig[C] {
 	return &MachineConfig[C]{
-		ID:       m.ID,
-		Initial:  m.Initial,
-		Context:  ctx,
-		States:   m.States,   // Share state configs (immutable)
-		Actions:  m.Actions,  // Share actions (immutable)
-		Guards:   m.Guards,   // Share guards (immutable)
-		Services: m.Services, // Share services (immutable)
+		ID:            m.ID,
+		Initial:       m.Initial,
+		Context:       ctx,
+		States:        m.States,        // Share state configs (immutable)
+		Actions:       m.Actions,       // Share actions (immutable)
+		Guards:        m.Guards,        // Share guards (immutable)
+		Services:      m.Services,      // Share services (immutable)
+		ChildMachines: m.ChildMachines, // Share child machine factories (immutable)
 	}
+}
+
+// GetChildMachine returns the child machine factory for the given reference, or nil if not found
+func (m *MachineConfig[C]) GetChildMachine(ref string) ChildMachineFactory[C] {
+	return m.ChildMachines[ref]
 }

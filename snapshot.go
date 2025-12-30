@@ -40,8 +40,30 @@ type Snapshot[C any] struct {
 	// PendingTimers captures active delayed transitions
 	PendingTimers []PendingTimer `json:"pending_timers,omitempty"`
 
+	// SpawnedActors captures metadata about spawned child actors (v0.14)
+	// Note: Actors are NOT automatically restored. This metadata allows
+	// the application to manually respawn actors if needed.
+	SpawnedActors []ActorMetadata `json:"spawned_actors,omitempty"`
+
 	// CreatedAt is when the snapshot was taken
 	CreatedAt time.Time `json:"created_at"`
+}
+
+// ActorMetadata captures information about a spawned actor for persistence (v0.14).
+// This is a metadata-only snapshot - the actor's internal state is not captured.
+// When restoring, actors must be manually respawned by the application.
+type ActorMetadata struct {
+	// ID is the actor's unique identifier
+	ID ActorID `json:"id"`
+
+	// SpawnedInState is the state that spawned this actor
+	SpawnedInState StateID `json:"spawned_in_state"`
+
+	// Supervision is the supervision strategy for this actor
+	Supervision SupervisionStrategy `json:"supervision"`
+
+	// AutoForward lists event types that were auto-forwarded to this actor
+	AutoForward []EventType `json:"auto_forward,omitempty"`
 }
 
 // PendingTimer represents an active delayed transition that hasn't fired yet.
@@ -62,6 +84,10 @@ type PendingTimer struct {
 // Snapshot creates a snapshot of the current interpreter state.
 // The snapshot captures all information needed to restore the interpreter
 // to this exact state later.
+//
+// Note on actors: Actor metadata is captured but actors are NOT automatically
+// restored. The SpawnedActors field contains metadata about what actors were
+// running, allowing the application to manually respawn them if needed.
 func (i *Interpreter[C]) Snapshot() Snapshot[C] {
 	i.mu.Lock()
 	defer i.mu.Unlock()
@@ -95,7 +121,39 @@ func (i *Interpreter[C]) Snapshot() Snapshot[C] {
 	// Capture pending timers
 	s.PendingTimers = i.snapshotTimers()
 
+	// Capture actor metadata (v0.14)
+	s.SpawnedActors = i.snapshotActors()
+
 	return s
+}
+
+// snapshotActors captures metadata about spawned actors.
+// Caller must hold mu.
+func (i *Interpreter[C]) snapshotActors() []ActorMetadata {
+	i.actorMu.Lock()
+	defer i.actorMu.Unlock()
+
+	if len(i.actorRegistry) == 0 {
+		return nil
+	}
+
+	actors := make([]ActorMetadata, 0, len(i.actorRegistry))
+	for id, entry := range i.actorRegistry {
+		// Convert auto-forward map to slice
+		var autoForward []EventType
+		for et := range entry.autoForward {
+			autoForward = append(autoForward, et)
+		}
+
+		actors = append(actors, ActorMetadata{
+			ID:             id,
+			SpawnedInState: entry.stateID,
+			Supervision:    entry.supervision,
+			AutoForward:    autoForward,
+		})
+	}
+
+	return actors
 }
 
 // snapshotTimers captures information about active delayed transitions.

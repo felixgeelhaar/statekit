@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
 	"github.com/felixgeelhaar/statekit/internal/ir"
+	"github.com/felixgeelhaar/statekit/plugin"
 )
 
 // Interpreter is the statechart runtime that processes events and manages state
@@ -18,6 +20,9 @@ type Interpreter[C any] struct {
 
 	// Mutex to protect all interpreter state from concurrent access (e.g., timer goroutines)
 	mu sync.Mutex
+
+	// Plugin system (v0.14)
+	plugins []plugin.Plugin[C]
 
 	// History tracking (v2.0)
 	// Maps compound state ID to the last immediate child that was active (shallow)
@@ -48,6 +53,10 @@ type Interpreter[C any] struct {
 	actorsByState map[StateID][]ActorID
 	// If this interpreter is a child actor, holds the function to send to parent
 	parentSend func(Event) error
+
+	// Invoked machine management (v0.14)
+	// Maps invoke key (stateID:invokeID) to running child interpreter
+	activeInvokedMachines map[string]ir.ChildInterpreter
 }
 
 // transitionSource holds the state that owns the transition and the transition itself
@@ -64,12 +73,172 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 			Context:          machine.Context,
 			ActiveInParallel: make(map[ir.StateID]ir.StateID),
 		},
-		shallowHistory: make(map[ir.StateID]ir.StateID),
-		deepHistory:    make(map[ir.StateID]ir.StateID),
-		timers:         make(map[string]*time.Timer),
-		activeServices: make(map[string]context.CancelFunc),
-		actorRegistry:  make(map[ActorID]*actorEntry),
-		actorsByState:  make(map[StateID][]ActorID),
+		shallowHistory:        make(map[ir.StateID]ir.StateID),
+		deepHistory:           make(map[ir.StateID]ir.StateID),
+		timers:                make(map[string]*time.Timer),
+		activeServices:        make(map[string]context.CancelFunc),
+		actorRegistry:         make(map[ActorID]*actorEntry),
+		actorsByState:         make(map[StateID][]ActorID),
+		activeInvokedMachines: make(map[string]ir.ChildInterpreter),
+	}
+}
+
+// Use registers a plugin with the interpreter.
+// Plugins receive callbacks during interpreter execution.
+// Multiple plugins can be registered; they are called in registration order.
+func (i *Interpreter[C]) Use(p plugin.Plugin[C]) {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
+	// Expand composite plugins
+	if composite, ok := p.(*plugin.Composite[C]); ok {
+		i.plugins = append(i.plugins, composite.Plugins()...)
+		return
+	}
+
+	i.plugins = append(i.plugins, p)
+}
+
+// pluginContext creates a plugin.Context from current interpreter state.
+// Caller must hold mu.
+func (i *Interpreter[C]) pluginContext() plugin.Context[C] {
+	return plugin.Context[C]{
+		MachineID:    i.machine.ID,
+		CurrentState: plugin.StateID(i.state.Value),
+		Context:      i.state.Context,
+	}
+}
+
+// toPluginEvent converts a statekit Event to plugin.Event.
+func toPluginEvent(e Event) plugin.Event {
+	return plugin.Event{
+		Type:    plugin.EventType(e.Type),
+		Payload: e.Payload,
+	}
+}
+
+// fromPluginEvent converts a plugin.Event to statekit Event.
+func fromPluginEvent(e plugin.Event) Event {
+	return Event{
+		Type:    EventType(e.Type),
+		Payload: e.Payload,
+	}
+}
+
+// callOnEvent calls OnEvent hooks on all plugins that implement OnEventHook.
+// Returns the (potentially modified) event.
+// Caller must hold mu.
+func (i *Interpreter[C]) callOnEvent(event Event) Event {
+	ctx := i.pluginContext()
+	pEvent := toPluginEvent(event)
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnEventHook[C]); ok {
+			pEvent = hook.OnEvent(ctx, pEvent)
+		}
+	}
+	return fromPluginEvent(pEvent)
+}
+
+// callBeforeTransition calls BeforeTransition hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callBeforeTransition(from, to StateID, event Event) {
+	ctx := i.pluginContext()
+	pEvent := toPluginEvent(event)
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnTransitionHook[C]); ok {
+			hook.BeforeTransition(ctx, plugin.StateID(from), plugin.StateID(to), pEvent)
+		}
+	}
+}
+
+// callAfterTransition calls AfterTransition hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callAfterTransition(from, to StateID, event Event) {
+	ctx := i.pluginContext()
+	pEvent := toPluginEvent(event)
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnTransitionHook[C]); ok {
+			hook.AfterTransition(ctx, plugin.StateID(from), plugin.StateID(to), pEvent)
+		}
+	}
+}
+
+// callOnEnter calls OnEnter hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callOnEnter(state StateID) {
+	ctx := i.pluginContext()
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnStateHook[C]); ok {
+			hook.OnEnter(ctx, plugin.StateID(state))
+		}
+	}
+}
+
+// callOnExit calls OnExit hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callOnExit(state StateID) {
+	ctx := i.pluginContext()
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnStateHook[C]); ok {
+			hook.OnExit(ctx, plugin.StateID(state))
+		}
+	}
+}
+
+// callBeforeAction calls BeforeAction hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callBeforeAction(action ActionType, event Event) {
+	ctx := i.pluginContext()
+	pEvent := toPluginEvent(event)
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnActionHook[C]); ok {
+			hook.BeforeAction(ctx, plugin.ActionType(action), pEvent)
+		}
+	}
+}
+
+// callAfterAction calls AfterAction hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callAfterAction(action ActionType, event Event) {
+	ctx := i.pluginContext()
+	pEvent := toPluginEvent(event)
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnActionHook[C]); ok {
+			hook.AfterAction(ctx, plugin.ActionType(action), pEvent)
+		}
+	}
+}
+
+// callOnStart calls OnStart hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callOnStart() {
+	ctx := i.pluginContext()
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnStartStopHook[C]); ok {
+			hook.OnStart(ctx)
+		}
+	}
+}
+
+// callOnStop calls OnStop hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callOnStop() {
+	ctx := i.pluginContext()
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnStartStopHook[C]); ok {
+			hook.OnStop(ctx)
+		}
+	}
+}
+
+// callOnError calls OnError hooks on all plugins.
+// Caller must hold mu.
+func (i *Interpreter[C]) callOnError(err error) {
+	ctx := i.pluginContext()
+	for _, p := range i.plugins {
+		if hook, ok := p.(plugin.OnErrorHook[C]); ok {
+			hook.OnError(ctx, err)
+		}
 	}
 }
 
@@ -82,6 +251,9 @@ func (i *Interpreter[C]) Start() {
 		return
 	}
 	i.started = true
+
+	// Call OnStart hooks
+	i.callOnStart()
 
 	// Enter initial state, resolving to deepest leaf
 	i.enterStateHierarchy(i.machine.Initial)
@@ -144,6 +316,9 @@ func (i *Interpreter[C]) Send(event Event) {
 	if !i.started {
 		return
 	}
+
+	// Call OnEvent hooks (may modify event)
+	event = i.callOnEvent(event)
 
 	// Auto-forward to child actors (v4.0)
 	i.broadcastToAutoForward(event)
@@ -257,6 +432,9 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
 	}
 
+	// Call BeforeTransition hooks
+	i.callBeforeTransition(currentLeaf, resolvedTarget, event)
+
 	// 1. Execute exit actions (leaf to root order), cancel timers/services/actors, and record history
 	for _, stateID := range statesToExit {
 		stateConfig := i.machine.GetState(stateID)
@@ -265,8 +443,13 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 			i.cancelDelayedTransitions(stateID)
 			// Cancel any active invoked services (v3.0)
 			i.cancelInvokedServices(stateID)
+			// Stop invoked machines (v0.14)
+			i.stopInvokedMachines(stateID)
 			// Stop any spawned actors (v4.0)
 			i.stopActorsForState(stateID)
+
+			// Call OnExit hooks before exit actions
+			i.callOnExit(stateID)
 
 			i.executeActions(stateConfig.Exit, event)
 
@@ -291,6 +474,8 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 	if targetConfig != nil && targetConfig.IsParallel() {
 		// Enter the parallel state (handles all regions)
 		i.enterParallelState(resolvedTarget, event)
+		// Call AfterTransition hooks
+		i.callAfterTransition(currentLeaf, resolvedTarget, event)
 		return
 	}
 
@@ -303,15 +488,25 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 			// Check if this is a parallel state within the entry path
 			if stateConfig.IsParallel() {
 				i.enterParallelState(stateID, event)
+				// Call AfterTransition hooks
+				i.callAfterTransition(currentLeaf, resolvedTarget, event)
 				return
 			}
+			// Call OnEnter hooks before entry actions
+			i.callOnEnter(stateID)
+
 			i.executeActions(stateConfig.Entry, event)
 			// Schedule delayed transitions (v2.0)
 			i.scheduleDelayedTransitions(stateID)
 			// Start invoked services (v3.0)
 			i.startInvokedServices(stateID)
+			// Start invoked machines (v0.14)
+			i.startInvokedMachines(stateID)
 		}
 	}
+
+	// Call AfterTransition hooks
+	i.callAfterTransition(currentLeaf, resolvedTarget, event)
 }
 
 // getStatesToExit returns states to exit in leaf-to-root order
@@ -391,6 +586,8 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 				i.state.Value = preID
 				preConfig := i.machine.GetState(preID)
 				if preConfig != nil {
+					// Call OnEnter hooks
+					i.callOnEnter(preID)
 					i.executeActions(preConfig.Entry, Event{})
 					i.scheduleDelayedTransitions(preID)
 				}
@@ -406,11 +603,15 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 		i.state.Value = id
 		stateConfig := i.machine.GetState(id)
 		if stateConfig != nil {
+			// Call OnEnter hooks
+			i.callOnEnter(id)
 			i.executeActions(stateConfig.Entry, Event{})
 			// Schedule delayed transitions (v2.0)
 			i.scheduleDelayedTransitions(id)
 			// Start invoked services (v3.0)
 			i.startInvokedServices(id)
+			// Start invoked machines (v0.14)
+			i.startInvokedMachines(id)
 		}
 	}
 }
@@ -439,12 +640,28 @@ func (i *Interpreter[C]) getEntryPath(start, leaf ir.StateID) []ir.StateID {
 	return result
 }
 
-// executeActions executes a list of actions
+// executeActions executes a list of actions with plugin hooks
 func (i *Interpreter[C]) executeActions(actions []ir.ActionType, event Event) {
 	for _, actionName := range actions {
 		action := i.machine.GetAction(actionName)
 		if action != nil {
-			action(&i.state.Context, event)
+			// Call BeforeAction hooks
+			i.callBeforeAction(actionName, event)
+
+			// Execute action with panic recovery
+			func() {
+				defer func() {
+					if r := recover(); r != nil {
+						err := fmt.Errorf("action %q panicked: %v", actionName, r)
+						slog.Error("action panic recovered", "action", actionName, "panic", r)
+						i.callOnError(err)
+					}
+				}()
+				action(&i.state.Context, event)
+			}()
+
+			// Call AfterAction hooks
+			i.callAfterAction(actionName, event)
 		}
 	}
 }
@@ -503,9 +720,12 @@ func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.S
 
 // --- Timer management for delayed transitions (v2.0) ---
 
-// Stop cancels all active timers, services, and actors, then stops the interpreter
+// Stop cancels all active timers, services, invoked machines, and actors, then stops the interpreter
 func (i *Interpreter[C]) Stop() {
 	i.mu.Lock()
+
+	// Call OnStop hooks before cleanup
+	i.callOnStop()
 
 	// Cancel all timers
 	for key, timer := range i.timers {
@@ -517,6 +737,12 @@ func (i *Interpreter[C]) Stop() {
 	for key, cancel := range i.activeServices {
 		cancel()
 		delete(i.activeServices, key)
+	}
+
+	// Stop all invoked machines (v0.14)
+	for key, child := range i.activeInvokedMachines {
+		child.Stop()
+		delete(i.activeInvokedMachines, key)
 	}
 
 	i.started = false
@@ -703,6 +929,8 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 			i.cancelDelayedTransitions(stateID)
 			// Cancel invoked services (v3.0)
 			i.cancelInvokedServices(stateID)
+			// Stop invoked machines (v0.14)
+			i.stopInvokedMachines(stateID)
 			// Stop spawned actors (v4.0)
 			i.stopActorsForState(stateID)
 			i.executeActions(stateConfig.Exit, event)
@@ -722,6 +950,8 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 			i.scheduleDelayedTransitions(stateID)
 			// Start invoked services (v3.0)
 			i.startInvokedServices(stateID)
+			// Start invoked machines (v0.14)
+			i.startInvokedMachines(stateID)
 		}
 	}
 }
@@ -742,6 +972,8 @@ func (i *Interpreter[C]) enterParallelState(parallelID ir.StateID, event Event) 
 	i.scheduleDelayedTransitions(parallelID)
 	// Start invoked services (v3.0)
 	i.startInvokedServices(parallelID)
+	// Start invoked machines (v0.14)
+	i.startInvokedMachines(parallelID)
 
 	// Enter each region (child of parallel state)
 	for _, regionID := range parallelState.Children {
@@ -777,6 +1009,8 @@ func (i *Interpreter[C]) enterRegion(regionID ir.StateID, event Event) {
 			i.scheduleDelayedTransitions(stateID)
 			// Start invoked services (v3.0)
 			i.startInvokedServices(stateID)
+			// Start invoked machines (v0.14)
+			i.startInvokedMachines(stateID)
 		}
 	}
 
@@ -804,6 +1038,8 @@ func (i *Interpreter[C]) exitParallelState(event Event) {
 	i.cancelDelayedTransitions(i.currentParallel)
 	// Cancel invoked services (v3.0)
 	i.cancelInvokedServices(i.currentParallel)
+	// Stop invoked machines (v0.14)
+	i.stopInvokedMachines(i.currentParallel)
 	// Stop spawned actors (v4.0)
 	i.stopActorsForState(i.currentParallel)
 	i.executeActions(parallelState.Exit, event)
@@ -833,6 +1069,8 @@ func (i *Interpreter[C]) exitRegion(regionID, leafID ir.StateID, event Event) {
 			i.cancelDelayedTransitions(stateID)
 			// Cancel invoked services (v3.0)
 			i.cancelInvokedServices(stateID)
+			// Stop invoked machines (v0.14)
+			i.stopInvokedMachines(stateID)
 			// Stop spawned actors (v4.0)
 			i.stopActorsForState(stateID)
 			i.executeActions(stateConfig.Exit, event)
@@ -948,6 +1186,97 @@ func (i *Interpreter[C]) executeServiceTransition(sourceStateID ir.StateID, tran
 		transition: trans,
 	}
 	i.executeTransitionHierarchical(source, event)
+}
+
+// --- Invoked machine management (v0.14) ---
+
+// startInvokedMachines starts all child machines for the given state
+// Caller must hold mu.
+func (i *Interpreter[C]) startInvokedMachines(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil || len(stateConfig.MachineInvocations) == 0 {
+		return
+	}
+
+	for _, invoke := range stateConfig.MachineInvocations {
+		factory := i.machine.GetChildMachine(invoke.MachineRef)
+		if factory == nil {
+			continue
+		}
+
+		// Create unique key for this invocation
+		invokeKey := fmt.Sprintf("%s:%s", stateID, invoke.ID)
+
+		// Create parent send function for child-to-parent communication
+		parentSend := func(event Event) error {
+			i.Send(event)
+			return nil
+		}
+
+		// Create child interpreter via factory
+		child := factory(i.state.Context, parentSend)
+		i.activeInvokedMachines[invokeKey] = child
+
+		// Start child in goroutine to handle its lifecycle
+		capturedInvoke := invoke
+		capturedStateID := stateID
+		go func() {
+			// Start the child machine
+			child.Start()
+
+			// Wait for child to complete (reach final state)
+			// Poll periodically - in production this would use channels
+			for !child.Done() {
+				// Small sleep to avoid busy-waiting
+				time.Sleep(10 * time.Millisecond)
+
+				// Check if we've been stopped
+				i.mu.Lock()
+				_, stillActive := i.activeInvokedMachines[invokeKey]
+				i.mu.Unlock()
+				if !stillActive {
+					return // We were stopped externally
+				}
+			}
+
+			// Child completed - handle OnDone
+			i.mu.Lock()
+			defer i.mu.Unlock()
+
+			// Check if we're still in the same state and still active
+			if !i.started || !i.matchesUnlocked(capturedStateID) {
+				return
+			}
+
+			// Clean up
+			delete(i.activeInvokedMachines, invokeKey)
+
+			// Execute OnDone transition if configured
+			if capturedInvoke.OnDone != nil && capturedInvoke.OnDone.Target != "" {
+				doneEvent := Event{
+					Type: EventType(fmt.Sprintf("xstate.done.invoke.%s", capturedInvoke.ID)),
+				}
+				i.executeServiceTransition(capturedStateID, capturedInvoke.OnDone, doneEvent)
+			}
+		}()
+	}
+}
+
+// stopInvokedMachines stops all child machines for the given state
+// Caller must hold mu.
+func (i *Interpreter[C]) stopInvokedMachines(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil {
+		return
+	}
+
+	for _, invoke := range stateConfig.MachineInvocations {
+		invokeKey := fmt.Sprintf("%s:%s", stateID, invoke.ID)
+		if child, ok := i.activeInvokedMachines[invokeKey]; ok {
+			child.Stop()
+			delete(i.activeInvokedMachines, invokeKey)
+		}
+	}
 }
 
 // --- Actor management (v4.0) ---

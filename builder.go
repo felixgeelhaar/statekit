@@ -8,13 +8,14 @@ import (
 
 // MachineBuilder provides a fluent API for constructing state machines
 type MachineBuilder[C any] struct {
-	id       string
-	initial  StateID
-	context  C
-	states   []*StateBuilder[C]
-	actions  map[ActionType]Action[C]
-	guards   map[GuardType]Guard[C]
-	services map[ServiceType]Service[C] // v3.0: Invoked services
+	id            string
+	initial       StateID
+	context       C
+	states        []*StateBuilder[C]
+	actions       map[ActionType]Action[C]
+	guards        map[GuardType]Guard[C]
+	services      map[ServiceType]Service[C]           // v3.0: Invoked services
+	childMachines map[string]ir.ChildMachineFactory[C] // v0.14: Child machine factories
 }
 
 // StateBuilder provides a fluent API for constructing states
@@ -36,6 +37,9 @@ type StateBuilder[C any] struct {
 
 	// Invoked services (v3.0)
 	invocations []*InvokeBuilder[C]
+
+	// Invoked child machines (v0.14)
+	machineInvocations []*MachineInvokeBuilder[C]
 }
 
 // InvokeBuilder provides a fluent API for constructing service invocations (v3.0)
@@ -47,6 +51,18 @@ type InvokeBuilder[C any] struct {
 	onDoneAction ActionType
 	onErrTarget  StateID
 	onErrAction  ActionType
+}
+
+// MachineInvokeBuilder provides a fluent API for constructing child machine invocations (v0.14)
+type MachineInvokeBuilder[C any] struct {
+	state        *StateBuilder[C]
+	id           string
+	machineRef   string
+	onDoneTarget StateID
+	onDoneAction ActionType
+	onErrTarget  StateID
+	onErrAction  ActionType
+	autoForward  []EventType
 }
 
 // HistoryBuilder provides a fluent API for constructing history states
@@ -80,10 +96,11 @@ type TransitionBuilder[C any] struct {
 // NewMachine creates a new MachineBuilder with the given ID
 func NewMachine[C any](id string) *MachineBuilder[C] {
 	return &MachineBuilder[C]{
-		id:       id,
-		actions:  make(map[ActionType]Action[C]),
-		guards:   make(map[GuardType]Guard[C]),
-		services: make(map[ServiceType]Service[C]),
+		id:            id,
+		actions:       make(map[ActionType]Action[C]),
+		guards:        make(map[GuardType]Guard[C]),
+		services:      make(map[ServiceType]Service[C]),
+		childMachines: make(map[string]ir.ChildMachineFactory[C]),
 	}
 }
 
@@ -117,6 +134,13 @@ func (b *MachineBuilder[C]) WithService(name ServiceType, service Service[C]) *M
 	return b
 }
 
+// WithChildMachine registers a child machine factory for machine composition (v0.14).
+// The factory creates a child interpreter when the machine is invoked.
+func (b *MachineBuilder[C]) WithChildMachine(name string, factory ir.ChildMachineFactory[C]) *MachineBuilder[C] {
+	b.childMachines[name] = factory
+	return b
+}
+
 // State starts building a new state with the given ID
 func (b *MachineBuilder[C]) State(id StateID) *StateBuilder[C] {
 	sb := &StateBuilder[C]{
@@ -143,6 +167,10 @@ func (b *MachineBuilder[C]) Build() (*ir.MachineConfig[C], error) {
 	// Copy services (v3.0)
 	for name, service := range b.services {
 		machine.Services[name] = service
+	}
+	// Copy child machine factories (v0.14)
+	for name, factory := range b.childMachines {
+		machine.ChildMachines[name] = factory
 	}
 
 	// Build states recursively
@@ -215,6 +243,28 @@ func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machin
 			}
 		}
 		state.Invocations = append(state.Invocations, invoke)
+	}
+
+	// Build machine invocations (v0.14)
+	for _, mib := range sb.machineInvocations {
+		machineInvoke := &ir.MachineInvokeConfig{
+			ID:          mib.id,
+			MachineRef:  mib.machineRef,
+			AutoForward: mib.autoForward,
+		}
+		if mib.onDoneTarget != "" {
+			machineInvoke.OnDone = ir.NewTransitionConfig("", mib.onDoneTarget)
+			if mib.onDoneAction != "" {
+				machineInvoke.OnDone.Actions = append(machineInvoke.OnDone.Actions, mib.onDoneAction)
+			}
+		}
+		if mib.onErrTarget != "" {
+			machineInvoke.OnError = ir.NewTransitionConfig("", mib.onErrTarget)
+			if mib.onErrAction != "" {
+				machineInvoke.OnError.Actions = append(machineInvoke.OnError.Actions, mib.onErrAction)
+			}
+		}
+		state.MachineInvocations = append(state.MachineInvocations, machineInvoke)
 	}
 
 	machine.States[sb.id] = state
@@ -346,6 +396,19 @@ func (b *StateBuilder[C]) Invoke(src ServiceType) *InvokeBuilder[C] {
 	return ib
 }
 
+// InvokeMachine starts building a child machine invocation for this state (v0.14).
+// The child machine is spawned when entering the state and stopped when exiting.
+// The machineRef must match a name registered with WithChildMachine.
+func (b *StateBuilder[C]) InvokeMachine(machineRef string) *MachineInvokeBuilder[C] {
+	mib := &MachineInvokeBuilder[C]{
+		state:      b,
+		machineRef: machineRef,
+		id:         machineRef, // Default ID is the machine reference
+	}
+	b.machineInvocations = append(b.machineInvocations, mib)
+	return mib
+}
+
 // --- InvokeBuilder methods (v3.0) ---
 
 // ID sets a custom ID for this invocation
@@ -385,6 +448,54 @@ func (b *InvokeBuilder[C]) End() *StateBuilder[C] {
 
 // Done completes the state definition and returns to the machine builder
 func (b *InvokeBuilder[C]) Done() *MachineBuilder[C] {
+	return b.state.Done()
+}
+
+// --- MachineInvokeBuilder methods (v0.14) ---
+
+// ID sets a custom ID for this machine invocation
+func (b *MachineInvokeBuilder[C]) ID(id string) *MachineInvokeBuilder[C] {
+	b.id = id
+	return b
+}
+
+// OnDone sets the transition target when the child machine reaches a final state
+func (b *MachineInvokeBuilder[C]) OnDone(target StateID) *MachineInvokeBuilder[C] {
+	b.onDoneTarget = target
+	return b
+}
+
+// OnDoneAction sets an action to execute when the child machine completes
+func (b *MachineInvokeBuilder[C]) OnDoneAction(action ActionType) *MachineInvokeBuilder[C] {
+	b.onDoneAction = action
+	return b
+}
+
+// OnError sets the transition target when the child machine encounters an error
+func (b *MachineInvokeBuilder[C]) OnError(target StateID) *MachineInvokeBuilder[C] {
+	b.onErrTarget = target
+	return b
+}
+
+// OnErrorAction sets an action to execute when the child machine fails
+func (b *MachineInvokeBuilder[C]) OnErrorAction(action ActionType) *MachineInvokeBuilder[C] {
+	b.onErrAction = action
+	return b
+}
+
+// AutoForward adds event types that should be auto-forwarded to the child machine
+func (b *MachineInvokeBuilder[C]) AutoForward(events ...EventType) *MachineInvokeBuilder[C] {
+	b.autoForward = append(b.autoForward, events...)
+	return b
+}
+
+// End completes the machine invocation definition and returns to the StateBuilder
+func (b *MachineInvokeBuilder[C]) End() *StateBuilder[C] {
+	return b.state
+}
+
+// Done completes the state definition and returns to the machine builder
+func (b *MachineInvokeBuilder[C]) Done() *MachineBuilder[C] {
 	return b.state.Done()
 }
 
