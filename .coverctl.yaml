@@ -30,3 +30,11 @@ policy:
       match:
         - ./debug/...
       min: 85
+    - name: metrics
+      match:
+        - ./metrics/...
+      min: 90
+    - name: health
+      match:
+        - ./health/...
+      min: 90
