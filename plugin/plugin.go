@@ -17,20 +17,19 @@
 //	interp.Use(&MyPlugin{})
 package plugin
 
-// StateID uniquely identifies a state within a machine
-type StateID = string
+import "github.com/felixgeelhaar/statekit/internal/ir"
 
-// EventType is a named event identifier
-type EventType = string
-
-// ActionType identifies a named action
-type ActionType = string
-
-// Event represents a runtime event with optional payload
-type Event struct {
-	Type    EventType
-	Payload any
-}
+// Re-export types from internal/ir to ensure type compatibility with statekit
+type (
+	// StateID uniquely identifies a state within a machine
+	StateID = ir.StateID
+	// EventType is a named event identifier
+	EventType = ir.EventType
+	// ActionType identifies a named action
+	ActionType = ir.ActionType
+	// Event represents a runtime event with optional payload
+	Event = ir.Event
+)
 
 // Plugin is the base interface that all plugins must implement.
 type Plugin[C any] interface {

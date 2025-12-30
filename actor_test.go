@@ -470,3 +470,84 @@ func TestConcurrentSpawning(t *testing.T) {
 
 	parent.Stop()
 }
+
+func TestSpawn_WithOnError(t *testing.T) {
+	// Test that WithOnError option can be set (error path reserved for future use)
+	parentMachine, _ := NewMachine[parentContext]("parent").
+		WithInitial("active").
+		State("active").
+		On("xstate.error.actor.worker").Target("failed").
+		Done().
+		State("failed").Final().
+		Done().
+		Build()
+
+	childMachine := buildSimpleChildMachine()
+
+	parent := NewInterpreter(parentMachine)
+	parent.Start()
+
+	// Spawn with OnError configured
+	ref, err := Spawn(parent, "worker", childMachine,
+		WithOnError("failed"),
+		WithSupervision(SupervisionEscalate),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify actor was spawned successfully
+	if ref == nil {
+		t.Fatal("expected non-nil actor ref")
+	}
+	if ref.ID() != "worker" {
+		t.Errorf("expected actor ID 'worker', got %s", ref.ID())
+	}
+
+	// Actor should be running
+	select {
+	case <-ref.Done():
+		t.Error("actor should not be done yet")
+	default:
+		// Expected - actor is still running
+	}
+
+	parent.Stop()
+}
+
+func TestSpawn_AllOptions(t *testing.T) {
+	// Test spawning with all options combined
+	parentMachine, _ := NewMachine[parentContext]("parent").
+		WithInitial("active").
+		State("active").
+		On("xstate.done.actor.worker").Target("completed").
+		On("xstate.error.actor.worker").Target("failed").
+		On("TASK").Target("active"). // For auto-forward testing
+		Done().
+		State("completed").Final().
+		Done().
+		State("failed").Final().
+		Done().
+		Build()
+
+	childMachine := buildSimpleChildMachine()
+
+	parent := NewInterpreter(parentMachine)
+	parent.Start()
+
+	ref, err := Spawn(parent, "worker", childMachine,
+		WithSupervision(SupervisionRecover),
+		WithAutoForward("TASK", "DATA"),
+		WithOnDone("completed"),
+		WithOnError("failed"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if ref.ID() != "worker" {
+		t.Errorf("expected actor ID 'worker', got %s", ref.ID())
+	}
+
+	parent.Stop()
+}

@@ -104,24 +104,8 @@ func (i *Interpreter[C]) Use(p plugin.Plugin[C]) {
 func (i *Interpreter[C]) pluginContext() plugin.Context[C] {
 	return plugin.Context[C]{
 		MachineID:    i.machine.ID,
-		CurrentState: plugin.StateID(i.state.Value),
+		CurrentState: i.state.Value,
 		Context:      i.state.Context,
-	}
-}
-
-// toPluginEvent converts a statekit Event to plugin.Event.
-func toPluginEvent(e Event) plugin.Event {
-	return plugin.Event{
-		Type:    plugin.EventType(e.Type),
-		Payload: e.Payload,
-	}
-}
-
-// fromPluginEvent converts a plugin.Event to statekit Event.
-func fromPluginEvent(e plugin.Event) Event {
-	return Event{
-		Type:    EventType(e.Type),
-		Payload: e.Payload,
 	}
 }
 
@@ -130,23 +114,21 @@ func fromPluginEvent(e plugin.Event) Event {
 // Caller must hold mu.
 func (i *Interpreter[C]) callOnEvent(event Event) Event {
 	ctx := i.pluginContext()
-	pEvent := toPluginEvent(event)
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnEventHook[C]); ok {
-			pEvent = hook.OnEvent(ctx, pEvent)
+			event = hook.OnEvent(ctx, event)
 		}
 	}
-	return fromPluginEvent(pEvent)
+	return event
 }
 
 // callBeforeTransition calls BeforeTransition hooks on all plugins.
 // Caller must hold mu.
 func (i *Interpreter[C]) callBeforeTransition(from, to StateID, event Event) {
 	ctx := i.pluginContext()
-	pEvent := toPluginEvent(event)
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnTransitionHook[C]); ok {
-			hook.BeforeTransition(ctx, plugin.StateID(from), plugin.StateID(to), pEvent)
+			hook.BeforeTransition(ctx, from, to, event)
 		}
 	}
 }
@@ -155,10 +137,9 @@ func (i *Interpreter[C]) callBeforeTransition(from, to StateID, event Event) {
 // Caller must hold mu.
 func (i *Interpreter[C]) callAfterTransition(from, to StateID, event Event) {
 	ctx := i.pluginContext()
-	pEvent := toPluginEvent(event)
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnTransitionHook[C]); ok {
-			hook.AfterTransition(ctx, plugin.StateID(from), plugin.StateID(to), pEvent)
+			hook.AfterTransition(ctx, from, to, event)
 		}
 	}
 }
@@ -169,7 +150,7 @@ func (i *Interpreter[C]) callOnEnter(state StateID) {
 	ctx := i.pluginContext()
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnStateHook[C]); ok {
-			hook.OnEnter(ctx, plugin.StateID(state))
+			hook.OnEnter(ctx, state)
 		}
 	}
 }
@@ -180,7 +161,7 @@ func (i *Interpreter[C]) callOnExit(state StateID) {
 	ctx := i.pluginContext()
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnStateHook[C]); ok {
-			hook.OnExit(ctx, plugin.StateID(state))
+			hook.OnExit(ctx, state)
 		}
 	}
 }
@@ -189,10 +170,9 @@ func (i *Interpreter[C]) callOnExit(state StateID) {
 // Caller must hold mu.
 func (i *Interpreter[C]) callBeforeAction(action ActionType, event Event) {
 	ctx := i.pluginContext()
-	pEvent := toPluginEvent(event)
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnActionHook[C]); ok {
-			hook.BeforeAction(ctx, plugin.ActionType(action), pEvent)
+			hook.BeforeAction(ctx, action, event)
 		}
 	}
 }
@@ -201,10 +181,9 @@ func (i *Interpreter[C]) callBeforeAction(action ActionType, event Event) {
 // Caller must hold mu.
 func (i *Interpreter[C]) callAfterAction(action ActionType, event Event) {
 	ctx := i.pluginContext()
-	pEvent := toPluginEvent(event)
 	for _, p := range i.plugins {
 		if hook, ok := p.(plugin.OnActionHook[C]); ok {
-			hook.AfterAction(ctx, plugin.ActionType(action), pEvent)
+			hook.AfterAction(ctx, action, event)
 		}
 	}
 }

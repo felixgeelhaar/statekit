@@ -199,68 +199,6 @@ func (i *Interpreter[C]) handleActorDone(entry *actorEntry) {
 	}
 }
 
-// handleActorError is called when a child actor encounters an error.
-// Currently reserved for future actor supervision enhancements.
-//
-//nolint:unused // Reserved for actor supervision pattern
-func (i *Interpreter[C]) handleActorError(entry *actorEntry, err error) {
-	i.mu.Lock()
-	if !i.started {
-		i.mu.Unlock()
-		return
-	}
-
-	switch entry.supervision {
-	case SupervisionEscalate:
-		// Send error event to parent
-		errorEvent := Event{
-			Type:    EventType(fmt.Sprintf("xstate.error.actor.%s", entry.ref.id)),
-			Payload: err,
-		}
-
-		// Execute OnError transition if configured
-		if entry.onError != nil && entry.onError.Target != "" {
-			currentState := i.machine.GetState(i.state.Value)
-			if currentState != nil {
-				source := &transitionSource[C]{
-					state:      currentState,
-					transition: entry.onError,
-				}
-				i.executeTransitionHierarchical(source, errorEvent)
-			}
-		}
-		i.mu.Unlock()
-
-		// Clean up the actor under actorMu
-		entry.ref.Stop()
-		i.actorMu.Lock()
-		delete(i.actorRegistry, entry.ref.id)
-		i.actorMu.Unlock()
-
-	case SupervisionRecover:
-		i.mu.Unlock()
-		// Log and continue (actor keeps running if not fatal)
-		// In production, this would use a proper logger
-
-	case SupervisionRestart:
-		i.mu.Unlock()
-		// Stop the actor and let the parent respawn it
-		entry.ref.Stop()
-		i.actorMu.Lock()
-		delete(i.actorRegistry, entry.ref.id)
-		i.actorMu.Unlock()
-		// Note: Automatic restart would require storing the machine config
-
-	case SupervisionStop:
-		i.mu.Unlock()
-		// Stop silently
-		entry.ref.Stop()
-		i.actorMu.Lock()
-		delete(i.actorRegistry, entry.ref.id)
-		i.actorMu.Unlock()
-	}
-}
-
 // stopActorsForState stops all actors spawned in the given state.
 // This implements state-scoped actor lifecycle.
 // This function acquires actorMu internally.

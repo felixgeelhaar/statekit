@@ -320,3 +320,96 @@ func BenchmarkParallelStates(b *testing.B) {
 		}
 	})
 }
+
+// BenchmarkPluginHooks benchmarks plugin hook overhead (v0.14)
+func BenchmarkPluginHooks(b *testing.B) {
+	b.Run("no_plugins", func(b *testing.B) {
+		machine, _ := NewMachine[struct{}]("simple").
+			WithInitial("idle").
+			State("idle").On("GO").Target("running").Done().
+			State("running").On("STOP").Target("idle").Done().
+			Build()
+
+		interp := NewInterpreter(machine)
+		interp.Start()
+		event := Event{Type: "GO"}
+
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			interp.Send(event)
+			interp.Send(Event{Type: "STOP"})
+		}
+	})
+
+	b.Run("with_logging_plugin", func(b *testing.B) {
+		machine, _ := NewMachine[struct{}]("simple").
+			WithInitial("idle").
+			State("idle").On("GO").Target("running").Done().
+			State("running").On("STOP").Target("idle").Done().
+			Build()
+
+		interp := NewInterpreter(machine)
+		// Add a minimal logging plugin
+		interp.Use(&benchLoggingPlugin{})
+		interp.Start()
+		event := Event{Type: "GO"}
+
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			interp.Send(event)
+			interp.Send(Event{Type: "STOP"})
+		}
+	})
+}
+
+// benchLoggingPlugin is a minimal plugin for benchmarking
+type benchLoggingPlugin struct{}
+
+func (p *benchLoggingPlugin) Name() string { return "bench-logger" }
+
+// BenchmarkUpdateContext benchmarks context update performance
+func BenchmarkUpdateContext(b *testing.B) {
+	type Ctx struct {
+		Count int
+		Items []int
+	}
+
+	machine, _ := NewMachine[Ctx]("bench").
+		WithInitial("idle").
+		WithContext(Ctx{Count: 0, Items: make([]int, 0, 100)}).
+		State("idle").Done().
+		Build()
+
+	interp := NewInterpreter(machine)
+	interp.Start()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		interp.UpdateContext(func(ctx *Ctx) {
+			ctx.Count++
+		})
+	}
+}
+
+// BenchmarkSnapshot benchmarks snapshot creation (v0.5+)
+func BenchmarkSnapshot(b *testing.B) {
+	type Ctx struct {
+		Count int
+		Data  string
+	}
+
+	machine, _ := NewMachine[Ctx]("bench").
+		WithInitial("idle").
+		WithContext(Ctx{Count: 42, Data: "benchmark"}).
+		State("idle").On("GO").Target("running").Done().
+		State("running").On("STOP").Target("idle").Done().
+		Build()
+
+	interp := NewInterpreter(machine)
+	interp.Start()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = interp.Snapshot()
+	}
+}
