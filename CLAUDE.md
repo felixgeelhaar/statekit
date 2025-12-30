@@ -303,9 +303,9 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.14)
+## Current Status (v1.0)
 
-All planned features implemented:
+**v1.0 is the first stable release** with API stability commitment. All planned features implemented:
 
 **Core (v0.2)**
 - ✅ Fluent builder API with generics
@@ -1157,10 +1157,37 @@ data, _ := json.Marshal(snap)
 
 Note: Actor metadata is captured for informational purposes. Actors must be manually respawned after restoring a snapshot.
 
-## Future Enhancements
+## Performance Characteristics
 
-The library is feature-complete for most use cases. Potential future additions:
+Benchmarks on Apple M1:
 
-**Advanced Features**
-- Formal verification tooling
-- Visual state machine editor integration
+| Operation | Time | Allocations |
+|-----------|------|-------------|
+| Simple transition | ~960ns | 7 |
+| Hierarchical bubble | ~1.7μs | 10 |
+| No match (fast path) | ~91ns | 0 |
+| State query | ~35ns | 0 |
+| Context update | ~27ns | 0 |
+| Snapshot | ~383ns | 3 |
+| Plugin overhead | ~0ns | 0 |
+
+Run benchmarks with: `go test -bench=. -benchmem .`
+
+## Post v1.0 Considerations
+
+The library is feature-complete and API-stable. Future additions (v1.x):
+
+**Formal Verification**
+- Model checking for state machine properties
+- Deadlock detection
+- Liveness verification
+
+**Visual Editor Integration**
+- VSCode extension for machine editing
+- Real-time visualization
+- Enhanced Stately.ai integration
+
+**Advanced Persistence**
+- Full actor state persistence
+- Automatic actor restoration
+- Distributed actor coordination
