@@ -150,6 +150,7 @@ See [XState Export Guide](xstate-export.md) for more details.
 - [Guards and Actions](guards-actions.md) - Add behavior to your machines
 - [Hierarchical States](hierarchical-states.md) - Nested states and event bubbling
 - [Patterns & Recipes](patterns-recipes.md) - Common patterns and best practices
+- [Performance Tuning](performance-tuning.md) - Optimization techniques
 - [Reflection DSL](reflection-dsl.md) - Declarative machine definition
 - [XState Export](xstate-export.md) - Visualization with XState tools
 - [XState Migration](xstate-migration.md) - Coming from XState/TypeScript?
