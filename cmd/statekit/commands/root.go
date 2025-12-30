@@ -16,6 +16,7 @@ Examples:
   statekit viz machine.json              # Visualize as ASCII diagram
   statekit viz -f mermaid machine.json   # Output Mermaid diagram
   statekit viz -f tui machine.json       # Interactive TUI explorer
+  statekit generate machine.json -o m.go # Generate Go code from XState JSON
   cat machine.json | statekit viz        # Read from stdin`,
 }
 
@@ -27,4 +28,5 @@ func Execute() error {
 func init() {
 	rootCmd.AddCommand(vizCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(GenerateCmd())
 }
