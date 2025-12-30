@@ -1,10 +1,10 @@
-package testing_test
+package statetest_test
 
 import (
 	"testing"
 
 	"github.com/felixgeelhaar/statekit"
-	statetesting "github.com/felixgeelhaar/statekit/testing"
+	statetesting "github.com/felixgeelhaar/statekit/statetest"
 )
 
 func TestSendEvents(t *testing.T) {

@@ -1,4 +1,4 @@
-package testing
+package statetest
 
 import (
 	"sync"
@@ -6,6 +6,9 @@ import (
 
 	"github.com/felixgeelhaar/statekit"
 )
+
+// syntheticStartEvent is the event type used to record the initial state entry.
+const syntheticStartEvent statekit.EventType = "__START__"
 
 // Transition represents a recorded state transition.
 type Transition[C any] struct {
@@ -61,7 +64,7 @@ func (r *Recorder[C]) Start() {
 
 	// Record the initial state entry as a transition from empty state
 	r.transitions = append(r.transitions, Transition[C]{
-		Event:         statekit.Event{Type: "__START__"},
+		Event:         statekit.Event{Type: syntheticStartEvent},
 		FromState:     "",
 		ToState:       r.interp.State().Value,
 		Transitioned:  true,
@@ -175,8 +178,8 @@ func (r *Recorder[C]) Events() []statekit.Event {
 
 	events := make([]statekit.Event, 0, len(r.transitions))
 	for _, t := range r.transitions {
-		// Skip the synthetic __START__ event
-		if t.Event.Type != "__START__" {
+		// Skip the synthetic start event
+		if t.Event.Type != syntheticStartEvent {
 			events = append(events, t.Event)
 		}
 	}
@@ -190,8 +193,8 @@ func (r *Recorder[C]) EventTypes() []statekit.EventType {
 
 	types := make([]statekit.EventType, 0, len(r.transitions))
 	for _, t := range r.transitions {
-		// Skip the synthetic __START__ event
-		if t.Event.Type != "__START__" {
+		// Skip the synthetic start event
+		if t.Event.Type != syntheticStartEvent {
 			types = append(types, t.Event.Type)
 		}
 	}
@@ -206,17 +209,26 @@ func (r *Recorder[C]) Reset() {
 }
 
 // State returns the current state from the underlying interpreter.
+// Safe for concurrent use.
 func (r *Recorder[C]) State() statekit.State[C] {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	return r.interp.State()
 }
 
 // Matches delegates to the underlying interpreter's Matches method.
+// Safe for concurrent use.
 func (r *Recorder[C]) Matches(id statekit.StateID) bool {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	return r.interp.Matches(id)
 }
 
 // Done returns true if the interpreter is in a final state.
+// Safe for concurrent use.
 func (r *Recorder[C]) Done() bool {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	return r.interp.Done()
 }
 

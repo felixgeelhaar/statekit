@@ -72,7 +72,7 @@ func (i *Inspector[C]) StateInfo(stateID statekit.StateID) *StateInfo {
 
 	info := &StateInfo{
 		ID:       config.ID,
-		Type:     stateTypeToString(config.Type),
+		Type:     config.Type.String(),
 		Parent:   config.Parent,
 		Initial:  config.Initial,
 		Children: config.Children,
@@ -323,23 +323,6 @@ type TransitionInfo struct {
 }
 
 // Helper functions
-
-func stateTypeToString(t ir.StateType) string {
-	switch t {
-	case ir.StateTypeAtomic:
-		return "atomic"
-	case ir.StateTypeCompound:
-		return "compound"
-	case ir.StateTypeFinal:
-		return "final"
-	case ir.StateTypeHistory:
-		return "history"
-	case ir.StateTypeParallel:
-		return "parallel"
-	default:
-		return "unknown"
-	}
-}
 
 func actionsToStrings(actions []ir.ActionType) []string {
 	result := make([]string, len(actions))

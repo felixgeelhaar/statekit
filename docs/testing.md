@@ -14,14 +14,14 @@ Import the packages in your test files:
 
 ```go
 import (
-    "github.com/felixgeelhaar/statekit/testing"
+    "github.com/felixgeelhaar/statekit/statetest"
     "github.com/felixgeelhaar/statekit/debug"
 )
 ```
 
 ## Testing Package
 
-The `testing` package provides utilities for testing state machines with transition recording, assertions, and test helpers.
+The `statetest` package provides utilities for testing state machines with transition recording, assertions, and test helpers.
 
 ### Transition Recorder
 
@@ -33,7 +33,7 @@ func TestOrderWorkflow(t *testing.T) {
     interp := statekit.NewInterpreter(machine)
 
     // Wrap the interpreter with a recorder
-    rec := testing.NewRecorder(interp)
+    rec := statetest.NewRecorder(interp)
     rec.Start()
 
     // Send events
@@ -77,16 +77,16 @@ func TestCheckout(t *testing.T) {
     interp.Start()
 
     // Assert initial state
-    testing.AssertState(t, interp, "cart")
-    testing.AssertNotDone(t, interp)
+    statetest.AssertState(t, interp, "cart")
+    statetest.AssertNotDone(t, interp)
 
     // Send events and verify
     interp.Send(statekit.Event{Type: "CHECKOUT"})
-    testing.AssertState(t, interp, "payment")
+    statetest.AssertState(t, interp, "payment")
 
     interp.Send(statekit.Event{Type: "PAY"})
-    testing.AssertState(t, interp, "confirmation")
-    testing.AssertDone(t, interp)
+    statetest.AssertState(t, interp, "confirmation")
+    statetest.AssertDone(t, interp)
 }
 ```
 
@@ -112,7 +112,7 @@ For more expressive tests, use the fluent assertion API:
 func TestWorkflow(t *testing.T) {
     machine := buildMachine()
     interp := statekit.NewInterpreter(machine)
-    rec := testing.NewRecorder(interp)
+    rec := statetest.NewRecorder(interp)
     rec.Start()
 
     // Send events
@@ -120,15 +120,14 @@ func TestWorkflow(t *testing.T) {
     rec.Send(statekit.Event{Type: "COMPLETE"})
 
     // Fluent state assertions
-    testing.Assert(t, interp).
-        State("done").
-        Done()
+    statetest.NewStateAssertion(t, interp).
+        IsIn("done").
+        IsDone()
 
     // Fluent recorder assertions
-    testing.AssertRecorder(t, rec).
-        TransitionCount(2).
-        EventSequence("START", "COMPLETE").
-        StateSequence("idle", "running", "done")
+    statetest.NewRecorderAssertion(t, rec).
+        StateSequence("idle", "running", "done").
+        EventSequence("START", "COMPLETE")
 }
 ```
 
@@ -138,14 +137,14 @@ Convenience functions for common testing scenarios:
 
 ```go
 // Send multiple events
-testing.SendEvents(interp,
+statetest.SendEvents(interp,
     statekit.Event{Type: "START"},
     statekit.Event{Type: "PAUSE"},
     statekit.Event{Type: "RESUME"},
 )
 
 // Send events by type only (no payload)
-testing.SendEventTypes(interp, "START", "PAUSE", "RESUME")
+statetest.SendEventTypes(interp, "START", "PAUSE", "RESUME")
 ```
 
 ### Quick Machine Builders
@@ -154,16 +153,16 @@ Create simple machines for testing:
 
 ```go
 // Linear machine: idle -> running -> done (NEXT transitions)
-machine := testing.QuickMachine[Context]("idle", "running", "done")
+machine := statetest.QuickMachine[Context]("idle", "running", "done")
 
-// Toggle machine: off <-> on (TOGGLE event)
-machine := testing.ToggleMachine[Context]()
+// Toggle machine: off <-> on
+machine := statetest.ToggleMachine[Context]("off", "on", "ON", "OFF")
 
 // Cycle machine: a -> b -> c -> a (NEXT event)
-machine := testing.CycleMachine[Context]("a", "b", "c")
+machine := statetest.CycleMachine[Context]("a", "b", "c")
 
-// Branch machine: start -> (a, b) based on condition
-machine := testing.BranchMachine[Context]("start", "a", "b")
+// Branch machine: start -> (a, b) based on event
+machine := statetest.BranchMachine[Context]("start", "a", "b", "GO_A", "GO_B")
 ```
 
 ### Action and Guard Test Helpers
@@ -172,11 +171,11 @@ Control actions and guards in tests:
 
 ```go
 func TestWithCounter(t *testing.T) {
-    counter := testing.NewActionCounter()
+    counter := statetest.NewActionCounter()
 
     machine, _ := statekit.NewMachine[struct{}]("test").
         WithInitial("idle").
-        WithAction("count", counter.Action()).
+        WithAction("count", statetest.ActionFor[struct{}](counter, "count")).
         State("idle").
             OnEntry("count").
             On("NEXT").Target("done").
@@ -190,17 +189,18 @@ func TestWithCounter(t *testing.T) {
     interp.Start()
     interp.Send(statekit.Event{Type: "NEXT"})
 
-    if counter.Count() != 2 {
-        t.Errorf("expected 2 action calls, got %d", counter.Count())
+    if counter.Count("count") != 2 {
+        t.Errorf("expected 2 action calls, got %d", counter.Count("count"))
     }
 }
 
 func TestWithGuard(t *testing.T) {
-    guard := testing.NewGuardResult(true) // Initially passes
+    guards := statetest.NewGuardResult()
+    guards.Set("check", true) // Initially passes
 
     machine, _ := statekit.NewMachine[struct{}]("test").
         WithInitial("idle").
-        WithGuard("check", guard.Guard()).
+        WithGuard("check", statetest.GuardFor[struct{}](guards, "check")).
         State("idle").
             On("GO").Target("done").Guard("check").
         Done().
@@ -212,14 +212,14 @@ func TestWithGuard(t *testing.T) {
 
     // Guard passes
     interp.Send(statekit.Event{Type: "GO"})
-    testing.AssertState(t, interp, "done")
+    statetest.AssertState(t, interp, "done")
 
     // Reset and block
     interp2 := statekit.NewInterpreter(machine)
     interp2.Start()
-    guard.SetResult(false)
+    guards.Set("check", false)
     interp2.Send(statekit.Event{Type: "GO"})
-    testing.AssertState(t, interp2, "idle") // Blocked
+    statetest.AssertState(t, interp2, "idle") // Blocked
 }
 ```
 
@@ -375,13 +375,13 @@ func TestOrderStates(t *testing.T) {
             interp := statekit.NewInterpreter(machine)
             interp.Start()
 
-            testing.SendEventTypes(interp, tt.events...)
-            testing.AssertState(t, interp, tt.expected)
+            statetest.SendEventTypes(interp, tt.events...)
+            statetest.AssertState(t, interp, tt.expected)
 
             if tt.done {
-                testing.AssertDone(t, interp)
+                statetest.AssertDone(t, interp)
             } else {
-                testing.AssertNotDone(t, interp)
+                statetest.AssertNotDone(t, interp)
             }
         })
     }

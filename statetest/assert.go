@@ -1,4 +1,4 @@
-package testing
+package statetest
 
 import (
 	"fmt"
@@ -141,11 +141,11 @@ func AssertRecorderContext[C any](t testing.TB, rec *Recorder[C], check func(C) 
 // AssertTransitionCount asserts the number of transitions recorded.
 func AssertTransitionCount[C any](t testing.TB, rec *Recorder[C], expected int) {
 	t.Helper()
-	// Subtract 1 to exclude the synthetic __START__ event
+	// Subtract start events to count only user-sent events
 	actual := rec.TransitionCount()
 	startEvents := 0
 	for _, tr := range rec.Transitions() {
-		if tr.Event.Type == "__START__" {
+		if tr.Event.Type == syntheticStartEvent {
 			startEvents++
 		}
 	}

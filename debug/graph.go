@@ -16,7 +16,6 @@ type StateGraph struct {
 	Initial  statekit.StateID
 	Nodes    map[statekit.StateID]*GraphNode
 	Edges    []*GraphEdge
-	machine  *ir.MachineConfig[any]
 	nodeList []statekit.StateID // Ordered list of nodes
 }
 
@@ -67,7 +66,7 @@ func NewStateGraph[C any](machine *ir.MachineConfig[C]) *StateGraph {
 
 		node := &GraphNode{
 			ID:       id,
-			Type:     stateTypeToString(config.Type),
+			Type:     config.Type.String(),
 			Parent:   config.Parent,
 			Initial:  config.Initial,
 			Children: config.Children,
@@ -251,9 +250,9 @@ func (g *StateGraph) DeadEndStates() []statekit.StateID {
 func (g *StateGraph) String() string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("StateGraph: %s\n", g.ID))
-	sb.WriteString(fmt.Sprintf("Initial: %s\n", g.Initial))
-	sb.WriteString(fmt.Sprintf("States: %d, Transitions: %d\n", len(g.Nodes), len(g.Edges)))
+	fmt.Fprintf(&sb, "StateGraph: %s\n", g.ID)
+	fmt.Fprintf(&sb, "Initial: %s\n", g.Initial)
+	fmt.Fprintf(&sb, "States: %d, Transitions: %d\n", len(g.Nodes), len(g.Edges))
 	sb.WriteString("\n")
 
 	// Print states hierarchically
@@ -264,9 +263,9 @@ func (g *StateGraph) String() string {
 	// Print transitions
 	sb.WriteString("Transitions:\n")
 	for _, edge := range g.Edges {
-		sb.WriteString(fmt.Sprintf("  %s --%s--> %s", edge.From, edge.Event, edge.To))
+		fmt.Fprintf(&sb, "  %s --%s--> %s", edge.From, edge.Event, edge.To)
 		if edge.Guard != "" {
-			sb.WriteString(fmt.Sprintf(" [%s]", edge.Guard))
+			fmt.Fprintf(&sb, " [%s]", edge.Guard)
 		}
 		if edge.IsDelay {
 			sb.WriteString(" (delayed)")
@@ -291,11 +290,14 @@ func (g *StateGraph) printNodesHierarchically(sb *strings.Builder, parentID stat
 		node := g.Nodes[id]
 		prefix := strings.Repeat(" ", indent)
 
-		marker := "○"
-		if node.Type == "final" {
+		var marker string
+		switch node.Type {
+		case "final":
 			marker = "◉"
-		} else if node.Type == "compound" || node.Type == "parallel" {
+		case "compound", "parallel":
 			marker = "◆"
+		default:
+			marker = "○"
 		}
 
 		if id == g.Initial {
@@ -304,7 +306,7 @@ func (g *StateGraph) printNodesHierarchically(sb *strings.Builder, parentID stat
 			marker = " " + marker
 		}
 
-		sb.WriteString(fmt.Sprintf("%s%s %s (%s)\n", prefix, marker, id, node.Type))
+		fmt.Fprintf(sb, "%s%s %s (%s)\n", prefix, marker, id, node.Type)
 
 		// Recurse for children
 		g.printNodesHierarchically(sb, id, indent+2)
@@ -318,7 +320,7 @@ func (g *StateGraph) ToMermaid() string {
 	sb.WriteString("stateDiagram-v2\n")
 
 	// Add initial state
-	sb.WriteString(fmt.Sprintf("    [*] --> %s\n", sanitizeMermaidID(g.Initial)))
+	fmt.Fprintf(&sb, "    [*] --> %s\n", sanitizeMermaidID(g.Initial))
 
 	// Add all transitions
 	for _, edge := range g.Edges {
@@ -328,12 +330,12 @@ func (g *StateGraph) ToMermaid() string {
 		if edge.Guard != "" {
 			label = fmt.Sprintf("%s [%s]", label, edge.Guard)
 		}
-		sb.WriteString(fmt.Sprintf("    %s --> %s : %s\n", from, to, label))
+		fmt.Fprintf(&sb, "    %s --> %s : %s\n", from, to, label)
 	}
 
 	// Mark final states
 	for _, node := range g.FinalNodes() {
-		sb.WriteString(fmt.Sprintf("    %s --> [*]\n", sanitizeMermaidID(node.ID)))
+		fmt.Fprintf(&sb, "    %s --> [*]\n", sanitizeMermaidID(node.ID))
 	}
 
 	return sb.String()
@@ -343,19 +345,19 @@ func (g *StateGraph) ToMermaid() string {
 func (g *StateGraph) ToDOT() string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("digraph %s {\n", sanitizeDOTID(g.ID)))
+	fmt.Fprintf(&sb, "digraph %s {\n", sanitizeDOTID(g.ID))
 	sb.WriteString("    rankdir=LR;\n")
 	sb.WriteString("    node [shape=box, style=rounded];\n")
 	sb.WriteString("\n")
 
 	// Add invisible start node
 	sb.WriteString("    __start__ [shape=point, width=0.1];\n")
-	sb.WriteString(fmt.Sprintf("    __start__ -> %s;\n", sanitizeDOTID(g.Initial)))
+	fmt.Fprintf(&sb, "    __start__ -> %s;\n", sanitizeDOTID(g.Initial))
 	sb.WriteString("\n")
 
 	// Style final states
 	for _, node := range g.FinalNodes() {
-		sb.WriteString(fmt.Sprintf("    %s [shape=doublecircle];\n", sanitizeDOTID(node.ID)))
+		fmt.Fprintf(&sb, "    %s [shape=doublecircle];\n", sanitizeDOTID(node.ID))
 	}
 
 	// Add all states
@@ -364,7 +366,7 @@ func (g *StateGraph) ToDOT() string {
 		if node.Type == "final" {
 			continue // Already handled
 		}
-		sb.WriteString(fmt.Sprintf("    %s;\n", sanitizeDOTID(id)))
+		fmt.Fprintf(&sb, "    %s;\n", sanitizeDOTID(id))
 	}
 	sb.WriteString("\n")
 
@@ -380,7 +382,7 @@ func (g *StateGraph) ToDOT() string {
 		if edge.IsDelay {
 			style = ", style=dashed"
 		}
-		sb.WriteString(fmt.Sprintf("    %s -> %s [label=\"%s\"%s];\n", from, to, label, style))
+		fmt.Fprintf(&sb, "    %s -> %s [label=\"%s\"%s];\n", from, to, label, style)
 	}
 
 	sb.WriteString("}\n")
@@ -477,17 +479,17 @@ func (a *Analysis) String() string {
 	var sb strings.Builder
 
 	sb.WriteString("Analysis Results:\n")
-	sb.WriteString(fmt.Sprintf("  Leaf States: %d\n", a.LeafCount))
-	sb.WriteString(fmt.Sprintf("  Final States: %d\n", a.FinalCount))
-	sb.WriteString(fmt.Sprintf("  Max Depth: %d\n", a.MaxDepth))
-	sb.WriteString(fmt.Sprintf("  Has Cycles: %v\n", a.HasCycles))
+	fmt.Fprintf(&sb, "  Leaf States: %d\n", a.LeafCount)
+	fmt.Fprintf(&sb, "  Final States: %d\n", a.FinalCount)
+	fmt.Fprintf(&sb, "  Max Depth: %d\n", a.MaxDepth)
+	fmt.Fprintf(&sb, "  Has Cycles: %v\n", a.HasCycles)
 
 	if len(a.Unreachable) > 0 {
-		sb.WriteString(fmt.Sprintf("  ⚠ Unreachable States: %v\n", a.Unreachable))
+		fmt.Fprintf(&sb, "  ⚠ Unreachable States: %v\n", a.Unreachable)
 	}
 
 	if len(a.DeadEnds) > 0 {
-		sb.WriteString(fmt.Sprintf("  ⚠ Dead End States: %v\n", a.DeadEnds))
+		fmt.Fprintf(&sb, "  ⚠ Dead End States: %v\n", a.DeadEnds)
 	}
 
 	return sb.String()

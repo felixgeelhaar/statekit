@@ -1,4 +1,4 @@
-// Package testing provides utilities for testing statekit state machines.
+// Package statetest provides utilities for testing statekit state machines.
 //
 // This package offers helpers for:
 //   - Recording state transitions for later assertion
@@ -16,13 +16,13 @@
 //	        Build()
 //
 //	    interp := statekit.NewInterpreter(machine)
-//	    rec := statetesting.NewRecorder(interp)
+//	    rec := statetest.NewRecorder(interp)
 //
 //	    rec.Start()
 //	    rec.Send(statekit.Event{Type: "SUBMIT"})
 //	    rec.Send(statekit.Event{Type: "COMPLETE"})
 //
-//	    statetesting.AssertStateSequence(t, rec, "pending", "processing", "done")
-//	    statetesting.AssertDone(t, rec.Interpreter())
+//	    statetest.AssertStateSequence(t, rec, "pending", "processing", "done")
+//	    statetest.AssertDone(t, rec.Interpreter())
 //	}
-package testing
+package statetest

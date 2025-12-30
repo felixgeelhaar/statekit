@@ -1,11 +1,11 @@
-package testing_test
+package statetest_test
 
 import (
 	"bytes"
 	"testing"
 
 	"github.com/felixgeelhaar/statekit"
-	statetesting "github.com/felixgeelhaar/statekit/testing"
+	statetesting "github.com/felixgeelhaar/statekit/statetest"
 )
 
 // mockT is a mock testing.TB for testing assertions

@@ -11,7 +11,7 @@
 //	interp := statekit.NewInterpreter(machine)
 //	interp.Start()
 //
-//	inspector := debug.NewInspector(interp)
+//	inspector := debug.NewInspector(interp, machine)
 //
 //	// Check available events from current state
 //	events := inspector.AvailableEvents()

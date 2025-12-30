@@ -1,6 +1,8 @@
-package testing
+package statetest
 
 import (
+	"sync"
+
 	"github.com/felixgeelhaar/statekit"
 )
 
@@ -94,7 +96,9 @@ func RecordAndRunTypes[C any](machine *statekit.MachineConfig[C], types ...state
 
 // MustBuild builds a machine and panics on error.
 // Useful for test setup where build errors should fail immediately.
-func MustBuild[C any](builder interface{ Build() (*statekit.MachineConfig[C], error) }) *statekit.MachineConfig[C] {
+func MustBuild[C any](builder interface {
+	Build() (*statekit.MachineConfig[C], error)
+}) *statekit.MachineConfig[C] {
 	machine, err := builder.Build()
 	if err != nil {
 		panic("MustBuild: " + err.Error())
@@ -231,7 +235,9 @@ func BranchMachine[C any](startState, branch1, branch2 string, event1, event2 st
 }
 
 // ActionCounter is a helper for counting action invocations in tests.
+// It is safe for concurrent use.
 type ActionCounter struct {
+	mu     sync.Mutex
 	counts map[statekit.ActionType]int
 }
 
@@ -243,31 +249,42 @@ func NewActionCounter() *ActionCounter {
 }
 
 // Action returns an action that increments the counter for the given name.
+// Deprecated: Use ActionFor[C] for type-safe actions.
 func (c *ActionCounter) Action(name statekit.ActionType) func(ctx *any, e statekit.Event) {
 	return func(_ *any, _ statekit.Event) {
+		c.mu.Lock()
 		c.counts[name]++
+		c.mu.Unlock()
 	}
 }
 
 // ActionFor returns a typed action that increments the counter.
 func ActionFor[C any](c *ActionCounter, name statekit.ActionType) statekit.Action[C] {
 	return func(_ *C, _ statekit.Event) {
+		c.mu.Lock()
 		c.counts[name]++
+		c.mu.Unlock()
 	}
 }
 
 // Count returns the number of times the action was invoked.
 func (c *ActionCounter) Count(name statekit.ActionType) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	return c.counts[name]
 }
 
 // Reset clears all counts.
 func (c *ActionCounter) Reset() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.counts = make(map[statekit.ActionType]int)
 }
 
 // Total returns the total number of action invocations.
 func (c *ActionCounter) Total() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	total := 0
 	for _, count := range c.counts {
 		total += count
@@ -276,7 +293,9 @@ func (c *ActionCounter) Total() int {
 }
 
 // GuardResult is a helper for controlling guard behavior in tests.
+// It is safe for concurrent use.
 type GuardResult struct {
+	mu      sync.RWMutex
 	results map[statekit.GuardType]bool
 }
 
@@ -289,12 +308,16 @@ func NewGuardResult() *GuardResult {
 
 // Set sets the return value for a guard.
 func (g *GuardResult) Set(name statekit.GuardType, result bool) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	g.results[name] = result
 }
 
 // GuardFor returns a typed guard that returns the configured result.
 func GuardFor[C any](g *GuardResult, name statekit.GuardType) statekit.Guard[C] {
 	return func(_ C, _ statekit.Event) bool {
+		g.mu.RLock()
+		defer g.mu.RUnlock()
 		result, ok := g.results[name]
 		if !ok {
 			return true // Default to true if not configured
@@ -305,6 +328,8 @@ func GuardFor[C any](g *GuardResult, name statekit.GuardType) statekit.Guard[C] 
 
 // SetAll sets all guards to the same value.
 func (g *GuardResult) SetAll(result bool) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	for name := range g.results {
 		g.results[name] = result
 	}
@@ -312,5 +337,7 @@ func (g *GuardResult) SetAll(result bool) {
 
 // Reset clears all configured guard results.
 func (g *GuardResult) Reset() {
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	g.results = make(map[statekit.GuardType]bool)
 }
