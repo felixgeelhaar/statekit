@@ -34,24 +34,29 @@ go fmt ./...
 
 ```
 statekit/
-├── types.go              # Public types (Event, State, StateID, Service, etc.)
+├── types.go              # Public types (Event, State, StateID, ActorID, etc.)
 ├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder, InvokeBuilder)
 ├── interpreter.go        # Runtime execution (Start, Send, State, Matches, Done, Stop)
+├── actor.go              # Actor model (Spawn, ActorRef, supervision strategies)
 ├── snapshot.go           # Persistence (Snapshot, Restore)
 ├── reflect.go            # Reflection DSL (FromStruct, MachineDef, ActionRegistry)
-├── hierarchy_test.go     # Comprehensive hierarchical state tests
-├── history_test.go       # History state tests (shallow and deep)
-├── delayed_test.go       # Delayed transition tests
-├── invoke_test.go        # Invoked services tests
-├── snapshot_test.go      # Snapshot/restore tests
+├── *_test.go             # Comprehensive tests for all features
+├── cmd/
+│   └── statekit/         # CLI tool for visualization
+│       └── commands/     # viz, version commands
+├── viz/                  # Visualization package
+│   ├── model.go          # VizMachine, VizState models
+│   ├── parser.go         # XState JSON parser
+│   ├── ascii/            # ASCII box diagram renderer
+│   ├── mermaid/          # Mermaid stateDiagram renderer
+│   ├── goparser/         # Go source code parser
+│   └── tui/              # Interactive terminal UI (Bubble Tea)
 ├── internal/
-│   ├── ir/
+│   ├── ir/               # Immutable machine representation
 │   │   ├── types.go      # Core type definitions
 │   │   ├── machine.go    # MachineConfig, StateConfig, TransitionConfig
 │   │   └── validate.go   # Build-time validation
-│   └── parser/
-│       ├── parser.go     # Struct tag parsing for reflection DSL
-│       └── parser_test.go
+│   └── parser/           # Struct tag parsing for reflection DSL
 ├── export/
 │   ├── xstate.go         # XState JSON exporter
 │   └── xstate_test.go    # Exporter tests
@@ -59,12 +64,9 @@ statekit/
 │   ├── traffic_light/    # Simple FSM example
 │   ├── pedestrian_light/ # Hierarchical states example
 │   ├── order_workflow/   # Reflection DSL example
-│   └── incident_lifecycle/ # Complex workflow example
-└── docs/
-    ├── reflection-dsl.md # Reflection DSL guide
-    ├── api-reference.md  # Complete API reference
-    ├── prd.md            # Product Requirements Document
-    └── tdd.md            # Technical Design Document
+│   ├── incident_lifecycle/ # Complex workflow example
+│   └── actor_supervisor/ # Actor model example
+└── docs/                 # Documentation
 ```
 
 ## Architecture
@@ -244,7 +246,7 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.5)
+## Current Status (v0.6)
 
 All planned features implemented:
 
@@ -268,6 +270,21 @@ All planned features implemented:
 **Production Features (v0.5)**
 - ✅ Invoked services (async operations with cancellation)
 - ✅ Snapshot/Restore (interpreter state persistence)
+
+**Actor Model (v0.6)**
+- ✅ Dynamic actor spawning with `Spawn()` and `SpawnWithContext()`
+- ✅ State-scoped lifecycle (actors stop when parent exits spawning state)
+- ✅ Bidirectional communication (`SendTo`, `SendParent`, `ActorRef.Send`)
+- ✅ Supervision strategies (Escalate, Recover, Restart, Stop)
+- ✅ Auto-forwarding of events to child actors
+- ✅ XState-compatible done/error events
+
+**CLI Visualization Tool (v0.6)**
+- ✅ `statekit viz` command with multiple output formats
+- ✅ ASCII box diagrams for terminal
+- ✅ Mermaid stateDiagram-v2 markdown output
+- ✅ Interactive TUI with keyboard navigation
+- ✅ Go package parser for extracting machine definitions
 
 ## History States
 
@@ -421,27 +438,104 @@ Snapshot includes:
 - History state memory (shallow and deep)
 - Parallel region states
 
+## Actor Model
+
+Spawn child state machines with state-scoped lifecycle and supervision:
+
+```go
+// Define child machine
+childMachine, _ := statekit.NewMachine[ChildCtx]("worker").
+    WithInitial("idle").
+    State("idle").On("TASK").Target("working").Done().
+    State("working").On("COMPLETE").Target("done").Done().
+    State("done").Final().Done().
+    Build()
+
+// Define parent machine
+parentMachine, _ := statekit.NewMachine[ParentCtx]("supervisor").
+    WithInitial("active").
+    State("active").
+        On("xstate.done.actor.worker").Target("completed").
+    Done().
+    State("completed").Final().Done().
+    Build()
+
+// Create and start parent
+parent := statekit.NewInterpreter(parentMachine)
+parent.Start()
+
+// Spawn child actor
+ref, err := statekit.Spawn(parent, "worker", childMachine,
+    statekit.WithSupervision(statekit.SupervisionRecover),
+    statekit.WithAutoForward("TASK"),
+    statekit.WithOnDone("completed"),
+)
+
+// Send events to child
+ref.Send(statekit.Event{Type: "TASK", Payload: "data"})
+
+// Or via parent
+parent.SendTo("worker", statekit.Event{Type: "COMPLETE"})
+
+// Child can send to parent (from within child actions)
+// childInterp.SendParent(statekit.Event{Type: "RESULT"})
+
+// Wait for child completion
+<-ref.Done()
+
+// Clean up
+parent.Stop()
+```
+
+Key behaviors:
+- **State-scoped lifecycle**: Actors spawned in a state are automatically stopped when that state exits
+- **Supervision strategies**:
+  - `SupervisionEscalate`: Bubble error to parent via `xstate.error.actor.<id>` event
+  - `SupervisionRecover`: Log and continue
+  - `SupervisionRestart`: Stop and allow respawn
+  - `SupervisionStop`: Stop silently
+- **Auto-forwarding**: Events matching configured types are automatically forwarded to child
+- **Done/Error events**: XState-compatible events (`xstate.done.actor.<id>`, `xstate.error.actor.<id>`)
+- **Concurrent spawning**: Thread-safe spawn and communication
+
+## CLI Visualization Tool
+
+Visualize state machines from XState JSON or Go source code:
+
+```bash
+# From XState JSON file
+statekit viz machine.json
+
+# With Mermaid output
+statekit viz machine.json --format mermaid -o diagram.md
+
+# Interactive TUI
+statekit viz machine.json --format tui
+
+# From Go package
+statekit viz --go-package ./examples/order_workflow
+
+# Filter by type
+statekit viz --go-package ./... --go-type OrderMachine
+
+# Pipe from stdin
+cat machine.json | statekit viz
+```
+
+Output formats:
+- `ascii` (default): Terminal-friendly box diagrams
+- `mermaid`: Mermaid stateDiagram-v2 markdown
+- `tui`: Interactive terminal UI with keyboard navigation
+
 ## Scope Constraints
 
 Explicitly **out of scope** for v1:
-- Spawning child actor machines (parent-child machine relationships)
 - Distributed/clustered execution
 - Built-in event persistence/event sourcing
 
 ## Future Enhancements
 
 Potential features for future versions:
-
-**CLI Visualization Tool**
-- Native `statekit viz` command for terminal-based visualization
-- ASCII/Unicode rendering of state machine diagrams
-- Interactive mode for stepping through transitions
-- Mermaid diagram generation
-
-**Actor Model**
-- Spawn child machines from parent states
-- Inter-machine communication via events
-- Supervision strategies for child failures
 
 **Developer Experience**
 - Go code generation from XState JSON
