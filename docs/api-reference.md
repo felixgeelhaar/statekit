@@ -372,3 +372,222 @@ machine, err := statekit.FromStruct[Machine, Context](registry)
 exporter := export.NewXStateExporter(machine)
 json, _ := exporter.ExportJSONIndent("", "  ")
 ```
+
+---
+
+## Package generate
+
+Go code generation from XState JSON.
+
+### Generator
+
+```go
+func NewGenerator(packageName, typeName, contextType string) *Generator
+
+type Generator struct {
+    PackageName string
+    TypeName    string
+    ContextType string
+}
+
+func (g *Generator) Generate(r io.Reader) ([]byte, error)
+func (g *Generator) GenerateMachine(machine *XStateMachine) ([]byte, error)
+```
+
+### XState JSON Types
+
+```go
+type XStateMachine struct {
+    ID      string            `json:"id"`
+    Initial string            `json:"initial"`
+    Context json.RawMessage   `json:"context,omitempty"`
+    States  map[string]XState `json:"states"`
+}
+
+type XState struct {
+    Initial string                `json:"initial,omitempty"`
+    Type    string                `json:"type,omitempty"`
+    States  map[string]XState     `json:"states,omitempty"`
+    On      map[string]XTransSpec `json:"on,omitempty"`
+    Entry   XActionSpec           `json:"entry,omitempty"`
+    Exit    XActionSpec           `json:"exit,omitempty"`
+}
+
+type XTransSpec struct { ... }   // string, object, or array
+type XActionSpec struct { ... }  // string or array
+```
+
+### CLI Command
+
+```bash
+statekit generate [file.json] [flags]
+
+Flags:
+  -o, --output string    Output file (default: stdout)
+  -p, --package string   Go package name (default: "main")
+  -t, --type string      Type name for the machine
+  -c, --context string   Context type name (default: "struct{}")
+```
+
+---
+
+## Package http
+
+HTTP handlers and middleware for web frameworks.
+
+### MachineHandler
+
+```go
+func NewMachineHandler[C any](interp *statekit.Interpreter[C]) *MachineHandler[C]
+
+type MachineHandler[C any] struct { ... }
+
+func (h *MachineHandler[C]) HandleGetState(w http.ResponseWriter, r *http.Request)
+func (h *MachineHandler[C]) HandleSendEvent(w http.ResponseWriter, r *http.Request)
+func (h *MachineHandler[C]) HandleGetContext(w http.ResponseWriter, r *http.Request)
+func (h *MachineHandler[C]) ServeHTTP(w http.ResponseWriter, r *http.Request)
+```
+
+### Request/Response Types
+
+```go
+type StateResponse struct {
+    CurrentState string `json:"currentState"`
+    Done         bool   `json:"done"`
+    MachineID    string `json:"machineId,omitempty"`
+}
+
+type EventRequest struct {
+    Type    string         `json:"type"`
+    Payload map[string]any `json:"payload,omitempty"`
+}
+
+type EventResponse struct {
+    PreviousState string `json:"previousState"`
+    CurrentState  string `json:"currentState"`
+    Transitioned  bool   `json:"transitioned"`
+    Done          bool   `json:"done"`
+}
+```
+
+### MachineRegistry
+
+```go
+func NewMachineRegistry[C any](
+    factory func(id string) (*statekit.Interpreter[C], error),
+) *MachineRegistry[C]
+
+type MachineRegistry[C any] struct { ... }
+
+func (r *MachineRegistry[C]) Get(id string) (*statekit.Interpreter[C], error)
+func (r *MachineRegistry[C]) Remove(id string)
+func (r *MachineRegistry[C]) List() []string
+```
+
+### Middleware
+
+```go
+type Middleware func(http.Handler) http.Handler
+
+func MachineMiddleware[C any](interp *statekit.Interpreter[C]) Middleware
+func RegistryMiddleware[C any](
+    registry *MachineRegistry[C],
+    idExtractor func(*http.Request) string,
+) Middleware
+```
+
+### Context Helpers
+
+```go
+const MachineContextKey contextKey = "statekit.machine"
+
+func WithMachine[C any](ctx context.Context, interp *statekit.Interpreter[C]) context.Context
+func MachineFromContext[C any](ctx context.Context) (*statekit.Interpreter[C], bool)
+```
+
+### ServeMux Helper
+
+```go
+func NewServeMux[C any](interp *statekit.Interpreter[C], prefix string) *http.ServeMux
+```
+
+---
+
+## Package otel
+
+OpenTelemetry tracing integration.
+
+### TracingInterpreter
+
+```go
+func NewTracingInterpreter[C any](
+    interp *statekit.Interpreter[C],
+    machineID string,
+    opts ...TracingOption[C],
+) *TracingInterpreter[C]
+
+type TracingInterpreter[C any] struct { ... }
+
+func (ti *TracingInterpreter[C]) Start(ctx context.Context) context.Context
+func (ti *TracingInterpreter[C]) Send(ctx context.Context, event statekit.Event)
+func (ti *TracingInterpreter[C]) SendAll(ctx context.Context, events []statekit.Event)
+func (ti *TracingInterpreter[C]) State() statekit.State[C]
+func (ti *TracingInterpreter[C]) Context() C
+func (ti *TracingInterpreter[C]) Done() bool
+func (ti *TracingInterpreter[C]) Matches(stateID statekit.StateID) bool
+func (ti *TracingInterpreter[C]) Stop()
+func (ti *TracingInterpreter[C]) Interpreter() *statekit.Interpreter[C]
+```
+
+### Options
+
+```go
+type TracingOption[C any] func(*TracingInterpreter[C])
+
+func WithTracer[C any](tracer trace.Tracer) TracingOption[C]
+```
+
+### TracingHook
+
+```go
+type TransitionHook func(
+    ctx context.Context,
+    machineID string,
+    event statekit.Event,
+    stateBefore, stateAfter string,
+)
+
+func TracingHook(tracer trace.Tracer) TransitionHook
+```
+
+### Attribute Helpers
+
+```go
+func StateAttributes(machineID string, state statekit.StateID) []attribute.KeyValue
+func EventAttributes(machineID string, event statekit.Event) []attribute.KeyValue
+func TransitionAttributes(
+    machineID string,
+    event statekit.Event,
+    from, to statekit.StateID,
+) []attribute.KeyValue
+```
+
+### Constants
+
+```go
+const TracerName = "github.com/felixgeelhaar/statekit/otel"
+```
+
+### Span Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `statekit.machine.id` | Machine identifier |
+| `statekit.event.type` | Event type |
+| `statekit.state.id` | Current state ID |
+| `statekit.state.before` | State before transition |
+| `statekit.state.after` | State after transition |
+| `statekit.state.from` | Source state (in events) |
+| `statekit.state.to` | Target state (in events) |
+| `statekit.transitioned` | Whether state changed |
+| `statekit.completed` | Machine reached final state |
