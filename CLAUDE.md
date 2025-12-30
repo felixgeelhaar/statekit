@@ -114,6 +114,9 @@ statekit/
 │   └── health.go         # Kubernetes probes
 ├── lint/                 # Static analysis
 │   └── lint.go           # Lint rules and diagnostics
+├── plugin/               # Plugin system for extensibility
+│   ├── plugin.go         # Plugin interfaces and composite
+│   └── doc.go            # Package documentation
 ├── examples/
 │   ├── traffic_light/    # Simple FSM example
 │   ├── pedestrian_light/ # Hierarchical states example
@@ -300,7 +303,7 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.12)
+## Current Status (v0.14)
 
 All planned features implemented:
 
@@ -376,6 +379,16 @@ All planned features implemented:
 **Static Analysis (v0.12)**
 - ✅ Lint package for detecting structural issues (`lint` package)
 - ✅ Rules: unreachable, dead-end, non-determinism, compound-initial, self-transition, unused-action, unused-guard
+
+**Eventless Transitions (v0.13)**
+- ✅ Always transitions (auto-trigger on state entry)
+- ✅ Conditional always transitions with guards
+- ✅ Priority ordering for multiple always transitions
+
+**Advanced Composition (v0.14)**
+- ✅ Plugin system with lifecycle hooks (`plugin` package)
+- ✅ Machine composition via `InvokeMachine()` builder
+- ✅ Actor metadata persistence in snapshots
 
 ## History States
 
@@ -1025,11 +1038,129 @@ attrs := statekotel.EventAttributes("machine-1", event)
 attrs := statekotel.TransitionAttributes("machine-1", event, "idle", "running")
 ```
 
+## Plugin System
+
+Extend interpreter behavior with lifecycle hooks:
+
+```go
+import "github.com/felixgeelhaar/statekit/plugin"
+
+// Implement plugin hooks you need
+type LoggingPlugin[C any] struct{}
+
+func (p *LoggingPlugin[C]) Name() string { return "logging" }
+
+func (p *LoggingPlugin[C]) OnEnter(ctx plugin.Context[C], state plugin.StateID) {
+    log.Printf("entered state: %s", state)
+}
+
+func (p *LoggingPlugin[C]) OnExit(ctx plugin.Context[C], state plugin.StateID) {
+    log.Printf("exited state: %s", state)
+}
+
+func (p *LoggingPlugin[C]) BeforeTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
+    log.Printf("transitioning %s → %s on %s", from, to, event.Type)
+}
+
+func (p *LoggingPlugin[C]) AfterTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
+    log.Printf("transitioned %s → %s", from, to)
+}
+
+// Register with interpreter
+interp := statekit.NewInterpreter(machine)
+interp.Use(&LoggingPlugin[MyContext]{})
+interp.Start()
+```
+
+Available hook interfaces:
+- `OnStart(ctx)` / `OnStop(ctx)` - Interpreter lifecycle
+- `OnEvent(ctx, event) Event` - Event interception and modification
+- `OnEnter(ctx, state)` / `OnExit(ctx, state)` - State entry/exit
+- `BeforeTransition(ctx, from, to, event)` / `AfterTransition(ctx, from, to, event)` - Transition lifecycle
+- `BeforeAction(ctx, action, event)` / `AfterAction(ctx, action, event)` - Action execution
+- `OnError(ctx, err)` - Error handling
+
+Combine multiple plugins:
+```go
+composite := plugin.NewComposite[MyContext](loggingPlugin, metricsPlugin, auditPlugin)
+interp.Use(composite)
+```
+
+## Machine Composition (InvokeMachine)
+
+Invoke child state machines within a state with automatic lifecycle management:
+
+```go
+// Define child machine
+childMachine, _ := statekit.NewMachine[ChildCtx]("worker").
+    WithInitial("working").
+    State("working").On("COMPLETE").Target("done").End().Done().
+    State("done").Final().Done().
+    Build()
+
+// Parent machine invokes child
+parent, _ := statekit.NewMachine[ParentCtx]("parent").
+    WithInitial("idle").
+    // Register child machine factory
+    WithChildMachine("worker", func(ctx ParentCtx, send func(statekit.Event) error) ir.ChildInterpreter {
+        return statekit.NewInterpreter(childMachine)
+    }).
+    State("idle").
+        On("START").Target("processing").End().
+    Done().
+    State("processing").
+        // Invoke child machine when entering this state
+        InvokeMachine("worker").
+            ID("w1").
+            OnDone("completed").  // Transition when child reaches final state
+        End().
+    Done().
+    State("completed").Final().Done().
+    Build()
+
+interp := statekit.NewInterpreter(parent)
+interp.Start()
+interp.Send(statekit.Event{Type: "START"})
+// Child machine starts automatically
+// When child reaches "done" (final), parent transitions to "completed"
+```
+
+Key behaviors:
+- **Automatic lifecycle**: Child starts on state entry, stops on state exit
+- **OnDone transition**: Parent transitions when child reaches final state
+- **Type-erased**: Child machines can have different context types
+- **Multiple invocations**: Multiple children can be invoked per state
+
+## Actor Metadata Persistence
+
+Snapshots now capture spawned actor metadata for serialization:
+
+```go
+// Spawn actors with configuration
+statekit.Spawn(interp, "worker-1", childMachine,
+    statekit.WithSupervision(statekit.SupervisionRecover),
+    statekit.WithAutoForward("DATA", "TASK"),
+)
+
+// Take snapshot - includes actor metadata
+snap := interp.Snapshot()
+
+// Serialize to JSON
+data, _ := json.Marshal(snap)
+
+// SpawnedActors field contains:
+// - ID: actor identifier
+// - SpawnedInState: state where actor was spawned
+// - Supervision: supervision strategy
+// - AutoForward: event types to auto-forward
+```
+
+Note: Actor metadata is captured for informational purposes. Actors must be manually respawned after restoring a snapshot.
+
 ## Future Enhancements
 
 The library is feature-complete for most use cases. Potential future additions:
 
 **Advanced Features**
-- Plugin system for custom behaviors
-- State machine composition (nested machine references)
 - Formal verification tooling
+- Visual state machine editor integration
