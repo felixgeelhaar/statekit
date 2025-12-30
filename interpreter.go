@@ -14,7 +14,7 @@ type Interpreter[C any] struct {
 	state   State[C]
 	started bool
 
-	// Mutex to protect interpreter state from concurrent access (e.g., timer goroutines)
+	// Mutex to protect all interpreter state from concurrent access (e.g., timer goroutines)
 	mu sync.Mutex
 
 	// History tracking (v2.0)
@@ -25,8 +25,8 @@ type Interpreter[C any] struct {
 
 	// Timer management for delayed transitions (v2.0)
 	// Maps timer key (stateID:index) to active timer
-	timers   map[string]*time.Timer
-	timersMu sync.Mutex
+	// Protected by mu (single mutex to prevent deadlocks)
+	timers map[string]*time.Timer
 
 	// Parallel state tracking (v2.0)
 	// When inside a parallel state, this holds the parallel state ID
@@ -45,15 +45,12 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 	return &Interpreter[C]{
 		machine: machine,
 		state: State[C]{
-			Value:            "",
 			Context:          machine.Context,
 			ActiveInParallel: make(map[ir.StateID]ir.StateID),
 		},
-		started:         false,
-		shallowHistory:  make(map[ir.StateID]ir.StateID),
-		deepHistory:     make(map[ir.StateID]ir.StateID),
-		timers:          make(map[string]*time.Timer),
-		currentParallel: "",
+		shallowHistory: make(map[ir.StateID]ir.StateID),
+		deepHistory:    make(map[ir.StateID]ir.StateID),
+		timers:         make(map[string]*time.Timer),
 	}
 }
 
@@ -481,17 +478,16 @@ func (i *Interpreter[C]) Stop() {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 
-	i.timersMu.Lock()
 	for key, timer := range i.timers {
 		timer.Stop()
 		delete(i.timers, key)
 	}
-	i.timersMu.Unlock()
 
 	i.started = false
 }
 
 // scheduleDelayedTransitions schedules timers for all delayed transitions in the given state
+// Caller must hold mu.
 func (i *Interpreter[C]) scheduleDelayedTransitions(stateID ir.StateID) {
 	stateConfig := i.machine.GetState(stateID)
 	if stateConfig == nil {
@@ -509,16 +505,12 @@ func (i *Interpreter[C]) scheduleDelayedTransitions(stateID ir.StateID) {
 		// Capture transition for closure
 		capturedTrans := trans
 
-		i.timersMu.Lock()
 		timer := time.AfterFunc(trans.Delay, func() {
-			// Acquire main mutex first to protect state access
 			i.mu.Lock()
 			defer i.mu.Unlock()
 
-			i.timersMu.Lock()
 			// Remove timer from map before executing
 			delete(i.timers, timerKey)
-			i.timersMu.Unlock()
 
 			// Execute the delayed transition if still in the originating state
 			if i.started && i.matchesUnlocked(stateID) {
@@ -526,19 +518,16 @@ func (i *Interpreter[C]) scheduleDelayedTransitions(stateID ir.StateID) {
 			}
 		})
 		i.timers[timerKey] = timer
-		i.timersMu.Unlock()
 	}
 }
 
 // cancelDelayedTransitions cancels all timers for the given state
+// Caller must hold mu.
 func (i *Interpreter[C]) cancelDelayedTransitions(stateID ir.StateID) {
 	stateConfig := i.machine.GetState(stateID)
 	if stateConfig == nil {
 		return
 	}
-
-	i.timersMu.Lock()
-	defer i.timersMu.Unlock()
 
 	for idx := range stateConfig.Transitions {
 		timerKey := fmt.Sprintf("%s:%d", stateID, idx)

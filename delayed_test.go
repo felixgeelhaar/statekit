@@ -9,6 +9,21 @@ import (
 	"github.com/felixgeelhaar/statekit/export"
 )
 
+// assertEventually polls until condition is true or timeout expires
+//
+//nolint:unparam // timeout parameter is currently constant but kept for test flexibility
+func assertEventually(t *testing.T, condition func() bool, timeout time.Duration, msg string) {
+	t.Helper()
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if condition() {
+			return
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+	t.Fatalf("condition not met within %v: %s", timeout, msg)
+}
+
 // TestDelayedTransition_Basic tests a simple delayed transition
 func TestDelayedTransition_Basic(t *testing.T) {
 	machine, err := NewMachine[struct{}]("delayed_basic").
@@ -31,13 +46,10 @@ func TestDelayedTransition_Basic(t *testing.T) {
 		t.Errorf("Expected initial state 'loading', got %s", interp.State().Value)
 	}
 
-	// Wait for delayed transition
-	time.Sleep(100 * time.Millisecond)
-
-	// Should now be in ready
-	if interp.State().Value != "ready" {
-		t.Errorf("Expected state 'ready' after delay, got %s", interp.State().Value)
-	}
+	// Wait for delayed transition using polling
+	assertEventually(t, func() bool {
+		return interp.State().Value == "ready"
+	}, 200*time.Millisecond, "expected state 'ready' after delay")
 
 	interp.Stop()
 }
@@ -152,13 +164,10 @@ func TestDelayedTransition_WithAction(t *testing.T) {
 		t.Error("Action should not have executed yet")
 	}
 
-	// Wait for delayed transition
-	time.Sleep(100 * time.Millisecond)
-
-	// Action should have executed
-	if !interp.State().Context.ActionExecuted {
-		t.Error("Expected action to be executed")
-	}
+	// Wait for delayed transition using polling
+	assertEventually(t, func() bool {
+		return interp.State().Context.ActionExecuted
+	}, 200*time.Millisecond, "expected action to be executed")
 
 	interp.Stop()
 }
@@ -183,13 +192,10 @@ func TestDelayedTransition_Multiple(t *testing.T) {
 	interp := NewInterpreter(machine)
 	interp.Start()
 
-	// Wait for first delayed transition
-	time.Sleep(60 * time.Millisecond)
-
-	// Should be in first (shorter delay fires first)
-	if interp.State().Value != "first" {
-		t.Errorf("Expected state 'first', got %s", interp.State().Value)
-	}
+	// Wait for first delayed transition (shorter delay fires first)
+	assertEventually(t, func() bool {
+		return interp.State().Value == "first"
+	}, 200*time.Millisecond, "expected state 'first'")
 
 	// Wait past the second delay
 	time.Sleep(100 * time.Millisecond)
@@ -228,13 +234,10 @@ func TestDelayedTransition_InHierarchy(t *testing.T) {
 		t.Errorf("Expected initial state 'child', got %s", interp.State().Value)
 	}
 
-	// Wait for delayed transition
-	time.Sleep(100 * time.Millisecond)
-
-	// Should now be in done
-	if interp.State().Value != "done" {
-		t.Errorf("Expected state 'done' after delay, got %s", interp.State().Value)
-	}
+	// Wait for delayed transition using polling
+	assertEventually(t, func() bool {
+		return interp.State().Value == "done"
+	}, 200*time.Millisecond, "expected state 'done' after delay")
 
 	interp.Stop()
 }
@@ -415,12 +418,10 @@ func TestDelayedTransition_ChainedBuilder(t *testing.T) {
 		t.Errorf("Expected 'middle', got %s", interp.State().Value)
 	}
 
-	// Wait for delayed transition from middle
-	time.Sleep(100 * time.Millisecond)
-
-	if interp.State().Value != "end" {
-		t.Errorf("Expected 'end' after delay, got %s", interp.State().Value)
-	}
+	// Wait for delayed transition from middle using polling
+	assertEventually(t, func() bool {
+		return interp.State().Value == "end"
+	}, 200*time.Millisecond, "expected 'end' after delay")
 
 	interp.Stop()
 }

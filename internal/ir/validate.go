@@ -1,9 +1,26 @@
 package ir
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
+)
+
+// Sentinel errors for programmatic error checking using errors.Is()
+var (
+	ErrMissingInitial    = errors.New("initial state is required")
+	ErrInitialNotFound   = errors.New("initial state not found")
+	ErrInvalidTarget     = errors.New("transition target not found")
+	ErrMissingAction     = errors.New("action is not defined")
+	ErrMissingGuard      = errors.New("guard is not defined")
+	ErrNoStates          = errors.New("at least one state is required")
+	ErrInvalidParent     = errors.New("invalid parent state")
+	ErrInvalidChild      = errors.New("invalid child state")
+	ErrCompoundNoInitial = errors.New("compound state must have an initial child")
+	ErrHistoryNoDefault  = errors.New("history state must have a default target")
+	ErrParallelNoRegions = errors.New("parallel state must have at least one region")
+	ErrDelayNegative     = errors.New("delay cannot be negative")
 )
 
 // ValidationIssue represents a single validation problem
@@ -55,6 +72,12 @@ func (e *ValidationError) AddIssue(code, message string, path ...string) {
 // HasIssues returns true if there are any validation issues
 func (e *ValidationError) HasIssues() bool {
 	return len(e.Issues) > 0
+}
+
+// Is enables errors.Is() checking for ValidationError
+func (e *ValidationError) Is(target error) bool {
+	_, ok := target.(*ValidationError)
+	return ok
 }
 
 // Validation error codes

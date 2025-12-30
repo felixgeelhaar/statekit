@@ -2,6 +2,7 @@ package parser
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -499,22 +500,7 @@ func TestParseTransitions_ErrorContext(t *testing.T) {
 	}
 	// Error should mention "transition 2" since INVALID is the second transition
 	errStr := err.Error()
-	if !contains(errStr, "transition 2") {
+	if !strings.Contains(errStr, "transition 2") {
 		t.Errorf("error should mention 'transition 2', got: %s", errStr)
 	}
-}
-
-// Helper function for string containment check
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
-		(len(s) > 0 && len(substr) > 0 && findSubstring(s, substr)))
-}
-
-func findSubstring(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }

@@ -4,6 +4,8 @@ package export
 
 import (
 	"encoding/json"
+	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/felixgeelhaar/statekit/internal/ir"
@@ -77,12 +79,12 @@ func (e *XStateExporter[C]) Export() (*XStateMachine, error) {
 func (e *XStateExporter[C]) ExportJSON() (string, error) {
 	machine, err := e.Export()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("export machine: %w", err)
 	}
 
 	data, err := json.Marshal(machine)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("marshal to JSON: %w", err)
 	}
 
 	return string(data), nil
@@ -92,18 +94,18 @@ func (e *XStateExporter[C]) ExportJSON() (string, error) {
 func (e *XStateExporter[C]) ExportJSONIndent(prefix, indent string) (string, error) {
 	machine, err := e.Export()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("export machine: %w", err)
 	}
 
 	data, err := json.MarshalIndent(machine, prefix, indent)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("marshal to JSON: %w", err)
 	}
 
 	return string(data), nil
 }
 
-// findRootStates returns all states that don't have a parent
+// findRootStates returns all states that don't have a parent (sorted for deterministic output)
 func (e *XStateExporter[C]) findRootStates() []ir.StateID {
 	var roots []ir.StateID
 	for id, state := range e.machine.States {
@@ -111,6 +113,10 @@ func (e *XStateExporter[C]) findRootStates() []ir.StateID {
 			roots = append(roots, id)
 		}
 	}
+	// Sort for deterministic output
+	sort.Slice(roots, func(i, j int) bool {
+		return roots[i] < roots[j]
+	})
 	return roots
 }
 

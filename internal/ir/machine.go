@@ -60,24 +60,16 @@ func NewMachineConfig[C any](id string, initial StateID, ctx C) *MachineConfig[C
 // NewStateConfig creates a new StateConfig
 func NewStateConfig(id StateID, stateType StateType) *StateConfig {
 	return &StateConfig{
-		ID:          id,
-		Type:        stateType,
-		Parent:      "",
-		Initial:     "",
-		Children:    nil,
-		Entry:       nil,
-		Exit:        nil,
-		Transitions: nil,
+		ID:   id,
+		Type: stateType,
 	}
 }
 
 // NewTransitionConfig creates a new TransitionConfig
 func NewTransitionConfig(event EventType, target StateID) *TransitionConfig {
 	return &TransitionConfig{
-		Event:   event,
-		Target:  target,
-		Guard:   "",
-		Actions: nil,
+		Event:  event,
+		Target: target,
 	}
 }
 
