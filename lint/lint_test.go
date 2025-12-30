@@ -1,0 +1,490 @@
+package lint_test
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/felixgeelhaar/statekit"
+	"github.com/felixgeelhaar/statekit/lint"
+)
+
+func TestLint_CleanMachine(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("clean").
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("running").
+		Done().
+		State("running").
+		On("STOP").Target("idle").
+		On("FINISH").Target("done").
+		Done().
+		State("done").Final().
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	if result.HasErrors() {
+		t.Errorf("expected no errors, got: %v", result.Errors())
+	}
+	if result.HasWarnings() {
+		t.Errorf("expected no warnings, got: %v", result.Warnings())
+	}
+}
+
+func TestLint_UnreachableState(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("unreachable").
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("running").
+		Done().
+		State("running").
+		On("STOP").Target("idle").
+		Done().
+		State("orphan"). // No transitions lead here
+		On("ESCAPE").Target("idle").
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleUnreachable && d.State == "orphan" {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		t.Errorf("expected unreachable warning for 'orphan', got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_DeadEndState(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("deadend").
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("stuck").
+		Done().
+		State("stuck"). // No transitions out, not final
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleDeadEnd && d.State == "stuck" {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		t.Errorf("expected dead-end warning for 'stuck', got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_DeadEnd_FinalStateIsOK(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("final-ok").
+		WithInitial("idle").
+		State("idle").
+		On("FINISH").Target("done").
+		Done().
+		State("done").Final().
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleDeadEnd && d.State == "done" {
+			t.Errorf("final state should not be flagged as dead-end")
+		}
+	}
+}
+
+func TestLint_NonDeterminism(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("nondeterministic").
+		WithInitial("idle").
+		State("idle").
+		On("GO").Target("a"). // No guard
+		On("GO").Target("b"). // No guard - conflict!
+		Done().
+		State("a").Final().Done().
+		State("b").Final().Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleNonDeterminism && d.State == "idle" {
+			found = true
+			if d.Severity != lint.SeverityError {
+				t.Errorf("expected error severity for non-determinism")
+			}
+			break
+		}
+	}
+
+	if !found {
+		t.Errorf("expected non-determinism error for 'idle', got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_NonDeterminism_WithGuardsIsOK(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("guarded").
+		WithInitial("idle").
+		WithGuard("checkA", func(_ struct{}, _ statekit.Event) bool { return true }).
+		WithGuard("checkB", func(_ struct{}, _ statekit.Event) bool { return false }).
+		State("idle").
+		On("GO").Target("a").Guard("checkA").
+		On("GO").Target("b").Guard("checkB").
+		Done().
+		State("a").Final().Done().
+		State("b").Final().Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleNonDeterminism && d.Severity == lint.SeverityError {
+			t.Errorf("guarded transitions should not be flagged as error: %v", d)
+		}
+	}
+}
+
+func TestLint_CompoundWithoutInitial(t *testing.T) {
+	// This should actually fail at build time, but let's test the linter anyway
+	// We'll need to construct the machine differently or test via internal package
+	// For now, just verify the rule exists
+	rules := lint.AllRules()
+	found := false
+	for _, r := range rules {
+		if r == lint.RuleCompoundInitial {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("expected compound-initial rule to exist")
+	}
+}
+
+func TestLint_SelfTransitionWithEntry(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("self-transition").
+		WithInitial("counting").
+		WithAction("increment", func(_ *struct{}, _ statekit.Event) {}).
+		State("counting").
+		OnEntry("increment").
+		On("COUNT").Target("counting"). // Self-transition, will re-run entry
+		On("DONE").Target("finished").
+		Done().
+		State("finished").Final().
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleSelfTransition && d.State == "counting" {
+			found = true
+			if d.Severity != lint.SeverityInfo {
+				t.Errorf("expected info severity for self-transition")
+			}
+			break
+		}
+	}
+
+	if !found {
+		t.Errorf("expected self-transition info for 'counting', got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_UnusedAction(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("unused-action").
+		WithInitial("idle").
+		WithAction("used", func(_ *struct{}, _ statekit.Event) {}).
+		WithAction("unused", func(_ *struct{}, _ statekit.Event) {}). // Never used
+		State("idle").
+		OnEntry("used").
+		On("DONE").Target("done").
+		Done().
+		State("done").Final().Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleUnusedAction && strings.Contains(d.Message, "unused") {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		t.Errorf("expected unused-action info, got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_UnusedGuard(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("unused-guard").
+		WithInitial("idle").
+		WithGuard("used", func(_ struct{}, _ statekit.Event) bool { return true }).
+		WithGuard("unused", func(_ struct{}, _ statekit.Event) bool { return true }). // Never used
+		State("idle").
+		On("GO").Target("done").Guard("used").
+		Done().
+		State("done").Final().Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleUnusedGuard && strings.Contains(d.Message, "unused") {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		t.Errorf("expected unused-guard info, got: %v", result.Diagnostics)
+	}
+}
+
+func TestLinter_Ignore(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("ignore-test").
+		WithInitial("idle").
+		State("idle").
+		On("START").Target("stuck").
+		Done().
+		State("stuck"). // Dead end
+		Done().
+		State("orphan"). // Unreachable
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	linter := lint.NewLinter().
+		Ignore(lint.RuleDeadEnd).
+		Ignore(lint.RuleUnreachable)
+
+	result := lint.CheckTyped(linter, machine)
+
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleDeadEnd || d.Rule == lint.RuleUnreachable {
+			t.Errorf("ignored rule should not appear: %v", d)
+		}
+	}
+}
+
+func TestResult_HasErrors(t *testing.T) {
+	result := &lint.Result{
+		Diagnostics: []lint.Diagnostic{
+			{Severity: lint.SeverityInfo, Message: "info"},
+			{Severity: lint.SeverityWarning, Message: "warning"},
+		},
+	}
+
+	if result.HasErrors() {
+		t.Error("expected no errors")
+	}
+
+	result.Diagnostics = append(result.Diagnostics, lint.Diagnostic{
+		Severity: lint.SeverityError, Message: "error",
+	})
+
+	if !result.HasErrors() {
+		t.Error("expected errors")
+	}
+}
+
+func TestResult_String(t *testing.T) {
+	result := &lint.Result{
+		MachineID: "test",
+		Diagnostics: []lint.Diagnostic{
+			{Severity: lint.SeverityError, Rule: "test-rule", State: "state1", Message: "error msg"},
+		},
+	}
+
+	str := result.String()
+	if !strings.Contains(str, "test") {
+		t.Error("expected machine ID in string")
+	}
+	if !strings.Contains(str, "error") {
+		t.Error("expected error in string")
+	}
+}
+
+func TestSeverity_String(t *testing.T) {
+	tests := []struct {
+		s    lint.Severity
+		want string
+	}{
+		{lint.SeverityError, "error"},
+		{lint.SeverityWarning, "warning"},
+		{lint.SeverityInfo, "info"},
+		{lint.Severity(99), "unknown"},
+	}
+
+	for _, tt := range tests {
+		if got := tt.s.String(); got != tt.want {
+			t.Errorf("Severity(%d).String() = %q, want %q", tt.s, got, tt.want)
+		}
+	}
+}
+
+func TestAllRules(t *testing.T) {
+	rules := lint.AllRules()
+	if len(rules) < 5 {
+		t.Errorf("expected at least 5 rules, got %d", len(rules))
+	}
+
+	expected := []string{
+		lint.RuleUnreachable,
+		lint.RuleDeadEnd,
+		lint.RuleNonDeterminism,
+	}
+
+	for _, exp := range expected {
+		found := false
+		for _, r := range rules {
+			if r == exp {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("expected rule %q in AllRules()", exp)
+		}
+	}
+}
+
+func TestResult_Errors(t *testing.T) {
+	result := &lint.Result{
+		Diagnostics: []lint.Diagnostic{
+			{Severity: lint.SeverityInfo, Message: "info"},
+			{Severity: lint.SeverityError, Message: "error1"},
+			{Severity: lint.SeverityWarning, Message: "warning"},
+			{Severity: lint.SeverityError, Message: "error2"},
+		},
+	}
+
+	errors := result.Errors()
+	if len(errors) != 2 {
+		t.Errorf("expected 2 errors, got %d", len(errors))
+	}
+}
+
+func TestResult_Warnings(t *testing.T) {
+	result := &lint.Result{
+		Diagnostics: []lint.Diagnostic{
+			{Severity: lint.SeverityInfo, Message: "info"},
+			{Severity: lint.SeverityError, Message: "error"},
+			{Severity: lint.SeverityWarning, Message: "warning1"},
+			{Severity: lint.SeverityWarning, Message: "warning2"},
+		},
+	}
+
+	warnings := result.Warnings()
+	if len(warnings) != 2 {
+		t.Errorf("expected 2 warnings, got %d", len(warnings))
+	}
+}
+
+func TestResult_HasWarnings_NoWarnings(t *testing.T) {
+	result := &lint.Result{
+		Diagnostics: []lint.Diagnostic{
+			{Severity: lint.SeverityInfo, Message: "info"},
+		},
+	}
+
+	if result.HasWarnings() {
+		t.Error("expected no warnings")
+	}
+}
+
+func TestDiagnostic_String_NoState(t *testing.T) {
+	d := lint.Diagnostic{
+		Severity: lint.SeverityWarning,
+		Rule:     "test-rule",
+		State:    "", // Empty state
+		Message:  "test message",
+	}
+
+	str := d.String()
+	if !strings.Contains(str, "(machine)") {
+		t.Error("expected (machine) for empty state")
+	}
+}
+
+func TestLint_DeadEnd_ParentHasTransitions(t *testing.T) {
+	// Child state has no transitions but parent does (event bubbling)
+	machine, err := statekit.NewMachine[struct{}]("parent-escape").
+		WithInitial("active").
+		State("active").
+		WithInitial("working").
+		On("RESET").Target("done").End(). // Parent handles escape
+		State("working").                 // No direct transitions
+		End().                            // End working StateBuilder, return to active
+		Done().                           // Return to MachineBuilder (not End for top-level)
+		State("done").Final().
+		Done().
+		Build()
+
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleDeadEnd && d.State == "working" {
+			t.Errorf("working state should not be dead-end (parent has transitions): %v", d)
+		}
+	}
+}
