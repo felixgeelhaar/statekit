@@ -258,13 +258,24 @@ go run main.go -o output.json
 
 4. **Test round-trips** - Ensure exported JSON validates in XState tools.
 
-## Limitations
+## Exported Features (Full List)
 
-Currently not exported:
-- Invoke/spawn actors (not supported in statekit)
-- Parallel states (not supported in statekit)
-- History states (not supported in statekit)
-- Delayed transitions (not supported in statekit)
+Statekit v1.0 exports all statechart features:
+
+| Feature | Exported | XState JSON |
+|---------|----------|-------------|
+| Simple states | ✅ | `states: { name: {...} }` |
+| Initial state | ✅ | `initial: "stateName"` |
+| Transitions | ✅ | `on: { EVENT: { target: "..." } }` |
+| Entry/exit actions | ✅ | `entry: [...], exit: [...]` |
+| Transition actions | ✅ | `actions: [...]` |
+| Guards | ✅ | `guard: "guardName"` |
+| Final states | ✅ | `type: "final"` |
+| Nested states | ✅ | Recursive `states: {...}` |
+| Parallel states | ✅ | `type: "parallel"` |
+| History states | ✅ | `type: "history"` |
+| Delayed transitions | ✅ | `after: { 1000: {...} }` |
+| Invoke services | ✅ | `invoke: {...}` |
 
 ## See Also
 

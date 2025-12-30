@@ -151,4 +151,5 @@ See [XState Export Guide](xstate-export.md) for more details.
 - [Hierarchical States](hierarchical-states.md) - Nested states and event bubbling
 - [Reflection DSL](reflection-dsl.md) - Declarative machine definition
 - [XState Export](xstate-export.md) - Visualization with XState tools
+- [XState Migration](xstate-migration.md) - Coming from XState/TypeScript?
 - [API Reference](api-reference.md) - Complete API documentation
