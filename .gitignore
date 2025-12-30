@@ -25,5 +25,8 @@ vendor/
 .claude/
 .mcp.json
 
+# Relicta release state
+.relicta/
+
 # OS files
 .DS_Store
