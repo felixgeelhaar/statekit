@@ -22,6 +22,25 @@ type (
 	HistoryType = ir.HistoryType
 	// ServiceContext provides the execution context for a service (v3.0)
 	ServiceContext[C any] = ir.ServiceContext[C]
+	// MachineConfig is the immutable internal representation of a statechart
+	MachineConfig[C any] = ir.MachineConfig[C]
+)
+
+// ActorID uniquely identifies a spawned child actor
+type ActorID string
+
+// SupervisionStrategy defines how parent handles child actor errors
+type SupervisionStrategy int
+
+const (
+	// SupervisionEscalate bubbles the error to the parent via xstate.error.actor.<id> event
+	SupervisionEscalate SupervisionStrategy = iota
+	// SupervisionRecover logs the error and continues without stopping the child
+	SupervisionRecover
+	// SupervisionRestart stops the child and restarts it with initial state
+	SupervisionRestart
+	// SupervisionStop stops the child silently without generating an error event
+	SupervisionStop
 )
 
 // Action is a side-effect function executed during transitions.

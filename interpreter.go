@@ -2,6 +2,7 @@ package statekit
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -37,6 +38,16 @@ type Interpreter[C any] struct {
 	// Invoked services tracking (v3.0)
 	// Maps invocation key (stateID:invokeID) to cancel function
 	activeServices map[string]context.CancelFunc
+
+	// Actor management (v4.0)
+	// Separate mutex for actor operations to allow spawning from within actions
+	actorMu sync.Mutex
+	// Maps ActorID to actor entry (contains ref and config)
+	actorRegistry map[ActorID]*actorEntry
+	// Maps StateID to list of ActorIDs spawned in that state (for state-scoped cleanup)
+	actorsByState map[StateID][]ActorID
+	// If this interpreter is a child actor, holds the function to send to parent
+	parentSend func(Event) error
 }
 
 // transitionSource holds the state that owns the transition and the transition itself
@@ -57,6 +68,8 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 		deepHistory:    make(map[ir.StateID]ir.StateID),
 		timers:         make(map[string]*time.Timer),
 		activeServices: make(map[string]context.CancelFunc),
+		actorRegistry:  make(map[ActorID]*actorEntry),
+		actorsByState:  make(map[StateID][]ActorID),
 	}
 }
 
@@ -131,6 +144,9 @@ func (i *Interpreter[C]) Send(event Event) {
 	if !i.started {
 		return
 	}
+
+	// Auto-forward to child actors (v4.0)
+	i.broadcastToAutoForward(event)
 
 	// Handle parallel states: broadcast event to all regions (v2.0)
 	if i.currentParallel != "" {
@@ -241,7 +257,7 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
 	}
 
-	// 1. Execute exit actions (leaf to root order), cancel timers/services, and record history
+	// 1. Execute exit actions (leaf to root order), cancel timers/services/actors, and record history
 	for _, stateID := range statesToExit {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
@@ -249,6 +265,8 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 			i.cancelDelayedTransitions(stateID)
 			// Cancel any active invoked services (v3.0)
 			i.cancelInvokedServices(stateID)
+			// Stop any spawned actors (v4.0)
+			i.stopActorsForState(stateID)
 
 			i.executeActions(stateConfig.Exit, event)
 
@@ -278,6 +296,8 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 
 	// 4. Execute entry actions (root to leaf order), schedule delayed transitions, start services
 	for _, stateID := range statesToEnter {
+		// Set current state BEFORE entry actions so spawned actors are registered correctly
+		i.state.Value = stateID
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			// Check if this is a parallel state within the entry path
@@ -292,9 +312,6 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 			i.startInvokedServices(stateID)
 		}
 	}
-
-	// 5. Update current state to the leaf
-	i.state.Value = resolvedTarget
 }
 
 // getStatesToExit returns states to exit in leaf-to-root order
@@ -370,6 +387,8 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 			// Enter states up to the parallel state, then handle parallel
 			prePath := i.getEntryPath(stateID, id)
 			for _, preID := range prePath[:len(prePath)-1] {
+				// Set current state BEFORE entry actions so spawned actors are registered correctly
+				i.state.Value = preID
 				preConfig := i.machine.GetState(preID)
 				if preConfig != nil {
 					i.executeActions(preConfig.Entry, Event{})
@@ -383,6 +402,8 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 
 	// Enter each state in root-to-leaf order
 	for _, id := range path {
+		// Set current state BEFORE entry actions so spawned actors are registered correctly
+		i.state.Value = id
 		stateConfig := i.machine.GetState(id)
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, Event{})
@@ -392,9 +413,6 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 			i.startInvokedServices(id)
 		}
 	}
-
-	// Set current state to the leaf
-	i.state.Value = leaf
 }
 
 // getEntryPath returns the states to enter from start to leaf (inclusive)
@@ -485,10 +503,9 @@ func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.S
 
 // --- Timer management for delayed transitions (v2.0) ---
 
-// Stop cancels all active timers and services, and stops the interpreter
+// Stop cancels all active timers, services, and actors, then stops the interpreter
 func (i *Interpreter[C]) Stop() {
 	i.mu.Lock()
-	defer i.mu.Unlock()
 
 	// Cancel all timers
 	for key, timer := range i.timers {
@@ -503,6 +520,16 @@ func (i *Interpreter[C]) Stop() {
 	}
 
 	i.started = false
+	i.mu.Unlock()
+
+	// Stop all actors (v4.0) under actorMu
+	i.actorMu.Lock()
+	for id, entry := range i.actorRegistry {
+		entry.ref.Stop()
+		delete(i.actorRegistry, id)
+	}
+	i.actorsByState = make(map[StateID][]ActorID)
+	i.actorMu.Unlock()
 }
 
 // scheduleDelayedTransitions schedules timers for all delayed transitions in the given state
@@ -676,6 +703,8 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 			i.cancelDelayedTransitions(stateID)
 			// Cancel invoked services (v3.0)
 			i.cancelInvokedServices(stateID)
+			// Stop spawned actors (v4.0)
+			i.stopActorsForState(stateID)
 			i.executeActions(stateConfig.Exit, event)
 		}
 	}
@@ -685,6 +714,8 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 
 	// Execute entry actions
 	for _, stateID := range statesToEnter {
+		// Update the region's active state BEFORE entry actions
+		i.state.ActiveInParallel[regionID] = stateID
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, event)
@@ -693,9 +724,6 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 			i.startInvokedServices(stateID)
 		}
 	}
-
-	// Update the region's active state
-	i.state.ActiveInParallel[regionID] = resolvedTarget
 }
 
 // enterParallelState enters a parallel state and all its regions
@@ -741,6 +769,8 @@ func (i *Interpreter[C]) enterRegion(regionID ir.StateID, event Event) {
 
 	// Enter each state in the path
 	for _, stateID := range path {
+		// Track region state in ActiveInParallel BEFORE entry actions
+		i.state.ActiveInParallel[regionID] = stateID
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, event)
@@ -774,6 +804,8 @@ func (i *Interpreter[C]) exitParallelState(event Event) {
 	i.cancelDelayedTransitions(i.currentParallel)
 	// Cancel invoked services (v3.0)
 	i.cancelInvokedServices(i.currentParallel)
+	// Stop spawned actors (v4.0)
+	i.stopActorsForState(i.currentParallel)
 	i.executeActions(parallelState.Exit, event)
 
 	// Clear parallel state tracking
@@ -801,6 +833,8 @@ func (i *Interpreter[C]) exitRegion(regionID, leafID ir.StateID, event Event) {
 			i.cancelDelayedTransitions(stateID)
 			// Cancel invoked services (v3.0)
 			i.cancelInvokedServices(stateID)
+			// Stop spawned actors (v4.0)
+			i.stopActorsForState(stateID)
 			i.executeActions(stateConfig.Exit, event)
 		}
 	}
@@ -914,4 +948,123 @@ func (i *Interpreter[C]) executeServiceTransition(sourceStateID ir.StateID, tran
 		transition: trans,
 	}
 	i.executeTransitionHierarchical(source, event)
+}
+
+// --- Actor management (v4.0) ---
+
+// Spawn creates and starts a child actor from a machine configuration.
+// The actor is associated with the current state and will be stopped when
+// that state is exited (state-scoped lifecycle).
+//
+// Options can configure supervision strategy, auto-forwarding, and completion handlers.
+func Spawn[ParentC, ChildC any](
+	parent *Interpreter[ParentC],
+	id ActorID,
+	childMachine *ir.MachineConfig[ChildC],
+	opts ...SpawnOption,
+) (*ActorRef, error) {
+	// Check started status - no lock needed, it's safe to read this boolean
+	// If called from within an action, mu is already held by the caller
+	// If called externally, started will be stable
+	if !parent.started {
+		return nil, errors.New("interpreter not started")
+	}
+
+	// Use actorMu for actor registry operations (separate from main mu to allow spawning from actions)
+	parent.actorMu.Lock()
+	defer parent.actorMu.Unlock()
+
+	// Get current state - safe to read since if we're in an action, mu is held;
+	// if called externally, the state is only modified while mu is held
+	currentState := parent.state.Value
+
+	// Check for duplicate ID
+	if _, exists := parent.actorRegistry[id]; exists {
+		return nil, ErrActorAlreadyExists
+	}
+
+	// Apply options
+	options := spawnOptions{
+		supervision: SupervisionEscalate, // Default
+	}
+	for _, opt := range opts {
+		opt(&options)
+	}
+
+	// Create actor reference
+	ctx, cancel := context.WithCancel(context.Background())
+	ref := &ActorRef{
+		id:        id,
+		eventChan: make(chan Event, 16), // Buffered to prevent blocking
+		done:      make(chan struct{}),
+		cancel:    cancel,
+	}
+
+	// Build auto-forward map
+	autoForward := make(map[EventType]bool)
+	for _, et := range options.autoForward {
+		autoForward[et] = true
+	}
+
+	// Create OnDone/OnError transitions if targets specified
+	var onDone, onError *ir.TransitionConfig
+	if options.onDone != "" {
+		onDone = &ir.TransitionConfig{Target: options.onDone}
+	}
+	if options.onError != "" {
+		onError = &ir.TransitionConfig{Target: options.onError}
+	}
+
+	// Create actor entry
+	entry := &actorEntry{
+		ref:         ref,
+		stateID:     currentState,
+		supervision: options.supervision,
+		autoForward: autoForward,
+		onDone:      onDone,
+		onError:     onError,
+	}
+
+	// Register the actor
+	parent.actorRegistry[id] = entry
+	parent.actorsByState[currentState] = append(parent.actorsByState[currentState], id)
+
+	// Create child interpreter
+	childInterp := NewInterpreter(childMachine)
+
+	// Set up parent reference for SendParent
+	childInterp.parentSend = func(e Event) error {
+		parent.Send(e)
+		return nil
+	}
+
+	// Start the child actor in a goroutine
+	go runChildActor(parent, childInterp, entry, ctx)
+
+	return ref, nil
+}
+
+// SpawnWithContext is like Spawn but allows initializing the child context
+// from the parent context.
+func SpawnWithContext[ParentC, ChildC any](
+	parent *Interpreter[ParentC],
+	id ActorID,
+	childMachine *ir.MachineConfig[ChildC],
+	initContext func(ParentC) ChildC,
+	opts ...SpawnOption,
+) (*ActorRef, error) {
+	// Get parent context under main mutex
+	parent.mu.Lock()
+	if !parent.started {
+		parent.mu.Unlock()
+		return nil, errors.New("interpreter not started")
+	}
+	childContext := initContext(parent.state.Context)
+	parent.mu.Unlock()
+
+	// Create a new machine config with the initialized context
+	childMachineWithContext := childMachine.WithContext(childContext)
+
+	// Delegate to regular Spawn (which does its own duplicate ID check)
+	return Spawn(parent, id, childMachineWithContext, opts...)
 }

@@ -224,3 +224,17 @@ func (m *MachineConfig[C]) FindLCA(stateA, stateB StateID) StateID {
 	}
 	return lca
 }
+
+// WithContext returns a copy of the machine config with the given context.
+// This is useful for initializing child actors with a derived context.
+func (m *MachineConfig[C]) WithContext(ctx C) *MachineConfig[C] {
+	return &MachineConfig[C]{
+		ID:       m.ID,
+		Initial:  m.Initial,
+		Context:  ctx,
+		States:   m.States,   // Share state configs (immutable)
+		Actions:  m.Actions,  // Share actions (immutable)
+		Guards:   m.Guards,   // Share guards (immutable)
+		Services: m.Services, // Share services (immutable)
+	}
+}
