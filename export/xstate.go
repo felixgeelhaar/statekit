@@ -47,6 +47,23 @@ type XStateNode struct {
 
 	// Delayed transition fields (v2.0)
 	After map[string]XStateTransition `json:"after,omitempty"` // Key is delay in milliseconds
+
+	// Invoked services (v3.0)
+	Invoke []XStateInvoke `json:"invoke,omitempty"`
+}
+
+// XStateInvoke represents an invoked service in XState format
+type XStateInvoke struct {
+	ID      string                  `json:"id,omitempty"`
+	Src     string                  `json:"src"`
+	OnDone  *XStateInvokeTransition `json:"onDone,omitempty"`
+	OnError *XStateInvokeTransition `json:"onError,omitempty"`
+}
+
+// XStateInvokeTransition represents a transition from an invoked service
+type XStateInvokeTransition struct {
+	Target  string   `json:"target,omitempty"`
+	Actions []string `json:"actions,omitempty"`
 }
 
 // XStateTransition represents a transition in XState format
@@ -213,6 +230,43 @@ func (e *XStateExporter[C]) buildStateNode(stateID ir.StateID) XStateNode {
 				}
 				node.On[string(trans.Event)] = transition
 			}
+		}
+	}
+
+	// Invoked services (v3.0)
+	if len(state.Invocations) > 0 {
+		node.Invoke = make([]XStateInvoke, 0, len(state.Invocations))
+		for _, inv := range state.Invocations {
+			xInvoke := XStateInvoke{
+				ID:  inv.ID,
+				Src: string(inv.Src),
+			}
+
+			if inv.OnDone != nil {
+				xInvoke.OnDone = &XStateInvokeTransition{
+					Target: string(inv.OnDone.Target),
+				}
+				if len(inv.OnDone.Actions) > 0 {
+					xInvoke.OnDone.Actions = make([]string, len(inv.OnDone.Actions))
+					for i, action := range inv.OnDone.Actions {
+						xInvoke.OnDone.Actions[i] = string(action)
+					}
+				}
+			}
+
+			if inv.OnError != nil {
+				xInvoke.OnError = &XStateInvokeTransition{
+					Target: string(inv.OnError.Target),
+				}
+				if len(inv.OnError.Actions) > 0 {
+					xInvoke.OnError.Actions = make([]string, len(inv.OnError.Actions))
+					for i, action := range inv.OnError.Actions {
+						xInvoke.OnError.Actions[i] = string(action)
+					}
+				}
+			}
+
+			node.Invoke = append(node.Invoke, xInvoke)
 		}
 	}
 

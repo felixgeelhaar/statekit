@@ -4,12 +4,13 @@ import "time"
 
 // MachineConfig is the immutable internal representation of a statechart
 type MachineConfig[C any] struct {
-	ID      string
-	Initial StateID
-	Context C
-	States  map[StateID]*StateConfig
-	Actions map[ActionType]Action[C]
-	Guards  map[GuardType]Guard[C]
+	ID       string
+	Initial  StateID
+	Context  C
+	States   map[StateID]*StateConfig
+	Actions  map[ActionType]Action[C]
+	Guards   map[GuardType]Guard[C]
+	Services map[ServiceType]Service[C] // v3.0: Invoked services
 }
 
 // StateConfig represents a single state node
@@ -26,6 +27,24 @@ type StateConfig struct {
 	// History state fields (v2.0)
 	HistoryType    HistoryType // Shallow or Deep (only for StateTypeHistory)
 	HistoryDefault StateID     // Default target if no history recorded
+
+	// Invoked services (v3.0)
+	Invocations []*InvokeConfig
+}
+
+// InvokeConfig defines a service to be invoked when entering a state
+type InvokeConfig struct {
+	// ID uniquely identifies this invocation within the state
+	ID string
+
+	// Src references a registered service by name
+	Src ServiceType
+
+	// OnDone transition when service completes successfully
+	OnDone *TransitionConfig
+
+	// OnError transition when service fails
+	OnError *TransitionConfig
 }
 
 // TransitionConfig represents a single transition
@@ -48,12 +67,13 @@ func (t *TransitionConfig) IsDelayed() bool {
 // NewMachineConfig creates a new MachineConfig with initialized maps
 func NewMachineConfig[C any](id string, initial StateID, ctx C) *MachineConfig[C] {
 	return &MachineConfig[C]{
-		ID:      id,
-		Initial: initial,
-		Context: ctx,
-		States:  make(map[StateID]*StateConfig),
-		Actions: make(map[ActionType]Action[C]),
-		Guards:  make(map[GuardType]Guard[C]),
+		ID:       id,
+		Initial:  initial,
+		Context:  ctx,
+		States:   make(map[StateID]*StateConfig),
+		Actions:  make(map[ActionType]Action[C]),
+		Guards:   make(map[GuardType]Guard[C]),
+		Services: make(map[ServiceType]Service[C]),
 	}
 }
 
@@ -86,6 +106,11 @@ func (m *MachineConfig[C]) GetAction(t ActionType) Action[C] {
 // GetGuard returns the guard for the given type, or nil if not found
 func (m *MachineConfig[C]) GetGuard(t GuardType) Guard[C] {
 	return m.Guards[t]
+}
+
+// GetService returns the service for the given type, or nil if not found
+func (m *MachineConfig[C]) GetService(t ServiceType) Service[C] {
+	return m.Services[t]
 }
 
 // FindTransition finds the first matching transition for the given event

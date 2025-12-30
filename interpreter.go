@@ -1,6 +1,7 @@
 package statekit
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -32,6 +33,10 @@ type Interpreter[C any] struct {
 	// When inside a parallel state, this holds the parallel state ID
 	// The actual region states are tracked in state.ActiveInParallel
 	currentParallel ir.StateID
+
+	// Invoked services tracking (v3.0)
+	// Maps invocation key (stateID:invokeID) to cancel function
+	activeServices map[string]context.CancelFunc
 }
 
 // transitionSource holds the state that owns the transition and the transition itself
@@ -51,6 +56,7 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 		shallowHistory: make(map[ir.StateID]ir.StateID),
 		deepHistory:    make(map[ir.StateID]ir.StateID),
 		timers:         make(map[string]*time.Timer),
+		activeServices: make(map[string]context.CancelFunc),
 	}
 }
 
@@ -235,12 +241,14 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		statesToEnter = i.getStatesToEnter(resolvedTarget, lca)
 	}
 
-	// 1. Execute exit actions (leaf to root order), cancel timers, and record history
+	// 1. Execute exit actions (leaf to root order), cancel timers/services, and record history
 	for _, stateID := range statesToExit {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			// Cancel any active delayed transitions (v2.0)
 			i.cancelDelayedTransitions(stateID)
+			// Cancel any active invoked services (v3.0)
+			i.cancelInvokedServices(stateID)
 
 			i.executeActions(stateConfig.Exit, event)
 
@@ -268,7 +276,7 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		return
 	}
 
-	// 4. Execute entry actions (root to leaf order) and schedule delayed transitions
+	// 4. Execute entry actions (root to leaf order), schedule delayed transitions, start services
 	for _, stateID := range statesToEnter {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
@@ -280,6 +288,8 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 			i.executeActions(stateConfig.Entry, event)
 			// Schedule delayed transitions (v2.0)
 			i.scheduleDelayedTransitions(stateID)
+			// Start invoked services (v3.0)
+			i.startInvokedServices(stateID)
 		}
 	}
 
@@ -378,6 +388,8 @@ func (i *Interpreter[C]) enterStateHierarchy(stateID ir.StateID) {
 			i.executeActions(stateConfig.Entry, Event{})
 			// Schedule delayed transitions (v2.0)
 			i.scheduleDelayedTransitions(id)
+			// Start invoked services (v3.0)
+			i.startInvokedServices(id)
 		}
 	}
 
@@ -473,14 +485,21 @@ func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.S
 
 // --- Timer management for delayed transitions (v2.0) ---
 
-// Stop cancels all active timers and stops the interpreter
+// Stop cancels all active timers and services, and stops the interpreter
 func (i *Interpreter[C]) Stop() {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 
+	// Cancel all timers
 	for key, timer := range i.timers {
 		timer.Stop()
 		delete(i.timers, key)
+	}
+
+	// Cancel all services (v3.0)
+	for key, cancel := range i.activeServices {
+		cancel()
+		delete(i.activeServices, key)
 	}
 
 	i.started = false
@@ -655,6 +674,8 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			i.cancelDelayedTransitions(stateID)
+			// Cancel invoked services (v3.0)
+			i.cancelInvokedServices(stateID)
 			i.executeActions(stateConfig.Exit, event)
 		}
 	}
@@ -668,6 +689,8 @@ func (i *Interpreter[C]) executeTransitionInRegion(regionID ir.StateID, source *
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, event)
 			i.scheduleDelayedTransitions(stateID)
+			// Start invoked services (v3.0)
+			i.startInvokedServices(stateID)
 		}
 	}
 
@@ -689,6 +712,8 @@ func (i *Interpreter[C]) enterParallelState(parallelID ir.StateID, event Event) 
 	// Execute entry actions for parallel state
 	i.executeActions(parallelState.Entry, event)
 	i.scheduleDelayedTransitions(parallelID)
+	// Start invoked services (v3.0)
+	i.startInvokedServices(parallelID)
 
 	// Enter each region (child of parallel state)
 	for _, regionID := range parallelState.Children {
@@ -720,6 +745,8 @@ func (i *Interpreter[C]) enterRegion(regionID ir.StateID, event Event) {
 		if stateConfig != nil {
 			i.executeActions(stateConfig.Entry, event)
 			i.scheduleDelayedTransitions(stateID)
+			// Start invoked services (v3.0)
+			i.startInvokedServices(stateID)
 		}
 	}
 
@@ -745,6 +772,8 @@ func (i *Interpreter[C]) exitParallelState(event Event) {
 
 	// Execute exit actions for parallel state
 	i.cancelDelayedTransitions(i.currentParallel)
+	// Cancel invoked services (v3.0)
+	i.cancelInvokedServices(i.currentParallel)
 	i.executeActions(parallelState.Exit, event)
 
 	// Clear parallel state tracking
@@ -770,7 +799,119 @@ func (i *Interpreter[C]) exitRegion(regionID, leafID ir.StateID, event Event) {
 		stateConfig := i.machine.GetState(stateID)
 		if stateConfig != nil {
 			i.cancelDelayedTransitions(stateID)
+			// Cancel invoked services (v3.0)
+			i.cancelInvokedServices(stateID)
 			i.executeActions(stateConfig.Exit, event)
 		}
 	}
+}
+
+// --- Invoked services management (v3.0) ---
+
+// startInvokedServices starts all services for the given state
+// Caller must hold mu.
+func (i *Interpreter[C]) startInvokedServices(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil || len(stateConfig.Invocations) == 0 {
+		return
+	}
+
+	for _, invoke := range stateConfig.Invocations {
+		service := i.machine.GetService(invoke.Src)
+		if service == nil {
+			continue
+		}
+
+		// Create cancellation context for this invocation
+		ctx, cancel := context.WithCancel(context.Background())
+		invokeKey := fmt.Sprintf("%s:%s", stateID, invoke.ID)
+		i.activeServices[invokeKey] = cancel
+
+		// Capture invoke config for closure
+		capturedInvoke := invoke
+		capturedStateID := stateID
+
+		// Start service in goroutine
+		go func() {
+			// Create service context
+			svcCtx := ir.ServiceContext[C]{
+				Context:        ctx,
+				MachineContext: i.state.Context,
+				Send: func(event Event) {
+					i.Send(event)
+				},
+			}
+
+			// Run the service
+			err := service(svcCtx)
+
+			// Handle completion (back on the interpreter goroutine)
+			i.mu.Lock()
+			defer i.mu.Unlock()
+
+			// Check if we're still in the same state and service wasn't cancelled
+			if !i.started || !i.matchesUnlocked(capturedStateID) {
+				return
+			}
+
+			// Clean up
+			delete(i.activeServices, invokeKey)
+
+			// Handle result
+			if err != nil {
+				// Service failed
+				if capturedInvoke.OnError != nil {
+					i.executeServiceTransition(capturedStateID, capturedInvoke.OnError, Event{
+						Type:    "error",
+						Payload: err,
+					})
+				}
+			} else {
+				// Service succeeded
+				if capturedInvoke.OnDone != nil {
+					i.executeServiceTransition(capturedStateID, capturedInvoke.OnDone, Event{
+						Type: "done",
+					})
+				}
+			}
+		}()
+	}
+}
+
+// cancelInvokedServices cancels all services for the given state
+// Caller must hold mu.
+func (i *Interpreter[C]) cancelInvokedServices(stateID ir.StateID) {
+	stateConfig := i.machine.GetState(stateID)
+	if stateConfig == nil {
+		return
+	}
+
+	for _, invoke := range stateConfig.Invocations {
+		invokeKey := fmt.Sprintf("%s:%s", stateID, invoke.ID)
+		if cancel, ok := i.activeServices[invokeKey]; ok {
+			cancel()
+			delete(i.activeServices, invokeKey)
+		}
+	}
+}
+
+// executeServiceTransition executes an OnDone or OnError transition
+// Caller must hold mu.
+func (i *Interpreter[C]) executeServiceTransition(sourceStateID ir.StateID, trans *ir.TransitionConfig, event Event) {
+	if trans.Target == "" {
+		// No target, just execute actions
+		i.executeActions(trans.Actions, event)
+		return
+	}
+
+	sourceState := i.machine.GetState(sourceStateID)
+	if sourceState == nil {
+		return
+	}
+
+	source := &transitionSource[C]{
+		state:      sourceState,
+		transition: trans,
+	}
+	i.executeTransitionHierarchical(source, event)
 }

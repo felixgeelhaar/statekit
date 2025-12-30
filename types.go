@@ -14,10 +14,14 @@ type (
 	ActionType = ir.ActionType
 	// GuardType identifies a named guard
 	GuardType = ir.GuardType
+	// ServiceType identifies a named service (v3.0)
+	ServiceType = ir.ServiceType
 	// Event represents a runtime event with optional payload
 	Event = ir.Event
 	// HistoryType specifies how history states remember previous states (v2.0)
 	HistoryType = ir.HistoryType
+	// ServiceContext provides the execution context for a service (v3.0)
+	ServiceContext[C any] = ir.ServiceContext[C]
 )
 
 // Action is a side-effect function executed during transitions.
@@ -27,6 +31,11 @@ type Action[C any] func(ctx *C, event Event)
 // Guard is a predicate that determines if a transition should occur.
 // It receives the current context (by value) and the triggering event.
 type Guard[C any] func(ctx C, event Event) bool
+
+// Service is an async operation invoked when entering a state.
+// It runs in a goroutine and can send events back to the machine.
+// The service should respect the context for cancellation.
+type Service[C any] = ir.Service[C]
 
 // Re-export constants
 const (

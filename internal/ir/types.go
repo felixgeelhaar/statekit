@@ -79,3 +79,23 @@ type Action[C any] func(ctx *C, event Event)
 
 // Guard is a predicate that determines if a transition should occur
 type Guard[C any] func(ctx C, event Event) bool
+
+// ServiceType identifies a named service
+type ServiceType string
+
+// Service is an async operation that can be invoked by a state.
+// It receives a context for cancellation, a send function to emit events back to the machine,
+// and the current machine context. It returns an error if the service fails.
+type Service[C any] func(ctx ServiceContext[C]) error
+
+// ServiceContext provides the execution context for a service.
+type ServiceContext[C any] struct {
+	// Context is for cancellation when the state is exited
+	Context any // context.Context - using any to avoid import cycle
+
+	// MachineContext is the current machine context (read-only copy)
+	MachineContext C
+
+	// Send emits an event back to the parent machine
+	Send func(event Event)
+}

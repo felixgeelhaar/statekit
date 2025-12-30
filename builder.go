@@ -8,12 +8,13 @@ import (
 
 // MachineBuilder provides a fluent API for constructing state machines
 type MachineBuilder[C any] struct {
-	id      string
-	initial StateID
-	context C
-	states  []*StateBuilder[C]
-	actions map[ActionType]Action[C]
-	guards  map[GuardType]Guard[C]
+	id       string
+	initial  StateID
+	context  C
+	states   []*StateBuilder[C]
+	actions  map[ActionType]Action[C]
+	guards   map[GuardType]Guard[C]
+	services map[ServiceType]Service[C] // v3.0: Invoked services
 }
 
 // StateBuilder provides a fluent API for constructing states
@@ -32,6 +33,20 @@ type StateBuilder[C any] struct {
 	// History state fields (v2.0)
 	historyType    HistoryType
 	historyDefault StateID
+
+	// Invoked services (v3.0)
+	invocations []*InvokeBuilder[C]
+}
+
+// InvokeBuilder provides a fluent API for constructing service invocations (v3.0)
+type InvokeBuilder[C any] struct {
+	state        *StateBuilder[C]
+	id           string
+	src          ServiceType
+	onDoneTarget StateID
+	onDoneAction ActionType
+	onErrTarget  StateID
+	onErrAction  ActionType
 }
 
 // HistoryBuilder provides a fluent API for constructing history states
@@ -65,9 +80,10 @@ type TransitionBuilder[C any] struct {
 // NewMachine creates a new MachineBuilder with the given ID
 func NewMachine[C any](id string) *MachineBuilder[C] {
 	return &MachineBuilder[C]{
-		id:      id,
-		actions: make(map[ActionType]Action[C]),
-		guards:  make(map[GuardType]Guard[C]),
+		id:       id,
+		actions:  make(map[ActionType]Action[C]),
+		guards:   make(map[GuardType]Guard[C]),
+		services: make(map[ServiceType]Service[C]),
 	}
 }
 
@@ -95,6 +111,12 @@ func (b *MachineBuilder[C]) WithGuard(name GuardType, guard Guard[C]) *MachineBu
 	return b
 }
 
+// WithService registers a named service (v3.0)
+func (b *MachineBuilder[C]) WithService(name ServiceType, service Service[C]) *MachineBuilder[C] {
+	b.services[name] = service
+	return b
+}
+
 // State starts building a new state with the given ID
 func (b *MachineBuilder[C]) State(id StateID) *StateBuilder[C] {
 	sb := &StateBuilder[C]{
@@ -117,6 +139,10 @@ func (b *MachineBuilder[C]) Build() (*ir.MachineConfig[C], error) {
 	}
 	for name, guard := range b.guards {
 		machine.Guards[name] = ir.Guard[C](guard)
+	}
+	// Copy services (v3.0)
+	for name, service := range b.services {
+		machine.Services[name] = service
 	}
 
 	// Build states recursively
@@ -168,6 +194,27 @@ func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machin
 		trans.Actions = append(trans.Actions, tb.actions...)
 		trans.Delay = tb.delay // Delayed transitions (v2.0)
 		state.Transitions = append(state.Transitions, trans)
+	}
+
+	// Build invocations (v3.0)
+	for _, ib := range sb.invocations {
+		invoke := &ir.InvokeConfig{
+			ID:  ib.id,
+			Src: ib.src,
+		}
+		if ib.onDoneTarget != "" {
+			invoke.OnDone = ir.NewTransitionConfig("", ib.onDoneTarget)
+			if ib.onDoneAction != "" {
+				invoke.OnDone.Actions = append(invoke.OnDone.Actions, ib.onDoneAction)
+			}
+		}
+		if ib.onErrTarget != "" {
+			invoke.OnError = ir.NewTransitionConfig("", ib.onErrTarget)
+			if ib.onErrAction != "" {
+				invoke.OnError.Actions = append(invoke.OnError.Actions, ib.onErrAction)
+			}
+		}
+		state.Invocations = append(state.Invocations, invoke)
 	}
 
 	machine.States[sb.id] = state
@@ -285,6 +332,60 @@ func (b *StateBuilder[C]) After(d time.Duration) *TransitionBuilder[C] {
 	}
 	b.transitions = append(b.transitions, tb)
 	return tb
+}
+
+// Invoke starts building a service invocation for this state (v3.0)
+// The service is started when entering the state and cancelled when exiting
+func (b *StateBuilder[C]) Invoke(src ServiceType) *InvokeBuilder[C] {
+	ib := &InvokeBuilder[C]{
+		state: b,
+		src:   src,
+		id:    string(src), // Default ID is the service name
+	}
+	b.invocations = append(b.invocations, ib)
+	return ib
+}
+
+// --- InvokeBuilder methods (v3.0) ---
+
+// ID sets a custom ID for this invocation
+func (b *InvokeBuilder[C]) ID(id string) *InvokeBuilder[C] {
+	b.id = id
+	return b
+}
+
+// OnDone sets the transition target when the service completes successfully
+func (b *InvokeBuilder[C]) OnDone(target StateID) *InvokeBuilder[C] {
+	b.onDoneTarget = target
+	return b
+}
+
+// OnDoneAction sets an action to execute when the service completes successfully
+func (b *InvokeBuilder[C]) OnDoneAction(action ActionType) *InvokeBuilder[C] {
+	b.onDoneAction = action
+	return b
+}
+
+// OnError sets the transition target when the service fails
+func (b *InvokeBuilder[C]) OnError(target StateID) *InvokeBuilder[C] {
+	b.onErrTarget = target
+	return b
+}
+
+// OnErrorAction sets an action to execute when the service fails
+func (b *InvokeBuilder[C]) OnErrorAction(action ActionType) *InvokeBuilder[C] {
+	b.onErrAction = action
+	return b
+}
+
+// End completes the invocation definition and returns to the StateBuilder
+func (b *InvokeBuilder[C]) End() *StateBuilder[C] {
+	return b.state
+}
+
+// Done completes the state definition and returns to the machine builder
+func (b *InvokeBuilder[C]) Done() *MachineBuilder[C] {
+	return b.state.Done()
 }
 
 // --- HistoryBuilder methods (v2.0) ---

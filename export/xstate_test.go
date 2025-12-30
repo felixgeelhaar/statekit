@@ -371,3 +371,83 @@ func TestXStateExporter_ComplexMachine(t *testing.T) {
 
 	t.Logf("Exported XState JSON:\n%s", jsonStr)
 }
+
+func TestXStateExporter_InvokedServices(t *testing.T) {
+	machine, err := statekit.NewMachine[struct{}]("data_fetcher").
+		WithInitial("loading").
+		WithService("fetchData", func(ctx ir.ServiceContext[struct{}]) error {
+			return nil
+		}).
+		WithAction("handleSuccess", func(ctx *struct{}, e statekit.Event) {}).
+		State("loading").
+		Invoke("fetchData").
+		ID("fetchData").
+		OnDone("success").
+		OnDoneAction("handleSuccess").
+		OnError("failure").
+		End().
+		Done().
+		State("success").Final().
+		Done().
+		State("failure").Final().
+		Done().
+		Build()
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	exporter := NewXStateExporter(machine)
+	result, err := exporter.Export()
+	if err != nil {
+		t.Fatalf("failed to export: %v", err)
+	}
+
+	// Check loading state has invoke
+	loading, ok := result.States["loading"]
+	if !ok {
+		t.Fatal("expected 'loading' state")
+	}
+
+	if len(loading.Invoke) != 1 {
+		t.Fatalf("expected 1 invoke, got %d", len(loading.Invoke))
+	}
+
+	invoke := loading.Invoke[0]
+	if invoke.ID != "fetchData" {
+		t.Errorf("expected invoke ID 'fetchData', got '%s'", invoke.ID)
+	}
+	if invoke.Src != "fetchData" {
+		t.Errorf("expected invoke Src 'fetchData', got '%s'", invoke.Src)
+	}
+
+	if invoke.OnDone == nil {
+		t.Fatal("expected OnDone to be set")
+	}
+	if invoke.OnDone.Target != "success" {
+		t.Errorf("expected OnDone target 'success', got '%s'", invoke.OnDone.Target)
+	}
+	if len(invoke.OnDone.Actions) != 1 || invoke.OnDone.Actions[0] != "handleSuccess" {
+		t.Errorf("expected OnDone action 'handleSuccess', got %v", invoke.OnDone.Actions)
+	}
+
+	if invoke.OnError == nil {
+		t.Fatal("expected OnError to be set")
+	}
+	if invoke.OnError.Target != "failure" {
+		t.Errorf("expected OnError target 'failure', got '%s'", invoke.OnError.Target)
+	}
+
+	// Verify JSON export works
+	jsonStr, err := exporter.ExportJSONIndent("", "  ")
+	if err != nil {
+		t.Fatalf("failed to export JSON: %v", err)
+	}
+
+	// Verify the JSON can be parsed
+	var parsed XStateMachine
+	if err := json.Unmarshal([]byte(jsonStr), &parsed); err != nil {
+		t.Fatalf("exported JSON is invalid: %v", err)
+	}
+
+	t.Logf("Exported XState JSON with invoke:\n%s", jsonStr)
+}
