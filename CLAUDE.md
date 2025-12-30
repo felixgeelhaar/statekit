@@ -241,24 +241,26 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v2.0)
+## Current Status (v0.4)
 
-Implemented:
-- ✅ Core types
-- ✅ Fluent builder API
-- ✅ Synchronous interpreter
-- ✅ Guards and actions
+All planned features implemented:
+
+**Core (v0.2)**
+- ✅ Fluent builder API with generics
+- ✅ Synchronous interpreter with guards and actions
 - ✅ Build-time validation
 - ✅ Final states
-- ✅ Hierarchical (nested) states
-- ✅ Event bubbling to ancestors
-- ✅ Proper entry/exit ordering
-- ✅ XState JSON exporter
-- ✅ Reflection DSL for struct-based definitions (v0.3)
-- ✅ ActionRegistry for named actions/guards (v0.3)
-- ✅ History states (shallow and deep) (v2.0)
-- ✅ Delayed transitions with timers (v2.0)
-- ✅ Parallel/orthogonal states (v2.0)
+- ✅ Hierarchical (nested) states with event bubbling
+- ✅ XState JSON exporter for visualization
+
+**Reflection DSL (v0.3)**
+- ✅ Struct-based machine definitions with tags
+- ✅ ActionRegistry for named actions/guards
+
+**Advanced Statecharts (v0.4)**
+- ✅ History states (shallow and deep)
+- ✅ Delayed transitions with timers
+- ✅ Parallel/orthogonal states with regions
 
 ## History States
 
@@ -323,9 +325,10 @@ Key behaviors:
 - Multiple delayed transitions are supported (first to fire wins)
 - `interp.Stop()` cancels all active timers
 
-## Scope Constraints (v1)
+## Scope Constraints
 
-Explicitly **out of scope** for v1:
-- Parallel/orthogonal states
-- Invoked actors/services
-- Persistence/durability
+Explicitly **out of scope**:
+- Invoked actors/services (spawning child machines)
+- Persistence/durability (state serialization)
+
+These may be considered for future versions based on community feedback.

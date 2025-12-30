@@ -13,6 +13,10 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 
 - **Fluent Builder API** — Type-safe machine construction with Go generics
 - **Hierarchical States** — Compound/nested states with event bubbling
+- **History States** — Shallow and deep history for resuming previous states
+- **Delayed Transitions** — Timer-based automatic transitions
+- **Parallel States** — Orthogonal regions active simultaneously
+- **Reflection DSL** — Define machines using struct tags
 - **Guards & Actions** — Conditional transitions and side effects
 - **XState Export** — Visualize with [Stately.ai](https://stately.ai/viz) and XState Inspector
 - **Build-time Validation** — Catch configuration errors before runtime
@@ -24,7 +28,7 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 go get github.com/felixgeelhaar/statekit
 ```
 
-Requires Go 1.23 or later.
+Requires Go 1.24 or later.
 
 ## Quick Start
 
@@ -36,102 +40,169 @@ import (
     "github.com/felixgeelhaar/statekit"
 )
 
-type Context struct {
-    Count int
-}
-
 func main() {
-    machine, _ := statekit.NewMachine[Context]("counter").
-        WithInitial("idle").
-        WithContext(Context{Count: 0}).
-        WithAction("increment", func(ctx *Context, e statekit.Event) {
-            ctx.Count++
-        }).
-        State("idle").
-            On("START").Target("running").
-        Done().
-        State("running").
-            OnEntry("increment").
-            On("STOP").Target("idle").
-        Done().
+    machine, _ := statekit.NewMachine[struct{}]("traffic").
+        WithInitial("green").
+        State("green").On("TIMER").Target("yellow").Done().
+        State("yellow").On("TIMER").Target("red").Done().
+        State("red").On("TIMER").Target("green").Done().
         Build()
 
     interp := statekit.NewInterpreter(machine)
     interp.Start()
 
-    fmt.Println(interp.State().Value) // "idle"
-
-    interp.Send(statekit.Event{Type: "START"})
-    fmt.Println(interp.State().Value)   // "running"
-    fmt.Println(interp.State().Context.Count) // 1
+    fmt.Println(interp.State().Value) // "green"
+    interp.Send(statekit.Event{Type: "TIMER"})
+    fmt.Println(interp.State().Value) // "yellow"
 }
 ```
 
 ## Hierarchical States
 
-Statekit supports nested (compound) states with proper entry/exit ordering and event bubbling:
+Nested states with event bubbling and proper entry/exit ordering:
 
 ```go
-machine, _ := statekit.NewMachine[struct{}]("traffic").
-    WithInitial("active").
-    State("active").
-        WithInitial("green").
-        On("POWER_OFF").Target("off").End().  // Handled by parent
-        State("green").
-            On("TIMER").Target("yellow").
-        End().
-        End().
-        State("yellow").
-            On("TIMER").Target("red").
-        End().
-        End().
-        State("red").
-            On("TIMER").Target("green").
-        End().
-    End().
+machine, _ := statekit.NewMachine[struct{}]("editor").
+    WithInitial("editing").
+    State("editing").
+        WithInitial("idle").
+        On("SAVE").Target("saved").End().  // Parent handles SAVE
+        State("idle").On("TYPE").Target("dirty").End().End().
+        State("dirty").On("CLEAR").Target("idle").End().End().
     Done().
-    State("off").Final().
-    Done().
+    State("saved").Final().Done().
     Build()
 
 interp := statekit.NewInterpreter(machine)
 interp.Start()
 
-fmt.Println(interp.State().Value)    // "green"
-fmt.Println(interp.Matches("active")) // true (matches ancestor)
-
-interp.Send(statekit.Event{Type: "POWER_OFF"}) // Bubbles to parent
-fmt.Println(interp.State().Value) // "off"
+fmt.Println(interp.State().Value)     // "idle"
+fmt.Println(interp.Matches("editing")) // true
+interp.Send(statekit.Event{Type: "SAVE"}) // Bubbles to parent
+fmt.Println(interp.State().Value)     // "saved"
 ```
 
-### Hierarchical State Semantics
+## History States
 
-- **Event Bubbling**: Unhandled events bubble up to ancestor states
-- **Child Priority**: Child state transitions take precedence over parent
-- **Entry Order**: Ancestors enter before descendants (root → leaf)
-- **Exit Order**: Descendants exit before ancestors (leaf → root)
-
-## Guards
-
-Conditional transitions using guard functions:
+Remember and restore previous states:
 
 ```go
-machine, _ := statekit.NewMachine[Context]("guarded").
+machine, _ := statekit.NewMachine[struct{}]("player").
+    WithInitial("playing").
+    State("playing").
+        WithInitial("track1").
+        On("PAUSE").Target("paused").End().
+        History("hist").Shallow().Default("track1").End().
+        State("track1").On("NEXT").Target("track2").End().End().
+        State("track2").On("NEXT").Target("track3").End().End().
+        State("track3").End().
+    Done().
+    State("paused").
+        On("PLAY").Target("hist").  // Resume last track
+    Done().
+    Build()
+```
+
+- **Shallow history** — Remembers immediate child state
+- **Deep history** — Remembers exact leaf state
+
+## Delayed Transitions
+
+Timer-based automatic transitions:
+
+```go
+machine, _ := statekit.NewMachine[struct{}]("loading").
+    WithInitial("loading").
+    State("loading").
+        After(5*time.Second).Target("timeout").
+        On("LOADED").Target("ready").
+    Done().
+    State("timeout").Done().
+    State("ready").Done().
+    Build()
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+// Timer starts automatically, canceled if LOADED received
+defer interp.Stop() // Always clean up timers
+```
+
+## Parallel States
+
+Multiple regions active simultaneously:
+
+```go
+machine, _ := statekit.NewMachine[struct{}]("editor").
+    WithInitial("active").
+    State("active").Parallel().
+        Region("bold").WithInitial("off").
+            State("off").On("TOGGLE_BOLD").Target("on").EndState().
+            State("on").On("TOGGLE_BOLD").Target("off").EndState().
+        EndRegion().
+        Region("italic").WithInitial("off").
+            State("off").On("TOGGLE_ITALIC").Target("on").EndState().
+            State("on").On("TOGGLE_ITALIC").Target("off").EndState().
+        EndRegion().
+    Done().
+    Build()
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+interp.Send(statekit.Event{Type: "TOGGLE_BOLD"})
+// bold: on, italic: off (independent regions)
+```
+
+## Reflection DSL
+
+Define machines using struct tags:
+
+```go
+type OrderMachine struct {
+    statekit.MachineDef `id:"order" initial:"pending"`
+    Pending   statekit.StateNode `on:"SUBMIT->processing:hasItems"`
+    Processing statekit.StateNode `on:"COMPLETE->shipped"`
+    Shipped   statekit.FinalNode
+}
+
+type OrderContext struct {
+    Items []string
+}
+
+registry := statekit.NewActionRegistry[OrderContext]().
+    WithGuard("hasItems", func(ctx OrderContext, e statekit.Event) bool {
+        return len(ctx.Items) > 0
+    })
+
+machine, _ := statekit.FromStruct[OrderMachine, OrderContext](registry)
+```
+
+## Guards & Actions
+
+Conditional transitions and side effects:
+
+```go
+type Context struct{ Count int }
+
+machine, _ := statekit.NewMachine[Context]("counter").
     WithInitial("idle").
-    WithGuard("hasItems", func(ctx Context, e statekit.Event) bool {
+    WithContext(Context{Count: 0}).
+    WithAction("increment", func(ctx *Context, e statekit.Event) {
+        ctx.Count++
+    }).
+    WithGuard("hasCount", func(ctx Context, e statekit.Event) bool {
         return ctx.Count > 0
     }).
     State("idle").
-        On("CHECKOUT").Target("processing").Guard("hasItems").
+        OnEntry("increment").
+        On("NEXT").Target("done").Guard("hasCount").
     Done().
-    State("processing").
-    Done().
+    State("done").Final().Done().
     Build()
 ```
 
 ## XState Visualization
 
-Export your machine to XState JSON format for visualization:
+Export to XState JSON for visualization:
 
 ```go
 import "github.com/felixgeelhaar/statekit/export"
@@ -141,7 +212,7 @@ jsonStr, _ := exporter.ExportJSONIndent("", "  ")
 fmt.Println(jsonStr)
 ```
 
-Use the exported JSON with:
+Use with:
 - [Stately.ai Visualizer](https://stately.ai/viz)
 - [XState Inspector](https://stately.ai/docs/inspector)
 
@@ -149,57 +220,32 @@ Use the exported JSON with:
 
 See the [examples](./examples) directory:
 
-- **[traffic_light](./examples/traffic_light)** — Simple FSM with cyclic transitions
-- **[pedestrian_light](./examples/pedestrian_light)** — Hierarchical states with event bubbling
+| Example | Description |
+|---------|-------------|
+| [traffic_light](./examples/traffic_light) | Simple FSM with cyclic transitions |
+| [pedestrian_light](./examples/pedestrian_light) | Hierarchical states with event bubbling |
+| [order_workflow](./examples/order_workflow) | Reflection DSL for business workflows |
+| [incident_lifecycle](./examples/incident_lifecycle) | Complex IT incident management |
 
 ## API Reference
 
-### Machine Builder
+See the full [API documentation on pkg.go.dev](https://pkg.go.dev/github.com/felixgeelhaar/statekit).
+
+### Core Types
 
 ```go
+// Machine construction
 statekit.NewMachine[C](id string) *MachineBuilder[C]
-    .WithInitial(id StateID)
-    .WithContext(ctx C)
-    .WithAction(id ActionType, fn Action[C])
-    .WithGuard(id GuardType, fn Guard[C])
-    .State(id StateID) *StateBuilder[C]
-    .Build() (*ir.MachineConfig[C], error)
-```
+statekit.FromStruct[M, C](registry) (*MachineConfig[C], error)
 
-### State Builder
-
-```go
-StateBuilder[C]
-    .WithInitial(id StateID)      // For compound states
-    .OnEntry(action ActionType)
-    .OnExit(action ActionType)
-    .On(event EventType) *TransitionBuilder[C]
-    .State(id StateID)            // Nested state
-    .Final()                      // Mark as final state
-    .Done()                       // Return to machine builder
-    .End()                        // Return to parent state builder
-```
-
-### Transition Builder
-
-```go
-TransitionBuilder[C]
-    .Target(id StateID)
-    .Guard(id GuardType)
-    .Do(action ActionType)
-    .End()                        // Return to state builder
-```
-
-### Interpreter
-
-```go
+// Runtime
 statekit.NewInterpreter[C](machine) *Interpreter[C]
     .Start()                      // Enter initial state
     .Send(event Event)            // Process event
+    .Stop()                       // Cancel timers, cleanup
     .State() State[C]             // Current state
     .Matches(id StateID) bool     // Check state or ancestor
     .Done() bool                  // In final state?
-    .UpdateContext(fn func(*C))   // Modify context
 ```
 
 ## Design Philosophy
@@ -208,15 +254,6 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 - **Statecharts over FSMs** — Hierarchy enables complex behavior
 - **Visualization as a Feature** — XState compatibility for free tooling
 - **Small Surface Area** — Fewer features, better guarantees
-
-## Scope
-
-Explicitly **out of scope** for v1:
-- Parallel/orthogonal states
-- History states
-- Delayed/timed transitions
-- Invoked actors/services
-- Persistence/durability
 
 ## Contributing
 
