@@ -30,6 +30,35 @@ go test -cover ./...
 go fmt ./...
 ```
 
+## Release Process
+
+Before releasing a new version, always run the following checks:
+
+```bash
+# 1. Format all code
+go fmt ./...
+
+# 2. Run static analysis
+go vet ./...
+
+# 3. Run linter (fix any issues)
+golangci-lint run
+
+# 4. Run all tests
+go test ./...
+
+# 5. Check coverage meets thresholds
+coverctl check
+
+# 6. Use relicta for release management
+relicta plan      # Analyze commits and plan release
+relicta bump      # Set next version
+relicta notes     # Generate release notes
+relicta evaluate  # Evaluate risk
+relicta approve   # Approve release
+relicta publish   # Create tags and GitHub release
+```
+
 ## Project Structure
 
 ```
@@ -72,6 +101,19 @@ statekit/
 ├── export/
 │   ├── xstate.go         # XState JSON exporter
 │   └── xstate_test.go    # Exporter tests
+├── statetest/            # Testing utilities
+│   ├── recorder.go       # Transition recorder
+│   ├── assert.go         # Test assertions
+│   └── helpers.go        # Convenience functions
+├── debug/                # Debugging tools
+│   ├── inspector.go      # Runtime inspection
+│   └── graph.go          # State graph analysis
+├── metrics/              # Prometheus integration
+│   └── metrics.go        # MetricsInterpreter wrapper
+├── health/               # Health checks
+│   └── health.go         # Kubernetes probes
+├── lint/                 # Static analysis
+│   └── lint.go           # Lint rules and diagnostics
 ├── examples/
 │   ├── traffic_light/    # Simple FSM example
 │   ├── pedestrian_light/ # Hierarchical states example
@@ -258,7 +300,7 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.9)
+## Current Status (v0.12)
 
 All planned features implemented:
 
@@ -321,6 +363,19 @@ All planned features implemented:
 - ✅ Go code generation from XState JSON (`generate` package)
 - ✅ HTTP handlers and middleware for web frameworks (`http` package)
 - ✅ OpenTelemetry tracing for state transitions (`otel` package)
+
+**Testing & Debugging (v0.10)**
+- ✅ Test assertions and helpers (`statetest` package)
+- ✅ Transition recorder for test verification
+- ✅ Debug inspector for runtime state inspection (`debug` package)
+
+**Observability (v0.11)**
+- ✅ Prometheus metrics for state machine monitoring (`metrics` package)
+- ✅ Health check endpoints for Kubernetes probes (`health` package)
+
+**Static Analysis (v0.12)**
+- ✅ Lint package for detecting structural issues (`lint` package)
+- ✅ Rules: unreachable, dead-end, non-determinism, compound-initial, self-transition, unused-action, unused-guard
 
 ## History States
 
