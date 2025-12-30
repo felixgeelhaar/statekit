@@ -20,7 +20,10 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 - **Guards & Actions** — Conditional transitions and side effects
 - **XState Export** — Visualize with [Stately.ai](https://stately.ai/viz) and XState Inspector
 - **Build-time Validation** — Catch configuration errors before runtime
-- **Zero Dependencies** — Pure Go, no external dependencies
+- **Testing Utilities** — Assertions, recorders, and helpers for testing machines
+- **Prometheus Metrics** — Production monitoring with metrics and health checks
+- **Static Analysis** — Lint rules for detecting structural issues
+- **Zero Dependencies** — Pure Go, no external runtime dependencies
 
 ## Installation
 
@@ -216,6 +219,20 @@ Use with:
 - [Stately.ai Visualizer](https://stately.ai/viz)
 - [XState Inspector](https://stately.ai/docs/inspector)
 
+## Additional Packages
+
+| Package | Description |
+|---------|-------------|
+| [`statetest`](./statetest) | Testing utilities: assertions, recorders, helpers |
+| [`debug`](./debug) | Runtime inspection and state graph analysis |
+| [`metrics`](./metrics) | Prometheus metrics for monitoring |
+| [`health`](./health) | Kubernetes liveness/readiness probes |
+| [`lint`](./lint) | Static analysis for detecting structural issues |
+| [`export`](./export) | XState JSON exporter |
+| [`generate`](./generate) | Go code generation from XState JSON |
+| [`http`](./http) | HTTP handlers and middleware |
+| [`otel`](./otel) | OpenTelemetry tracing |
+
 ## Examples
 
 See the [examples](./examples) directory:
@@ -254,6 +271,18 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 - **Statecharts over FSMs** — Hierarchy enables complex behavior
 - **Visualization as a Feature** — XState compatibility for free tooling
 - **Small Surface Area** — Fewer features, better guarantees
+
+## Documentation
+
+- [Getting Started](./docs/getting-started.md)
+- [Hierarchical States](./docs/hierarchical-states.md)
+- [Guards & Actions](./docs/guards-actions.md)
+- [XState Export](./docs/xstate-export.md)
+- [Reflection DSL](./docs/reflection-dsl.md)
+- [Testing](./docs/testing.md)
+- [Observability](./docs/observability.md)
+- [Static Analysis (Lint)](./docs/lint.md)
+- [API Reference](./docs/api-reference.md)
 
 ## Contributing
 
