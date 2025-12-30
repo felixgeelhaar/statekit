@@ -34,13 +34,16 @@ go fmt ./...
 
 ```
 statekit/
-├── types.go              # Public types (Event, State, StateID, etc.)
-├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder, HistoryBuilder)
-├── interpreter.go        # Runtime execution (Start, Send, State, Matches, Done)
+├── types.go              # Public types (Event, State, StateID, Service, etc.)
+├── builder.go            # Fluent API (NewMachine, StateBuilder, TransitionBuilder, InvokeBuilder)
+├── interpreter.go        # Runtime execution (Start, Send, State, Matches, Done, Stop)
+├── snapshot.go           # Persistence (Snapshot, Restore)
 ├── reflect.go            # Reflection DSL (FromStruct, MachineDef, ActionRegistry)
 ├── hierarchy_test.go     # Comprehensive hierarchical state tests
 ├── history_test.go       # History state tests (shallow and deep)
 ├── delayed_test.go       # Delayed transition tests
+├── invoke_test.go        # Invoked services tests
+├── snapshot_test.go      # Snapshot/restore tests
 ├── internal/
 │   ├── ir/
 │   │   ├── types.go      # Core type definitions
@@ -241,7 +244,7 @@ interp.Start()
 - **Visualization as a feature** - XState JSON export for existing tooling
 - **Small surface area** - Fewer features, better guarantees
 
-## Current Status (v0.4)
+## Current Status (v0.5)
 
 All planned features implemented:
 
@@ -261,6 +264,10 @@ All planned features implemented:
 - ✅ History states (shallow and deep)
 - ✅ Delayed transitions with timers
 - ✅ Parallel/orthogonal states with regions
+
+**Production Features (v0.5)**
+- ✅ Invoked services (async operations with cancellation)
+- ✅ Snapshot/Restore (interpreter state persistence)
 
 ## History States
 
@@ -325,10 +332,118 @@ Key behaviors:
 - Multiple delayed transitions are supported (first to fire wins)
 - `interp.Stop()` cancels all active timers
 
+## Invoked Services
+
+Invoke async operations that are started on state entry and cancelled on exit:
+
+```go
+machine, _ := statekit.NewMachine[struct{}]("data_loader").
+    WithInitial("loading").
+    WithService("fetchData", func(ctx ir.ServiceContext[struct{}]) error {
+        // Perform async work
+        resp, err := http.Get("https://api.example.com/data")
+        if err != nil {
+            return err  // Triggers OnError transition
+        }
+        defer resp.Body.Close()
+        return nil  // Triggers OnDone transition
+    }).
+    WithAction("handleSuccess", func(ctx *struct{}, e statekit.Event) {}).
+    State("loading").
+        Invoke("fetchData").
+            ID("fetchData").
+            OnDone("success").
+            OnDoneAction("handleSuccess").
+            OnError("failure").
+        End().
+    Done().
+    State("success").Final().Done().
+    State("failure").Final().Done().
+    Build()
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+// Service starts automatically
+
+// Services can send events back to the machine
+// ctx.Send(statekit.Event{Type: "DATA_RECEIVED"})
+
+// Always call Stop() to cancel active services
+interp.Stop()
+```
+
+Key behaviors:
+- Services start when entering a state with `Invoke()`
+- Services are cancelled when exiting the state
+- `OnDone` transition triggers on successful completion
+- `OnError` transition triggers on error return
+- Services receive a context with `Context` (for cancellation), `MachineContext`, and `Send` function
+- Multiple services can be invoked per state
+- `interp.Stop()` cancels all active services
+
+## Snapshot/Restore
+
+Persist and restore interpreter state for durability:
+
+```go
+// Create and run interpreter
+machine, _ := statekit.NewMachine[MyContext]("workflow").
+    // ... machine definition
+    Build()
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+interp.Send(statekit.Event{Type: "PROCESS"})
+
+// Take a snapshot
+snapshot := interp.Snapshot()
+
+// Serialize for storage (JSON, database, etc.)
+data, _ := json.Marshal(snapshot)
+// Store data...
+
+// Later: restore from snapshot
+var restored statekit.InterpreterSnapshot[MyContext]
+json.Unmarshal(data, &restored)
+
+newInterp := statekit.NewInterpreter(machine)
+if err := newInterp.Restore(restored); err != nil {
+    // Handle error
+}
+
+// Continue from where we left off
+newInterp.Send(statekit.Event{Type: "NEXT"})
+```
+
+Snapshot includes:
+- Current state path (for hierarchical states)
+- Machine context
+- History state memory (shallow and deep)
+- Parallel region states
+
 ## Scope Constraints
 
-Explicitly **out of scope**:
-- Invoked actors/services (spawning child machines)
-- Persistence/durability (state serialization)
+Explicitly **out of scope** for v1:
+- Spawning child actor machines (parent-child machine relationships)
+- Distributed/clustered execution
+- Built-in event persistence/event sourcing
 
-These may be considered for future versions based on community feedback.
+## Future Enhancements
+
+Potential features for future versions:
+
+**CLI Visualization Tool**
+- Native `statekit viz` command for terminal-based visualization
+- ASCII/Unicode rendering of state machine diagrams
+- Interactive mode for stepping through transitions
+- Mermaid diagram generation
+
+**Actor Model**
+- Spawn child machines from parent states
+- Inter-machine communication via events
+- Supervision strategies for child failures
+
+**Developer Experience**
+- Go code generation from XState JSON
+- Integration with popular Go web frameworks
+- OpenTelemetry tracing for state transitions
