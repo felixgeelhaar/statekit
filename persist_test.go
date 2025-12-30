@@ -112,8 +112,8 @@ func TestPersistentInterpreter_WithSnapshot(t *testing.T) {
 			ctx.Count++
 		}).
 		State("counting").
-			On("INCREMENT").Target("counting").Do("increment").
-			On("FINISH").Target("done").
+		On("INCREMENT").Target("counting").Do("increment").
+		On("FINISH").Target("done").
 		Done().
 		State("done").Final().Done().
 		Build()
@@ -495,18 +495,18 @@ func TestPersistentInterpreter_HierarchicalHydration(t *testing.T) {
 	machine, _ := NewMachine[struct{}]("nested").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			State("idle").On("START").Target("working").End().End().
-			State("working").On("PAUSE").Target("paused").End().End().
-			State("paused").End().
+		WithInitial("idle").
+		State("idle").On("START").Target("working").End().End().
+		State("working").On("PAUSE").Target("paused").End().End().
+		State("paused").End().
 		Done().
 		Build()
 
 	eventStore := NewMemoryEventStore()
 
 	pi1, _ := NewPersistentInterpreter(ctx, "stream-1", machine, eventStore)
-	pi1.Send(Event{Type: "START"})  // idle -> working
-	pi1.Send(Event{Type: "PAUSE"})  // working -> paused
+	pi1.Send(Event{Type: "START"}) // idle -> working
+	pi1.Send(Event{Type: "PAUSE"}) // working -> paused
 	_, _ = pi1.Commit(ctx)
 	pi1.Stop()
 

@@ -22,10 +22,10 @@ func buildSimpleChildMachine() *MachineConfig[childContext] {
 	machine, _ := NewMachine[childContext]("child").
 		WithInitial("idle").
 		State("idle").
-			On("TASK").Target("working").
+		On("TASK").Target("working").
 		Done().
 		State("working").
-			On("COMPLETE").Target("done").
+		On("COMPLETE").Target("done").
 		Done().
 		State("done").Final().
 		Done().
@@ -38,8 +38,8 @@ func buildParentMachine() *MachineConfig[parentContext] {
 	machine, _ := NewMachine[parentContext]("parent").
 		WithInitial("active").
 		State("active").
-			On("SPAWN_CHILD").Target("active"). // Self-transition for spawn trigger
-			On("xstate.done.actor.worker").Target("completed").
+		On("SPAWN_CHILD").Target("active"). // Self-transition for spawn trigger
+		On("xstate.done.actor.worker").Target("completed").
 		Done().
 		State("completed").Final().
 		Done().
@@ -227,8 +227,8 @@ func TestStateScopedLifecycle(t *testing.T) {
 			}
 		}).
 		State("spawning").
-			OnEntry("spawn").
-			On("NEXT").Target("other").
+		OnEntry("spawn").
+		On("NEXT").Target("other").
 		Done().
 		State("other").Done().
 		Build()
@@ -273,8 +273,8 @@ func TestAutoForward(t *testing.T) {
 			mu.Unlock()
 		}).
 		State("listening").
-			On("FORWARD_ME").Target("listening").Do("track").
-			On("DONT_FORWARD").Target("listening").Do("track").
+		On("FORWARD_ME").Target("listening").Do("track").
+		On("DONT_FORWARD").Target("listening").Do("track").
 		Done().
 		Build()
 
@@ -402,7 +402,7 @@ func TestActorDone_NotifiesParent(t *testing.T) {
 	parentMachine, _ := NewMachine[struct{}]("parent").
 		WithInitial("active").
 		State("active").
-			On("xstate.done.actor.worker").Target("completed").
+		On("xstate.done.actor.worker").Target("completed").
 		Done().
 		State("completed").Final().
 		Done().
@@ -411,7 +411,7 @@ func TestActorDone_NotifiesParent(t *testing.T) {
 	childMachine, _ := NewMachine[struct{}]("child").
 		WithInitial("idle").
 		State("idle").
-			On("COMPLETE").Target("done").
+		On("COMPLETE").Target("done").
 		Done().
 		State("done").Final().
 		Done().

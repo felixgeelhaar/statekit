@@ -124,8 +124,8 @@ func TestDistributedInterpreter_Hydration(t *testing.T) {
 			ctx.Count++
 		}).
 		State("counting").
-			On("INC").Target("counting").Do("inc").
-			On("DONE").Target("finished").
+		On("INC").Target("counting").Do("inc").
+		On("DONE").Target("finished").
 		Done().
 		State("finished").Final().Done().
 		Build()
@@ -434,7 +434,7 @@ func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
 			ctx.Count++
 		}).
 		State("counting").
-			On("INC").Target("counting").Do("inc").
+		On("INC").Target("counting").Do("inc").
 		Done().
 		Build()
 

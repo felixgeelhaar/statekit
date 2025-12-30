@@ -115,10 +115,10 @@ func buildWorkerMachine() *statekit.MachineConfig[WorkerContext] {
 			fmt.Printf("    [Worker] Completed task\n")
 		}).
 		State("idle").
-			On("TASK").Target("working").Do("logReceived").
+		On("TASK").Target("working").Do("logReceived").
 		Done().
 		State("working").
-			On("COMPLETE").Target("done").Do("logComplete").
+		On("COMPLETE").Target("done").Do("logComplete").
 		Done().
 		State("done").Final().
 		Done().
@@ -131,13 +131,13 @@ func buildSupervisor() *statekit.MachineConfig[SupervisorContext] {
 		WithInitial("idle").
 		WithContext(SupervisorContext{}).
 		State("idle").
-			On("BEGIN").Target("supervising").
+		On("BEGIN").Target("supervising").
 		Done().
 		State("supervising").
-			On("STOP").Target("stopped").
-			On("xstate.done.actor.worker-1").Target("supervising").
-			On("xstate.done.actor.worker-2").Target("supervising").
-			On("xstate.done.actor.worker-3").Target("supervising").
+		On("STOP").Target("stopped").
+		On("xstate.done.actor.worker-1").Target("supervising").
+		On("xstate.done.actor.worker-2").Target("supervising").
+		On("xstate.done.actor.worker-3").Target("supervising").
 		Done().
 		State("stopped").Final().
 		Done().

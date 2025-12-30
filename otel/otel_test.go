@@ -237,8 +237,8 @@ func TestTracingInterpreter_Matches(t *testing.T) {
 	machine, _ := statekit.NewMachine[struct{}]("matches").
 		WithInitial("parent").
 		State("parent").
-			WithInitial("child").
-			State("child").End().
+		WithInitial("child").
+		State("child").End().
 		Done().
 		Build()
 

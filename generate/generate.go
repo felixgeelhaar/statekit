@@ -49,16 +49,16 @@ type XStateMachine struct {
 
 // XState represents an XState state definition.
 type XState struct {
-	Initial string                  `json:"initial,omitempty"`
-	Type    string                  `json:"type,omitempty"` // "final", "parallel", "history"
-	History string                  `json:"history,omitempty"` // "shallow", "deep"
-	Target  string                  `json:"target,omitempty"` // default for history
-	States  map[string]XState       `json:"states,omitempty"`
-	On      map[string]XTransSpec   `json:"on,omitempty"`
-	Entry   XActionSpec             `json:"entry,omitempty"`
-	Exit    XActionSpec             `json:"exit,omitempty"`
-	After   map[string]XTransSpec   `json:"after,omitempty"`
-	Invoke  json.RawMessage         `json:"invoke,omitempty"`
+	Initial string                `json:"initial,omitempty"`
+	Type    string                `json:"type,omitempty"`    // "final", "parallel", "history"
+	History string                `json:"history,omitempty"` // "shallow", "deep"
+	Target  string                `json:"target,omitempty"`  // default for history
+	States  map[string]XState     `json:"states,omitempty"`
+	On      map[string]XTransSpec `json:"on,omitempty"`
+	Entry   XActionSpec           `json:"entry,omitempty"`
+	Exit    XActionSpec           `json:"exit,omitempty"`
+	After   map[string]XTransSpec `json:"after,omitempty"`
+	Invoke  json.RawMessage       `json:"invoke,omitempty"`
 }
 
 // XTransSpec can be a string, object, or array of transitions.
@@ -242,18 +242,18 @@ type templateData struct {
 }
 
 type stateData struct {
-	ID           string
-	Initial      string
-	IsFinal      bool
-	IsParallel   bool
-	IsHistory    bool
-	HistoryType  string // "shallow" or "deep"
+	ID             string
+	Initial        string
+	IsFinal        bool
+	IsParallel     bool
+	IsHistory      bool
+	HistoryType    string // "shallow" or "deep"
 	HistoryDefault string
-	EntryActions []string
-	ExitActions  []string
-	Transitions  []transitionData
-	Children     []stateData
-	Indent       int
+	EntryActions   []string
+	ExitActions    []string
+	Transitions    []transitionData
+	Children       []stateData
+	Indent         int
 }
 
 type transitionData struct {
