@@ -1,6 +1,7 @@
 package ir
 
 import (
+	"errors"
 	"strings"
 	"testing"
 )
@@ -217,4 +218,23 @@ func containsCode(err *ValidationError, code string) bool {
 		}
 	}
 	return false
+}
+
+func TestValidationError_Is(t *testing.T) {
+	err := &ValidationError{}
+	err.AddIssue("TEST_CODE", "test message", "path")
+
+	t.Run("matches ValidationError", func(t *testing.T) {
+		target := &ValidationError{}
+		if !errors.Is(err, target) {
+			t.Error("expected errors.Is to return true for ValidationError target")
+		}
+	})
+
+	t.Run("does not match other error types", func(t *testing.T) {
+		target := errors.New("other error")
+		if errors.Is(err, target) {
+			t.Error("expected errors.Is to return false for non-ValidationError target")
+		}
+	})
 }

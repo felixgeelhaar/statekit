@@ -2,6 +2,7 @@ package ir
 
 import (
 	"testing"
+	"time"
 )
 
 type testContext struct {
@@ -154,6 +155,8 @@ func TestStateType_String(t *testing.T) {
 		{StateTypeAtomic, "atomic"},
 		{StateTypeCompound, "compound"},
 		{StateTypeFinal, "final"},
+		{StateTypeHistory, "history"},
+		{StateTypeParallel, "parallel"},
 		{StateType(99), "unknown"},
 	}
 
@@ -163,5 +166,111 @@ func TestStateType_String(t *testing.T) {
 				t.Errorf("StateType.String() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestHistoryType_String(t *testing.T) {
+	tests := []struct {
+		ht   HistoryType
+		want string
+	}{
+		{HistoryTypeShallow, "shallow"},
+		{HistoryTypeDeep, "deep"},
+		{HistoryType(99), "unknown"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.want, func(t *testing.T) {
+			if got := tt.ht.String(); got != tt.want {
+				t.Errorf("HistoryType.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTransitionConfig_IsDelayed(t *testing.T) {
+	t.Run("not delayed", func(t *testing.T) {
+		trans := NewTransitionConfig("GO", "target")
+		if trans.IsDelayed() {
+			t.Error("expected IsDelayed to return false for zero delay")
+		}
+	})
+
+	t.Run("delayed", func(t *testing.T) {
+		trans := NewTransitionConfig("", "target")
+		trans.Delay = 100 * time.Millisecond
+		if !trans.IsDelayed() {
+			t.Error("expected IsDelayed to return true for non-zero delay")
+		}
+	})
+}
+
+func TestStateConfig_IsHistory(t *testing.T) {
+	t.Run("history state", func(t *testing.T) {
+		state := NewStateConfig("hist", StateTypeHistory)
+		if !state.IsHistory() {
+			t.Error("expected IsHistory to return true")
+		}
+	})
+
+	t.Run("non-history state", func(t *testing.T) {
+		state := NewStateConfig("normal", StateTypeAtomic)
+		if state.IsHistory() {
+			t.Error("expected IsHistory to return false")
+		}
+	})
+}
+
+func TestStateConfig_IsParallel(t *testing.T) {
+	t.Run("parallel state", func(t *testing.T) {
+		state := NewStateConfig("parallel", StateTypeParallel)
+		if !state.IsParallel() {
+			t.Error("expected IsParallel to return true")
+		}
+	})
+
+	t.Run("non-parallel state", func(t *testing.T) {
+		state := NewStateConfig("normal", StateTypeAtomic)
+		if state.IsParallel() {
+			t.Error("expected IsParallel to return false")
+		}
+	})
+}
+
+func TestStateConfig_GetDelayedTransitions(t *testing.T) {
+	state := NewStateConfig("waiting", StateTypeAtomic)
+
+	// Add mix of normal and delayed transitions
+	trans1 := NewTransitionConfig("GO", "target1")
+	trans2 := NewTransitionConfig("", "target2")
+	trans2.Delay = 100 * time.Millisecond
+	trans3 := NewTransitionConfig("CANCEL", "target3")
+	trans4 := NewTransitionConfig("", "target4")
+	trans4.Delay = 200 * time.Millisecond
+
+	state.Transitions = []*TransitionConfig{trans1, trans2, trans3, trans4}
+
+	delayed := state.GetDelayedTransitions()
+	if len(delayed) != 2 {
+		t.Fatalf("expected 2 delayed transitions, got %d", len(delayed))
+	}
+	if delayed[0] != trans2 {
+		t.Error("expected first delayed transition to be trans2")
+	}
+	if delayed[1] != trans4 {
+		t.Error("expected second delayed transition to be trans4")
+	}
+}
+
+func TestStateConfig_GetDelayedTransitions_None(t *testing.T) {
+	state := NewStateConfig("active", StateTypeAtomic)
+	state.Transitions = []*TransitionConfig{
+		NewTransitionConfig("GO", "target1"),
+		NewTransitionConfig("STOP", "target2"),
+	}
+
+	delayed := state.GetDelayedTransitions()
+	if len(delayed) != 0 {
+		t.Errorf("expected 0 delayed transitions, got %d", len(delayed))
 	}
 }
