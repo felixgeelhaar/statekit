@@ -151,17 +151,17 @@ func (p *LoggingPlugin[C]) OnStop(ctx plugin.Context[C]) {
 }
 
 // OnEnter implements OnStateHook
-func (p *LoggingPlugin[C]) OnEnter(ctx plugin.Context[C], state plugin.StateID) {
+func (p *LoggingPlugin[C]) OnEnter(_ plugin.Context[C], state plugin.StateID) {
 	fmt.Printf("%s → Entered state: %s\n", p.prefix, state)
 }
 
 // OnExit implements OnStateHook
-func (p *LoggingPlugin[C]) OnExit(ctx plugin.Context[C], state plugin.StateID) {
+func (p *LoggingPlugin[C]) OnExit(_ plugin.Context[C], state plugin.StateID) {
 	fmt.Printf("%s ← Exited state: %s\n", p.prefix, state)
 }
 
 // BeforeTransition implements OnTransitionHook
-func (p *LoggingPlugin[C]) BeforeTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
+func (p *LoggingPlugin[C]) BeforeTransition(_ plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
 	fmt.Printf("%s Transition: %s -[%s]→ %s\n", p.prefix, from, event.Type, to)
 }
 
@@ -171,7 +171,7 @@ func (p *LoggingPlugin[C]) AfterTransition(ctx plugin.Context[C], from, to plugi
 }
 
 // BeforeAction implements OnActionHook
-func (p *LoggingPlugin[C]) BeforeAction(ctx plugin.Context[C], action plugin.ActionType, event plugin.Event) {
+func (p *LoggingPlugin[C]) BeforeAction(_ plugin.Context[C], action plugin.ActionType, _ plugin.Event) {
 	fmt.Printf("%s   Running action: %s\n", p.prefix, action)
 }
 
@@ -181,7 +181,7 @@ func (p *LoggingPlugin[C]) AfterAction(ctx plugin.Context[C], action plugin.Acti
 }
 
 // OnError implements OnErrorHook
-func (p *LoggingPlugin[C]) OnError(ctx plugin.Context[C], err error) {
+func (p *LoggingPlugin[C]) OnError(_ plugin.Context[C], err error) {
 	fmt.Printf("%s ❌ Error: %v\n", p.prefix, err)
 }
 
@@ -210,46 +210,48 @@ func (p *MetricsPlugin[C]) Name() string {
 	return "metrics"
 }
 
-func (p *MetricsPlugin[C]) OnStart(ctx plugin.Context[C]) {
+func (p *MetricsPlugin[C]) OnStart(_ plugin.Context[C]) {
 	p.startTime = time.Now()
 }
 
-func (p *MetricsPlugin[C]) OnStop(ctx plugin.Context[C]) {
+func (p *MetricsPlugin[C]) OnStop(_ plugin.Context[C]) {
 	// Record time in final state
 	if p.currentState != "" {
 		p.stateTime[p.currentState] += time.Since(p.stateEnterTime)
 	}
 }
 
-func (p *MetricsPlugin[C]) OnEnter(ctx plugin.Context[C], state plugin.StateID) {
+func (p *MetricsPlugin[C]) OnEnter(_ plugin.Context[C], state plugin.StateID) {
 	p.currentState = state
 	p.stateEnterTime = time.Now()
 }
 
-func (p *MetricsPlugin[C]) OnExit(ctx plugin.Context[C], state plugin.StateID) {
+func (p *MetricsPlugin[C]) OnExit(_ plugin.Context[C], state plugin.StateID) {
 	if p.currentState == state {
 		p.stateTime[state] += time.Since(p.stateEnterTime)
 	}
 }
 
-func (p *MetricsPlugin[C]) OnEvent(ctx plugin.Context[C], event plugin.Event) plugin.Event {
+func (p *MetricsPlugin[C]) OnEvent(_ plugin.Context[C], event plugin.Event) plugin.Event {
 	p.eventCount++
 	return event
 }
 
-func (p *MetricsPlugin[C]) BeforeTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
+func (p *MetricsPlugin[C]) BeforeTransition(_ plugin.Context[C], _, _ plugin.StateID, _ plugin.Event) {
 	p.transitionCount++
 }
 
-func (p *MetricsPlugin[C]) AfterTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {}
+func (p *MetricsPlugin[C]) AfterTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
+}
 
-func (p *MetricsPlugin[C]) BeforeAction(ctx plugin.Context[C], action plugin.ActionType, event plugin.Event) {
+func (p *MetricsPlugin[C]) BeforeAction(_ plugin.Context[C], _ plugin.ActionType, _ plugin.Event) {
 	p.actionCount++
 }
 
-func (p *MetricsPlugin[C]) AfterAction(ctx plugin.Context[C], action plugin.ActionType, event plugin.Event) {}
+func (p *MetricsPlugin[C]) AfterAction(ctx plugin.Context[C], action plugin.ActionType, event plugin.Event) {
+}
 
-func (p *MetricsPlugin[C]) OnError(ctx plugin.Context[C], err error) {
+func (p *MetricsPlugin[C]) OnError(_ plugin.Context[C], _ error) {
 	p.errorCount++
 }
 
@@ -282,7 +284,7 @@ func (p *EventTransformer[C]) Name() string {
 }
 
 // OnEvent normalizes event types to uppercase
-func (p *EventTransformer[C]) OnEvent(ctx plugin.Context[C], event plugin.Event) plugin.Event {
+func (p *EventTransformer[C]) OnEvent(_ plugin.Context[C], event plugin.Event) plugin.Event {
 	// Normalize event type to uppercase
 	normalized := plugin.EventType(strings.ToUpper(string(event.Type)))
 	if normalized != event.Type {
