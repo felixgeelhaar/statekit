@@ -174,7 +174,7 @@ func buildGameMachine() *statekit.MachineConfig[GameContext] {
 		On("LOSE").Target("game_over").
 		End().
 		End().
-		End(). // End on_quest
+		End().  // End on_quest
 		Done(). // End playing
 		// Game Over
 		State("game_over").

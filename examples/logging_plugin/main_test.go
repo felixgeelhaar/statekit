@@ -20,38 +20,40 @@ type TestPlugin[C any] struct {
 
 func (p *TestPlugin[C]) Name() string { return "test" }
 
-func (p *TestPlugin[C]) OnStart(ctx plugin.Context[C]) {
+func (p *TestPlugin[C]) OnStart(_ plugin.Context[C]) {
 	p.StartCalls++
 }
 
-func (p *TestPlugin[C]) OnStop(ctx plugin.Context[C]) {
+func (p *TestPlugin[C]) OnStop(_ plugin.Context[C]) {
 	p.StopCalls++
 }
 
-func (p *TestPlugin[C]) OnEnter(ctx plugin.Context[C], state plugin.StateID) {
+func (p *TestPlugin[C]) OnEnter(_ plugin.Context[C], _ plugin.StateID) {
 	p.EnterCalls++
 }
 
-func (p *TestPlugin[C]) OnExit(ctx plugin.Context[C], state plugin.StateID) {
+func (p *TestPlugin[C]) OnExit(_ plugin.Context[C], _ plugin.StateID) {
 	p.ExitCalls++
 }
 
-func (p *TestPlugin[C]) OnEvent(ctx plugin.Context[C], event plugin.Event) plugin.Event {
+func (p *TestPlugin[C]) OnEvent(_ plugin.Context[C], event plugin.Event) plugin.Event {
 	p.EventCalls++
 	return event
 }
 
-func (p *TestPlugin[C]) BeforeTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {
+func (p *TestPlugin[C]) BeforeTransition(_ plugin.Context[C], _, _ plugin.StateID, _ plugin.Event) {
 	p.TransitionCalls++
 }
 
-func (p *TestPlugin[C]) AfterTransition(ctx plugin.Context[C], from, to plugin.StateID, event plugin.Event) {}
+func (p *TestPlugin[C]) AfterTransition(_ plugin.Context[C], _, _ plugin.StateID, _ plugin.Event) {
+}
 
-func (p *TestPlugin[C]) BeforeAction(ctx plugin.Context[C], action plugin.ActionType, event plugin.Event) {
+func (p *TestPlugin[C]) BeforeAction(_ plugin.Context[C], _ plugin.ActionType, _ plugin.Event) {
 	p.ActionCalls++
 }
 
-func (p *TestPlugin[C]) AfterAction(ctx plugin.Context[C], action plugin.ActionType, event plugin.Event) {}
+func (p *TestPlugin[C]) AfterAction(_ plugin.Context[C], _ plugin.ActionType, _ plugin.Event) {
+}
 
 func TestPlugin_HooksAreCalled(t *testing.T) {
 	machine := buildOrderMachine()

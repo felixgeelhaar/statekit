@@ -87,14 +87,14 @@ func buildSessionMachine(warningTime, expiryTime time.Duration) *statekit.Machin
 		OnEntry("recordStart").
 		On("ACTIVITY").Target("active").Do("recordActivity").
 		On("LOGOUT").Target("ended").Do("markLoggedOut").
-		After(warningTime).Target("warning").Guard("notVIP"). // Regular users get warning
+		After(warningTime).Target("warning").Guard("notVIP").               // Regular users get warning
 		After(warningTime).Target("active").Guard("isVIP").Do("extendVIP"). // VIP users auto-extend
 		Done().
 		// Warning state - user has limited time to respond
 		State("warning").
 		OnEntry("showWarning").
 		On("ACTIVITY").Target("active").Do("recordActivity"). // Activity resets to active
-		On("STAY").Target("active").                           // Explicit stay request
+		On("STAY").Target("active").                          // Explicit stay request
 		On("LOGOUT").Target("ended").Do("markLoggedOut").
 		After(expiryTime - warningTime).Target("expired"). // Time remaining after warning
 		Done().

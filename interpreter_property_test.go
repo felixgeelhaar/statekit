@@ -67,12 +67,12 @@ func TestProperty_ContextNeverNil(t *testing.T) {
 			(*ctx).ActionLog = append((*ctx).ActionLog, string(e.Type))
 		}).
 		State("idle").
-			OnEntry("track").
-			On("GO").Target("active").
+		OnEntry("track").
+		On("GO").Target("active").
 		Done().
 		State("active").
-			OnEntry("track").
-			On("BACK").Target("idle").
+		OnEntry("track").
+		On("BACK").Target("idle").
 		Done().
 		Build()
 
@@ -114,8 +114,8 @@ func TestProperty_FinalStateIsTerminal(t *testing.T) {
 			ctx.TransitionCount++
 		}).
 		State("running").
-			On("FINISH").Target("done").Do("count").
-			On("FAIL").Target("failed").Do("count").
+		On("FINISH").Target("done").Do("count").
+		On("FAIL").Target("failed").Do("count").
 		Done().
 		State("done").Final().Done().
 		State("failed").Final().Done().
@@ -180,11 +180,11 @@ func TestProperty_GuardsPreventTransitions(t *testing.T) {
 			ctx.Value++
 		}).
 		State("locked").
-			On("TRY_UNLOCK").Target("unlocked").Guard("canUnlock").
-			On("INCREMENT").Target("locked").Do("increment").
+		On("TRY_UNLOCK").Target("unlocked").Guard("canUnlock").
+		On("INCREMENT").Target("locked").Do("increment").
 		Done().
 		State("unlocked").
-			On("LOCK").Target("locked").
+		On("LOCK").Target("locked").
 		Done().
 		Build()
 
@@ -269,16 +269,16 @@ func TestProperty_HierarchyMatchesAncestors(t *testing.T) {
 	machine, err := NewMachine[Ctx]("hierarchy_test").
 		WithInitial("active").
 		State("active").
-			WithInitial("idle").
-			On("SHUTDOWN").Target("stopped").End().
-			State("idle").
-				On("START").Target("working").
-			End().
-			End().
-			State("working").
-				On("STOP").Target("idle").
-			End().
-			End().
+		WithInitial("idle").
+		On("SHUTDOWN").Target("stopped").End().
+		State("idle").
+		On("START").Target("working").
+		End().
+		End().
+		State("working").
+		On("STOP").Target("idle").
+		End().
+		End().
 		Done().
 		State("stopped").Final().Done().
 		Build()
@@ -435,14 +435,14 @@ func TestProperty_EventOrderMatters(t *testing.T) {
 		WithAction("recordA", func(ctx *Ctx, e Event) { ctx.Path = append(ctx.Path, "A") }).
 		WithAction("recordB", func(ctx *Ctx, e Event) { ctx.Path = append(ctx.Path, "B") }).
 		State("start").
-			On("A").Target("stateA").Do("recordA").
-			On("B").Target("stateB").Do("recordB").
+		On("A").Target("stateA").Do("recordA").
+		On("B").Target("stateB").Do("recordB").
 		Done().
 		State("stateA").
-			On("B").Target("stateAB").Do("recordB").
+		On("B").Target("stateAB").Do("recordB").
 		Done().
 		State("stateB").
-			On("A").Target("stateBA").Do("recordA").
+		On("A").Target("stateBA").Do("recordA").
 		Done().
 		State("stateAB").Done().
 		State("stateBA").Done().
@@ -488,22 +488,22 @@ func buildPropertyMachine(t *testing.T) *MachineConfig[PropertyContext] {
 			ctx.TransitionCount++
 		}).
 		State("idle").
-			On("LOAD").Target("loading").Do("trackTransition").
+		On("LOAD").Target("loading").Do("trackTransition").
 		Done().
 		State("loading").
-			On("PROCESS").Target("processing").Do("trackTransition").
-			On("ERROR").Target("error").Do("trackTransition").
+		On("PROCESS").Target("processing").Do("trackTransition").
+		On("ERROR").Target("error").Do("trackTransition").
 		Done().
 		State("processing").
-			On("SUCCESS").Target("success").Do("trackTransition").
-			On("ERROR").Target("error").Do("trackTransition").
+		On("SUCCESS").Target("success").Do("trackTransition").
+		On("ERROR").Target("error").Do("trackTransition").
 		Done().
 		State("success").
-			On("RESET").Target("idle").Do("trackTransition").
+		On("RESET").Target("idle").Do("trackTransition").
 		Done().
 		State("error").
-			On("RETRY").Target("loading").Do("trackTransition").
-			On("RESET").Target("idle").Do("trackTransition").
+		On("RETRY").Target("loading").Do("trackTransition").
+		On("RESET").Target("idle").Do("trackTransition").
 		Done().
 		Build()
 

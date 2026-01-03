@@ -139,7 +139,7 @@ func FuzzToSnakeCase(f *testing.F) {
 				// Could be other unicode - that's fine, just verify it was in input
 				found := false
 				for _, inputR := range input {
-					if inputR == r || (inputR >= 'A' && inputR <= 'Z' && rune(inputR+32) == r) {
+					if inputR == r || (inputR >= 'A' && inputR <= 'Z' && inputR+32 == r) {
 						found = true
 						break
 					}
