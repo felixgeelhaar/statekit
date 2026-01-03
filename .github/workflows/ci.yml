@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  security-events: write
 
 jobs:
   test:
@@ -86,11 +87,22 @@ jobs:
         run: go install github.com/felixgeelhaar/verdictsec/cmd/verdict@latest
 
       - name: Run VerdictSec Security Scan
-        run: verdict scan --json -o verdict-results.json || true
+        run: |
+          verdict scan --json -o verdict-results.json || true
+          verdict scan --sarif -o verdict-results.sarif || true
+
+      - name: Upload VerdictSec SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: verdict-results.sarif
+        if: always() && hashFiles('verdict-results.sarif') != ''
+        continue-on-error: true
 
       - name: Upload VerdictSec results
         uses: actions/upload-artifact@v6
         with:
           name: security-scan-results
-          path: verdict-results.json
+          path: |
+            verdict-results.json
+            verdict-results.sarif
         if: always()
