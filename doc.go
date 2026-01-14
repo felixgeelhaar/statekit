@@ -1,68 +1,40 @@
-// Package statekit provides a Go-native statechart execution engine with
-// XState JSON compatibility for visualization.
+// Package statekit provides a Go-native statechart execution engine.
 //
-// Statekit enables backend engineers to define, execute, and visualize
-// statecharts using existing XState tooling (Stately Visualizer, XState Inspect).
-//
-// # Basic Usage
-//
-// Define a state machine using the fluent builder API:
-//
-//	type Context struct {
-//	    Count int
-//	}
-//
-//	machine, err := statekit.NewMachine[Context]("counter").
-//	    WithInitial("idle").
-//	    WithContext(Context{Count: 0}).
-//	    WithAction("increment", func(ctx *Context, e statekit.Event) {
-//	        ctx.Count++
-//	    }).
-//	    WithGuard("hasCount", func(ctx Context, e statekit.Event) bool {
-//	        return ctx.Count > 0
-//	    }).
-//	    State("idle").
-//	        OnEntry("increment").
-//	        On("START").Target("running").Guard("hasCount").
-//	        Done().
-//	    State("running").
-//	        On("STOP").Target("idle").
-//	        Done().
-//	    Build()
-//
-//	interp := statekit.NewInterpreter(machine)
-//	interp.Start()
-//	interp.Send(statekit.Event{Type: "START"})
+// Define and execute statecharts in Go — visualize them with built-in tools.
 //
 // # Features
 //
-// Core features:
-//   - Fluent builder API with generics for type-safe context
-//   - Synchronous interpreter with guards and actions
-//   - Build-time validation
-//   - Final states
+//   - Fluent Builder API
+//   - Hierarchical States (Compound/Nested)
+//   - History States (Shallow and Deep)
+//   - Delayed Transitions (Timers)
+//   - Parallel States (Orthogonal Regions)
+//   - Reflection DSL (Struct tags)
+//   - Native Visualization (HTML simulator, Mermaid, ASCII, TUI)
 //
-// Hierarchical states:
-//   - Compound/nested states with parent-child relationships
-//   - Event bubbling from child to parent states
-//   - Proper entry/exit action ordering
+// # Quick Start
 //
-// Advanced features (v2.0):
-//   - History states (shallow and deep)
-//   - Delayed transitions with timers
-//   - Parallel states with orthogonal regions
+//	machine, _ := statekit.NewMachine[struct{}]("traffic").
+//		WithInitial("green").
+//		State("green").On("TIMER").Target("yellow").Done().
+//		State("yellow").On("TIMER").Target("red").Done().
+//		State("red").On("TIMER").Target("green").Done().
+//		Build()
 //
-// Visualization:
-//   - XState JSON export for use with stately.ai/viz
-//   - Compatible with XState Inspector
+//	interp := statekit.NewInterpreter(machine)
+//	interp.Start()
 //
-// # XState Export
+//	interp.Send(statekit.Event{Type: "TIMER"})
 //
-// Export machines for visualization:
+// # Visualization
 //
-//	exporter := export.NewXStateExporter(machine)
-//	jsonStr, err := exporter.ExportJSONIndent("", "  ")
-//	// Use with stately.ai/viz or XState Inspector
+// Export your machine to Statekit Native JSON for visualization:
 //
-// For more examples, see the examples directory.
+//	exporter := export.NewNativeExporter(machine)
+//	jsonStr, _ := exporter.ExportJSONIndent("", "  ")
+//	fmt.Println(jsonStr)
+//
+// Or use the CLI:
+//
+//	statekit viz --go-package . --format html -o machine.html
 package statekit

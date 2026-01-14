@@ -2,33 +2,33 @@
 package viz
 
 // VizMachine represents a state machine for visualization purposes.
-// It is format-agnostic and can be constructed from XState JSON or ir.MachineConfig.
+// It is format-agnostic and can be constructed from ir.MachineConfig.
 type VizMachine struct {
-	ID      string
-	Initial string
-	States  map[string]*VizState
+	ID      string               `json:"id"`
+	Initial string               `json:"initial"`
+	States  map[string]*VizState `json:"states"`
 }
 
 // VizState represents a state node for visualization.
 type VizState struct {
-	ID          string
-	Type        VizStateType
-	Initial     string   // For compound states
-	Parent      string   // Parent state ID (empty for root)
-	Children    []string // Child state IDs (ordered)
-	Transitions []VizTransition
-	Entry       []string // Entry action names
-	Exit        []string // Exit action names
+	ID          string          `json:"id"`
+	Type        VizStateType    `json:"type"`
+	Initial     string          `json:"initial,omitempty"`
+	Parent      string          `json:"parent,omitempty"`
+	Children    []string        `json:"children,omitempty"`
+	Transitions []VizTransition `json:"transitions,omitempty"`
+	Entry       []string        `json:"entry,omitempty"`
+	Exit        []string        `json:"exit,omitempty"`
 
 	// History-specific fields
-	HistoryType    string // "shallow" or "deep"
-	HistoryDefault string // Default target if no history
+	HistoryType    string `json:"historyType,omitempty"`    // "shallow" or "deep"
+	HistoryDefault string `json:"historyDefault,omitempty"` // Default target if no history
 
 	// Invoked services
-	Invocations []VizInvoke
+	Invocations []VizInvoke `json:"invocations,omitempty"`
 
 	// Computed during traversal
-	Depth int
+	Depth int `json:"depth,omitempty"`
 }
 
 // VizStateType represents the type of state.
@@ -44,22 +44,22 @@ const (
 
 // VizTransition represents a transition between states.
 type VizTransition struct {
-	Event   string
-	Target  string
-	Guard   string
-	Actions []string
+	Event   string   `json:"event"`
+	Target  string   `json:"target"`
+	Guard   string   `json:"guard,omitempty"`
+	Actions []string `json:"actions,omitempty"`
 
 	// Delayed transition fields
-	IsDelayed bool
-	DelayMs   int64
+	IsDelayed bool  `json:"isDelayed,omitempty"`
+	DelayMs   int64 `json:"delayMs,omitempty"`
 }
 
 // VizInvoke represents an invoked service.
 type VizInvoke struct {
-	ID           string
-	Src          string
-	OnDoneTarget string
-	OnErrTarget  string
+	ID           string `json:"id"`
+	Src          string `json:"src"`
+	OnDoneTarget string `json:"onDoneTarget,omitempty"`
+	OnErrTarget  string `json:"onErrTarget,omitempty"`
 }
 
 // GetRootStates returns all root-level state IDs (states without parents).

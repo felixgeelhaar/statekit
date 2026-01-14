@@ -18,7 +18,7 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 - **Parallel States** — Orthogonal regions active simultaneously
 - **Reflection DSL** — Define machines using struct tags
 - **Guards & Actions** — Conditional transitions and side effects
-- **XState Export** — Visualize with [Stately.ai](https://stately.ai/viz) and XState Inspector
+- **Native Visualization** — Interactive HTML simulator, Mermaid diagrams, and TUI
 - **Build-time Validation** — Catch configuration errors before runtime
 - **Testing Utilities** — Assertions, recorders, and helpers for testing machines
 - **Prometheus Metrics** — Production monitoring with metrics and health checks
@@ -203,21 +203,35 @@ machine, _ := statekit.NewMachine[Context]("counter").
     Build()
 ```
 
-## XState Visualization
+## Visualization
 
-Export to XState JSON for visualization:
+Statekit provides a native `viz` command to visualize state machines from Go source code or JSON.
+
+Try the [Live Visualizer](https://felixgeelhaar.github.io/statekit/visualizer.html) to paste your JSON and interact with it.
+
+```bash
+# Interactive HTML simulation
+statekit viz --go-package ./examples/order_workflow --format html -o machine.html
+
+# Mermaid diagram
+statekit viz --go-package ./examples/order_workflow --format mermaid
+```
+
+It supports multiple output formats:
+- **HTML**: Interactive simulator with Cytoscape graph.
+- **Mermaid**: Markdown-friendly state diagrams.
+- **ASCII**: Terminal box diagrams.
+- **TUI**: Interactive terminal UI.
+
+To export JSON programmatically:
 
 ```go
 import "github.com/felixgeelhaar/statekit/export"
 
-exporter := export.NewXStateExporter(machine)
+exporter := export.NewNativeExporter(machine)
 jsonStr, _ := exporter.ExportJSONIndent("", "  ")
 fmt.Println(jsonStr)
 ```
-
-Use with:
-- [Stately.ai Visualizer](https://stately.ai/viz)
-- [XState Inspector](https://stately.ai/docs/inspector)
 
 ## Additional Packages
 

@@ -135,9 +135,9 @@ func buildSupervisor() *statekit.MachineConfig[SupervisorContext] {
 		Done().
 		State("supervising").
 		On("STOP").Target("stopped").
-		On("xstate.done.actor.worker-1").Target("supervising").
-		On("xstate.done.actor.worker-2").Target("supervising").
-		On("xstate.done.actor.worker-3").Target("supervising").
+		On("statekit.done.actor.worker-1").Target("supervising").
+		On("statekit.done.actor.worker-2").Target("supervising").
+		On("statekit.done.actor.worker-3").Target("supervising").
 		Done().
 		State("stopped").Final().
 		Done().

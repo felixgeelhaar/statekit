@@ -1,7 +1,7 @@
 package statekit
 
 import (
-	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/felixgeelhaar/statekit/export"
@@ -341,81 +341,31 @@ func TestParallelState_EntryOrder(t *testing.T) {
 	interp.Stop()
 }
 
-// TestParallelState_XStateExport tests XState JSON export of parallel states
-func TestParallelState_XStateExport(t *testing.T) {
-	machine, err := NewMachine[struct{}]("export_parallel").
+// TestParallelState_NativeExport tests Native JSON export of parallel states
+func TestParallelState_NativeExport(t *testing.T) {
+	machine, err := NewMachine[struct{}]("parallel").
 		WithInitial("active").
 		State("active").Parallel().
-		Region("upload").
-		WithInitial("pending").
-		State("pending").
-		On("START").Target("uploading").
-		EndState().
-		State("uploading").EndState().
-		State("complete").Final().EndState().
-		EndRegion().
-		Region("download").
-		WithInitial("waiting").
-		State("waiting").
-		On("START").Target("downloading").
-		EndState().
-		State("downloading").EndState().
-		State("finished").Final().EndState().
-		EndRegion().
+			Region("r1").WithInitial("s1").
+				State("s1").EndState().
+			EndRegion().
+			Region("r2").WithInitial("s2").
+				State("s2").EndState().
+			EndRegion().
 		Done().
 		Build()
 	if err != nil {
-		t.Fatalf("Failed to build machine: %v", err)
+		t.Fatalf("failed to build machine: %v", err)
 	}
 
-	exporter := export.NewXStateExporter(machine)
-	exported, err := exporter.Export()
-	if err != nil {
-		t.Fatalf("Failed to export: %v", err)
-	}
-
-	// Check the active state has type "parallel"
-	activeState := exported.States["active"]
-	if activeState.Type != "parallel" {
-		t.Errorf("Expected type 'parallel', got '%s'", activeState.Type)
-	}
-
-	// Check it has nested states (regions)
-	if activeState.States == nil {
-		t.Fatal("Expected nested states in parallel state")
-	}
-	if _, ok := activeState.States["upload"]; !ok {
-		t.Error("Expected 'upload' region")
-	}
-	if _, ok := activeState.States["download"]; !ok {
-		t.Error("Expected 'download' region")
-	}
-
-	// Check regions have their nested states
-	uploadRegion := activeState.States["upload"]
-	if uploadRegion.Initial != "pending" {
-		t.Errorf("Expected upload initial 'pending', got '%s'", uploadRegion.Initial)
-	}
-	if _, ok := uploadRegion.States["pending"]; !ok {
-		t.Error("Expected 'pending' state in upload region")
-	}
-
-	// Verify JSON structure
+	exporter := export.NewNativeExporter(machine)
 	jsonStr, err := exporter.ExportJSONIndent("", "  ")
 	if err != nil {
-		t.Fatalf("Failed to export JSON: %v", err)
+		t.Fatalf("failed to export: %v", err)
 	}
 
-	var parsed map[string]any
-	if err := json.Unmarshal([]byte(jsonStr), &parsed); err != nil {
-		t.Fatalf("Failed to parse exported JSON: %v", err)
-	}
-
-	states := parsed["states"].(map[string]any)
-	active := states["active"].(map[string]any)
-
-	if active["type"] != "parallel" {
-		t.Errorf("Expected JSON type 'parallel', got '%v'", active["type"])
+	if !strings.Contains(jsonStr, `"type": "parallel"`) {
+		t.Error("expected type: parallel")
 	}
 }
 

@@ -218,4 +218,4 @@ func main() {
 
 - [Getting Started](getting-started.md)
 - [Guards and Actions](guards-actions.md)
-- [XState Export](xstate-export.md) - Visualize hierarchical machines
+- [Visualization](visualization.md) - Visualize hierarchical machines

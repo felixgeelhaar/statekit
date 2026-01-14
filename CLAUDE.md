@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Statekit is a Go-native statechart execution engine with XState JSON compatibility for visualization. It enables backend engineers to define, execute, and visualize statecharts using existing XState tooling (Stately Visualizer, XState Inspect).
+Statekit is a Go-native statechart execution engine. It enables backend engineers to define, execute, and visualize statecharts.
 
-**One-liner:** Define and execute statecharts in Go — visualize them with XState tooling.
+**One-liner:** Define and execute statecharts in Go — visualize them with built-in tools.
 
 ## Build Commands
 
@@ -76,8 +76,8 @@ statekit/
 ├── cmd/
 │   └── statekit/         # CLI tool
 │       └── commands/     # viz, generate, version commands
-├── generate/             # Go code generation from XState JSON
-│   ├── generate.go       # Generator and XState JSON parsing
+├── generate/             # Go code generation from Native JSON
+│   ├── generate.go       # Generator and Native JSON parsing
 │   └── generate_test.go  # Generator tests
 ├── http/                 # HTTP integration for web frameworks
 │   ├── http.go           # MachineHandler, Registry, Middleware
@@ -87,9 +87,10 @@ statekit/
 │   └── otel_test.go      # Tracing tests
 ├── viz/                  # Visualization package
 │   ├── model.go          # VizMachine, VizState models
-│   ├── parser.go         # XState JSON parser
+│   ├── parser.go         # Native JSON parser
 │   ├── ascii/            # ASCII box diagram renderer
 │   ├── mermaid/          # Mermaid stateDiagram renderer
+│   ├── html/             # Interactive HTML renderer
 │   ├── goparser/         # Go source code parser
 │   └── tui/              # Interactive terminal UI (Bubble Tea)
 ├── internal/
@@ -99,8 +100,8 @@ statekit/
 │   │   └── validate.go   # Build-time validation
 │   └── parser/           # Struct tag parsing for reflection DSL
 ├── export/
-│   ├── xstate.go         # XState JSON exporter
-│   └── xstate_test.go    # Exporter tests
+│   ├── native.go         # Statekit Native JSON exporter
+│   └── native_test.go    # Exporter tests
 ├── statetest/            # Testing utilities
 │   ├── recorder.go       # Transition recorder
 │   ├── assert.go         # Test assertions
@@ -149,9 +150,9 @@ statekit/
    - `.Done()` checks if in final state
    - `.UpdateContext(fn)` updates context with a function
 
-4. **XState Exporter** (`export/xstate.go`) - Visualization export
-   - `NewXStateExporter(machine)` creates exporter
-   - `.Export()` returns XStateMachine struct
+4. **Native Exporter** (`export/native.go`) - Visualization export
+   - `NewNativeExporter(machine)` creates exporter
+   - `.Export()` returns VizMachine struct
    - `.ExportJSON()` returns compact JSON string
    - `.ExportJSONIndent()` returns formatted JSON
 
@@ -249,13 +250,13 @@ interp.Send(statekit.Event{Type: "GLOBAL_RESET"})  // Bubbles up to "active"
 fmt.Println(interp.State().Value)  // "done"
 ```
 
-### XState Export Example
+### Visualization Example
 
 ```go
-exporter := export.NewXStateExporter(machine)
+exporter := export.NewNativeExporter(machine)
 jsonStr, _ := exporter.ExportJSONIndent("", "  ")
 fmt.Println(jsonStr)
-// Use with stately.ai/viz or XState Inspector
+// Use with statekit viz command
 ```
 
 ### Reflection DSL Example
@@ -300,7 +301,7 @@ interp.Start()
 
 - **Go-first execution** - Explicit, deterministic, testable
 - **Statecharts over FSMs** - Full hierarchy support
-- **Visualization as a feature** - XState JSON export for existing tooling
+- **Visualization as a feature** - Built-in visualization tools
 - **Small surface area** - Fewer features, better guarantees
 
 ## Current Status (v1.0)
@@ -313,7 +314,7 @@ interp.Start()
 - ✅ Build-time validation
 - ✅ Final states
 - ✅ Hierarchical (nested) states with event bubbling
-- ✅ XState JSON exporter for visualization
+- ✅ Native JSON exporter for visualization
 
 **Reflection DSL (v0.3)**
 - ✅ Struct-based machine definitions with tags
@@ -604,14 +605,17 @@ Key behaviors:
 
 ## CLI Visualization Tool
 
-Visualize state machines from XState JSON or Go source code:
+Visualize state machines from Statekit JSON or Go source code:
 
 ```bash
-# From XState JSON file
+# From Statekit JSON file
 statekit viz machine.json
 
 # With Mermaid output
 statekit viz machine.json --format mermaid -o diagram.md
+
+# Interactive HTML
+statekit viz machine.json --format html -o machine.html
 
 # Interactive TUI
 statekit viz machine.json --format tui
@@ -629,6 +633,7 @@ cat machine.json | statekit viz
 Output formats:
 - `ascii` (default): Terminal-friendly box diagrams
 - `mermaid`: Mermaid stateDiagram-v2 markdown
+- `html`: Interactive simulator
 - `tui`: Interactive terminal UI with keyboard navigation
 
 ## Event Persistence
@@ -824,10 +829,10 @@ if router.IsLocal(streamID, members, localNodeID) {
 
 ## Go Code Generation
 
-Generate Go code from XState JSON definitions:
+Generate Go code from Statekit JSON definitions:
 
 ```bash
-# Generate from XState JSON file
+# Generate from Statekit JSON file
 statekit generate machine.json -o machine.go
 
 # With custom package and type name

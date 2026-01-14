@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/felixgeelhaar/statekit/viz"
 )
 
-// MachineExporter is implemented by types that can export to XState JSON format.
-// XStateExporter[C] implements this interface.
+// MachineExporter is implemented by types that can export to Native Visualization format.
+// NativeExporter[C] implements this interface.
 type MachineExporter interface {
-	Export() (*XStateMachine, error)
+	Export() *viz.VizMachine
 }
 
 // ExportOptions configures the export behavior.
@@ -41,11 +43,7 @@ func DefaultExportOptions() ExportOptions {
 
 // ExportMachine exports a single machine to JSON.
 func ExportMachine(exporter MachineExporter, opts ExportOptions) error {
-	machine, err := exporter.Export()
-	if err != nil {
-		return fmt.Errorf("export failed: %w", err)
-	}
-
+	machine := exporter.Export()
 	return writeJSON(machine, opts)
 }
 
@@ -62,13 +60,9 @@ func ExportAll(machines map[string]MachineExporter, opts ExportOptions) error {
 	}
 
 	// Export all machines
-	result := make(map[string]*XStateMachine)
+	result := make(map[string]*viz.VizMachine)
 	for id, exporter := range machines {
-		machine, err := exporter.Export()
-		if err != nil {
-			return fmt.Errorf("export %q failed: %w", id, err)
-		}
-		result[id] = machine
+		result[id] = exporter.Export()
 	}
 
 	return writeJSON(result, opts)
@@ -118,7 +112,8 @@ func RunCLI(machines map[string]MachineExporter, args []string) error {
 
 	pretty := fs.Bool("pretty", false, "Pretty-print JSON output")
 	indent := fs.String("indent", "  ", "Indentation string (used with -pretty)")
-	machineID := fs.String("machine", "", "Export only this machine ID")
+
+machineID := fs.String("machine", "", "Export only this machine ID")
 	output := fs.String("o", "", "Output file (default: stdout)")
 	list := fs.Bool("list", false, "List available machine IDs")
 

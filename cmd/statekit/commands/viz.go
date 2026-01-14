@@ -10,6 +10,7 @@ import (
 	"github.com/felixgeelhaar/statekit/viz"
 	"github.com/felixgeelhaar/statekit/viz/ascii"
 	"github.com/felixgeelhaar/statekit/viz/goparser"
+	"github.com/felixgeelhaar/statekit/viz/html"
 	"github.com/felixgeelhaar/statekit/viz/mermaid"
 	"github.com/felixgeelhaar/statekit/viz/tui"
 )
@@ -26,22 +27,23 @@ var (
 var vizCmd = &cobra.Command{
 	Use:   "viz [file]",
 	Short: "Visualize a state machine",
-	Long: `Visualize a state machine from XState JSON input or Go source code.
+	Long: `Visualize a state machine from Statekit JSON input or Go source code.
 
 Input can be provided as:
-  - A file path argument (XState JSON)
-  - Piped via stdin (XState JSON)
+  - A file path argument (Statekit JSON)
+  - Piped via stdin (Statekit JSON)
   - A Go package path (--go-package)
 
 Output formats:
   - ascii   : Terminal-friendly box diagrams (default)
   - mermaid : Mermaid stateDiagram-v2 markdown
+  - html    : Standalone HTML visualizer with interactive simulation
   - tui     : Interactive terminal UI with navigation
 
 Examples:
   statekit viz machine.json
   statekit viz machine.json --format mermaid
-  statekit viz machine.json --format mermaid -o diagram.md
+  statekit viz machine.json --format html -o machine.html
   statekit viz machine.json --format tui
   cat machine.json | statekit viz
   statekit viz machine.json --no-unicode
@@ -53,7 +55,7 @@ Examples:
 
 func init() {
 	vizCmd.Flags().StringVarP(&vizFormat, "format", "f", "ascii",
-		"Output format: ascii, mermaid, tui")
+		"Output format: ascii, mermaid, html, tui")
 	vizCmd.Flags().StringVarP(&vizOutput, "output", "o", "",
 		"Output file (default: stdout)")
 	vizCmd.Flags().BoolVar(&vizNoUnicode, "no-unicode", false,
@@ -112,8 +114,8 @@ func runViz(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("empty input")
 		}
 
-		// Parse XState JSON
-		machine, err := viz.ParseXStateJSON(input)
+		// Parse Statekit JSON
+		machine, err := viz.ParseNativeJSON(input)
 		if err != nil {
 			return fmt.Errorf("parse JSON: %w", err)
 		}
@@ -149,7 +151,7 @@ func runViz(cmd *cobra.Command, args []string) error {
 
 	// Write output
 	if vizOutput != "" {
-		if err := os.WriteFile(vizOutput, []byte(result), 0o644); err != nil {
+		if err := os.WriteFile(vizOutput, []byte(result), 0o600); err != nil {
 			return fmt.Errorf("write output: %w", err)
 		}
 		fmt.Fprintf(os.Stderr, "Written to %s\n", vizOutput)
@@ -172,7 +174,11 @@ func renderMachine(machine *viz.VizMachine) (string, error) {
 		r.Direction = vizDirection
 		return r.Render(machine), nil
 
+	case "html":
+		r := html.NewRenderer()
+		return r.Render(machine)
+
 	default:
-		return "", fmt.Errorf("unknown format: %s (supported: ascii, mermaid, tui)", vizFormat)
+		return "", fmt.Errorf("unknown format: %s (supported: ascii, mermaid, html, tui)", vizFormat)
 	}
 }

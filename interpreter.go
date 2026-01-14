@@ -1233,7 +1233,7 @@ func (i *Interpreter[C]) startInvokedMachines(stateID ir.StateID) {
 			// Execute OnDone transition if configured
 			if capturedInvoke.OnDone != nil && capturedInvoke.OnDone.Target != "" {
 				doneEvent := Event{
-					Type: EventType(fmt.Sprintf("xstate.done.invoke.%s", capturedInvoke.ID)),
+					Type: EventType(fmt.Sprintf("statekit.done.invoke.%s", capturedInvoke.ID)),
 				}
 				i.executeServiceTransition(capturedStateID, capturedInvoke.OnDone, doneEvent)
 			}

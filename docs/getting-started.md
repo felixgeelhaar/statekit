@@ -129,21 +129,21 @@ machine, _ := statekit.FromStruct[MyMachine, Context](registry)
 
 See [Reflection DSL Guide](reflection-dsl.md) for more details.
 
-## XState Visualization
+## Visualization
 
-Export your machine to XState JSON for visualization:
+Visualize your machine using the `statekit viz` command:
 
-```go
-import "github.com/felixgeelhaar/statekit/export"
-
-exporter := export.NewXStateExporter(machine)
-json, _ := exporter.ExportJSONIndent("", "  ")
-fmt.Println(json)
+```bash
+statekit viz --go-package . --format html -o machine.html
 ```
 
-Paste the output at [stately.ai/viz](https://stately.ai/viz) to visualize.
+Or export to JSON programmatically:
 
-See [XState Export Guide](xstate-export.md) for more details.
+```go
+exporter := export.NewNativeExporter(machine)
+```
+
+See [Visualization Guide](visualization.md) for more details.
 
 ## Next Steps
 
@@ -152,6 +152,6 @@ See [XState Export Guide](xstate-export.md) for more details.
 - [Patterns & Recipes](patterns-recipes.md) - Common patterns and best practices
 - [Performance Tuning](performance-tuning.md) - Optimization techniques
 - [Reflection DSL](reflection-dsl.md) - Declarative machine definition
-- [XState Export](xstate-export.md) - Visualization with XState tools
+- [Visualization](visualization.md) - Interactive graphs and diagrams
 - [XState Migration](xstate-migration.md) - Coming from XState/TypeScript?
 - [API Reference](api-reference.md) - Complete API documentation

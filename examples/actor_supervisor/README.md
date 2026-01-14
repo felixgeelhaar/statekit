@@ -135,11 +135,10 @@ err := interp.SendToParent(statekit.Event{Type: "DONE"})
 
 ### Actor Completion Events
 
-When an actor reaches a final state, it sends `xstate.done.actor.<id>` to the parent:
+When an actor reaches a final state, it sends `statekit.done.actor.<id>` to the parent:
 
 ```go
-State("supervising").
-    On("xstate.done.actor.worker-1").Target("supervising")
+On("statekit.done.actor.worker-1").Target("supervising")
 ```
 
 ### Context Separation

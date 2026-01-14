@@ -48,9 +48,9 @@ type PaymentInfo struct {
 func main() {
 	machine := buildWizardMachine()
 
-	// Export to XState JSON for visualization
-	fmt.Println("=== XState JSON (paste at stately.ai/viz) ===")
-	exporter := export.NewXStateExporter(machine)
+	// Export to Statekit Native JSON for visualization
+	fmt.Println("=== Statekit Native JSON ===")
+	exporter := export.NewNativeExporter(machine)
 	json, _ := exporter.ExportJSONIndent("", "  ")
 	fmt.Println(json)
 	fmt.Println()

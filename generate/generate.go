@@ -1,4 +1,4 @@
-// Package generate provides Go code generation from XState JSON definitions.
+// Package generate provides Go code generation from Statekit Native JSON definitions.
 package generate
 
 import (
@@ -11,9 +11,11 @@ import (
 	"strings"
 	"text/template"
 	"unicode"
+
+	"github.com/felixgeelhaar/statekit/viz"
 )
 
-// Generator generates Go code from XState JSON.
+// Generator generates Go code from Native JSON.
 type Generator struct {
 	PackageName string
 	TypeName    string
@@ -38,115 +40,9 @@ func NewGenerator(packageName, typeName, contextType string) *Generator {
 	}
 }
 
-// XStateMachine represents an XState machine definition.
-type XStateMachine struct {
-	ID      string                `json:"id"`
-	Initial string                `json:"initial"`
-	Context json.RawMessage       `json:"context,omitempty"`
-	States  map[string]XState     `json:"states"`
-	On      map[string]XTransSpec `json:"on,omitempty"`
-}
-
-// XState represents an XState state definition.
-type XState struct {
-	Initial string                `json:"initial,omitempty"`
-	Type    string                `json:"type,omitempty"`    // "final", "parallel", "history"
-	History string                `json:"history,omitempty"` // "shallow", "deep"
-	Target  string                `json:"target,omitempty"`  // default for history
-	States  map[string]XState     `json:"states,omitempty"`
-	On      map[string]XTransSpec `json:"on,omitempty"`
-	Entry   XActionSpec           `json:"entry,omitempty"`
-	Exit    XActionSpec           `json:"exit,omitempty"`
-	After   map[string]XTransSpec `json:"after,omitempty"`
-	Invoke  json.RawMessage       `json:"invoke,omitempty"`
-}
-
-// XTransSpec can be a string, object, or array of transitions.
-type XTransSpec struct {
-	raw json.RawMessage
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (ts *XTransSpec) UnmarshalJSON(data []byte) error {
-	ts.raw = make(json.RawMessage, len(data))
-	copy(ts.raw, data)
-	return nil
-}
-
-// XTransition represents a single transition.
-type XTransition struct {
-	Target  string      `json:"target,omitempty"`
-	Guard   string      `json:"guard,omitempty"`
-	Cond    string      `json:"cond,omitempty"` // alias for guard
-	Actions XActionSpec `json:"actions,omitempty"`
-}
-
-// XActionSpec can be a string or array of action names.
-type XActionSpec struct {
-	raw json.RawMessage
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (as *XActionSpec) UnmarshalJSON(data []byte) error {
-	as.raw = make(json.RawMessage, len(data))
-	copy(as.raw, data)
-	return nil
-}
-
-// ParseTransitions parses the transition spec into transitions.
-func (ts XTransSpec) ParseTransitions() ([]XTransition, error) {
-	if len(ts.raw) == 0 {
-		return nil, nil
-	}
-
-	// Try as string first
-	var target string
-	if err := json.Unmarshal(ts.raw, &target); err == nil {
-		return []XTransition{{Target: target}}, nil
-	}
-
-	// Try as single object
-	var single XTransition
-	if err := json.Unmarshal(ts.raw, &single); err == nil {
-		return []XTransition{single}, nil
-	}
-
-	// Try as array
-	var arr []XTransition
-	if err := json.Unmarshal(ts.raw, &arr); err == nil {
-		return arr, nil
-	}
-
-	return nil, fmt.Errorf("invalid transition spec: %s", string(ts.raw))
-}
-
-// ParseActions parses action spec into action names.
-func (as XActionSpec) ParseActions() ([]string, error) {
-	if len(as.raw) == 0 {
-		return nil, nil
-	}
-
-	// Try as string
-	var single string
-	if err := json.Unmarshal(as.raw, &single); err == nil {
-		if single == "" {
-			return nil, nil
-		}
-		return []string{single}, nil
-	}
-
-	// Try as array
-	var arr []string
-	if err := json.Unmarshal(as.raw, &arr); err == nil {
-		return arr, nil
-	}
-
-	return nil, fmt.Errorf("invalid action spec: %s", string(as.raw))
-}
-
-// Generate generates Go code from XState JSON.
+// Generate generates Go code from Native JSON.
 func (g *Generator) Generate(r io.Reader) ([]byte, error) {
-	var machine XStateMachine
+	var machine viz.VizMachine
 	if err := json.NewDecoder(r).Decode(&machine); err != nil {
 		return nil, fmt.Errorf("parse JSON: %w", err)
 	}
@@ -154,15 +50,16 @@ func (g *Generator) Generate(r io.Reader) ([]byte, error) {
 	return g.GenerateMachine(&machine)
 }
 
-// GenerateMachine generates Go code from a parsed XState machine.
-func (g *Generator) GenerateMachine(machine *XStateMachine) ([]byte, error) {
+// GenerateMachine generates Go code from a parsed VizMachine.
+func (g *Generator) GenerateMachine(machine *viz.VizMachine) ([]byte, error) {
 	// Collect all actions and guards
 	actions := make(map[string]bool)
 	guards := make(map[string]bool)
-	g.collectActionsAndGuards(machine.States, actions, guards)
+	g.collectActionsAndGuards(machine, actions, guards)
 
 	// Build template data
-	data := templateData{
+
+data := templateData{
 		Package:     g.PackageName,
 		TypeName:    g.TypeName,
 		ContextType: g.ContextType,
@@ -170,7 +67,7 @@ func (g *Generator) GenerateMachine(machine *XStateMachine) ([]byte, error) {
 		Initial:     machine.Initial,
 		Actions:     sortedKeys(actions),
 		Guards:      sortedKeys(guards),
-		States:      g.buildStates(machine.States, 1),
+		States:      g.buildStates(machine, machine.GetRootStates(), 1),
 	}
 
 	// Execute template
@@ -189,43 +86,21 @@ func (g *Generator) GenerateMachine(machine *XStateMachine) ([]byte, error) {
 	return formatted, nil
 }
 
-func (g *Generator) collectActionsAndGuards(states map[string]XState, actions, guards map[string]bool) {
-	for _, state := range states {
-		// Entry actions
-		if entryActions, _ := state.Entry.ParseActions(); len(entryActions) > 0 {
-			for _, a := range entryActions {
+func (g *Generator) collectActionsAndGuards(vm *viz.VizMachine, actions, guards map[string]bool) {
+	for _, state := range vm.States {
+		for _, a := range state.Entry {
+			actions[a] = true
+		}
+		for _, a := range state.Exit {
+			actions[a] = true
+		}
+		for _, t := range state.Transitions {
+			if t.Guard != "" {
+				guards[t.Guard] = true
+			}
+			for _, a := range t.Actions {
 				actions[a] = true
 			}
-		}
-
-		// Exit actions
-		if exitActions, _ := state.Exit.ParseActions(); len(exitActions) > 0 {
-			for _, a := range exitActions {
-				actions[a] = true
-			}
-		}
-
-		// Transitions
-		for _, transSpec := range state.On {
-			transitions, _ := transSpec.ParseTransitions()
-			for _, t := range transitions {
-				if t.Guard != "" {
-					guards[t.Guard] = true
-				}
-				if t.Cond != "" {
-					guards[t.Cond] = true
-				}
-				if transActions, _ := t.Actions.ParseActions(); len(transActions) > 0 {
-					for _, a := range transActions {
-						actions[a] = true
-					}
-				}
-			}
-		}
-
-		// Nested states
-		if len(state.States) > 0 {
-			g.collectActionsAndGuards(state.States, actions, guards)
 		}
 	}
 }
@@ -263,61 +138,45 @@ type transitionData struct {
 	Actions []string
 }
 
-func (g *Generator) buildStates(states map[string]XState, indent int) []stateData {
+func (g *Generator) buildStates(vm *viz.VizMachine, stateIDs []string, indent int) []stateData {
 	var result []stateData
 
 	// Sort state names for deterministic output
-	names := make([]string, 0, len(states))
-	for name := range states {
-		names = append(names, name)
-	}
-	sort.Strings(names)
+	sort.Strings(stateIDs)
 
-	for _, name := range names {
-		state := states[name]
+	for _, id := range stateIDs {
+		state := vm.States[id]
+		if state == nil {
+			continue
+		}
+
 		sd := stateData{
-			ID:         name,
+			ID:         state.ID,
 			Initial:    state.Initial,
-			IsFinal:    state.Type == "final",
-			IsParallel: state.Type == "parallel",
-			IsHistory:  state.Type == "history",
+			IsFinal:    state.Type == viz.VizStateFinal,
+			IsParallel: state.Type == viz.VizStateParallel,
+			IsHistory:  state.Type == viz.VizStateHistory,
 			Indent:     indent,
+			EntryActions: state.Entry,
+			ExitActions:  state.Exit,
 		}
 
 		if sd.IsHistory {
-			sd.HistoryType = state.History
+			sd.HistoryType = state.HistoryType
 			if sd.HistoryType == "" {
 				sd.HistoryType = "shallow"
 			}
-			sd.HistoryDefault = state.Target
-		}
-
-		// Entry actions
-		if actions, _ := state.Entry.ParseActions(); len(actions) > 0 {
-			sd.EntryActions = actions
-		}
-
-		// Exit actions
-		if actions, _ := state.Exit.ParseActions(); len(actions) > 0 {
-			sd.ExitActions = actions
+			sd.HistoryDefault = state.HistoryDefault
 		}
 
 		// Transitions
-		for event, transSpec := range state.On {
-			transitions, _ := transSpec.ParseTransitions()
-			for _, t := range transitions {
-				guard := t.Guard
-				if guard == "" {
-					guard = t.Cond
-				}
-				transActions, _ := t.Actions.ParseActions()
-				sd.Transitions = append(sd.Transitions, transitionData{
-					Event:   event,
-					Target:  t.Target,
-					Guard:   guard,
-					Actions: transActions,
-				})
-			}
+		for _, t := range state.Transitions {
+			sd.Transitions = append(sd.Transitions, transitionData{
+				Event:   t.Event,
+				Target:  t.Target,
+				Guard:   t.Guard,
+				Actions: t.Actions,
+			})
 		}
 
 		// Sort transitions for deterministic output
@@ -326,8 +185,8 @@ func (g *Generator) buildStates(states map[string]XState, indent int) []stateDat
 		})
 
 		// Nested states
-		if len(state.States) > 0 {
-			sd.Children = g.buildStates(state.States, indent+1)
+		if len(state.Children) > 0 {
+			sd.Children = g.buildStates(vm, state.Children, indent+1)
 		}
 
 		result = append(result, sd)

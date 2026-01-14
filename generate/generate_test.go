@@ -11,13 +11,19 @@ func TestGenerator_SimpleStateMachine(t *testing.T) {
 		"initial": "green",
 		"states": {
 			"green": {
-				"on": { "TIMER": "yellow" }
+				"id": "green",
+				"type": "atomic",
+				"transitions": [ { "event": "TIMER", "target": "yellow" } ]
 			},
 			"yellow": {
-				"on": { "TIMER": "red" }
+				"id": "yellow",
+				"type": "atomic",
+				"transitions": [ { "event": "TIMER", "target": "red" } ]
 			},
 			"red": {
-				"on": { "TIMER": "green" }
+				"id": "red",
+				"type": "atomic",
+				"transitions": [ { "event": "TIMER", "target": "green" } ]
 			}
 		}
 	}`
@@ -73,12 +79,16 @@ func TestGenerator_WithActions(t *testing.T) {
 		"initial": "idle",
 		"states": {
 			"idle": {
-				"entry": "logEntry",
-				"exit": "logExit",
-				"on": { "COUNT": { "target": "counting", "actions": "increment" } }
+				"id": "idle",
+				"type": "atomic",
+				"entry": ["logEntry"],
+				"exit": ["logExit"],
+				"transitions": [ { "event": "COUNT", "target": "counting", "actions": ["increment"] } ]
 			},
 			"counting": {
-				"on": { "STOP": "idle" }
+				"id": "counting",
+				"type": "atomic",
+				"transitions": [ { "event": "STOP", "target": "idle" } ]
 			}
 		}
 	}`
@@ -127,10 +137,14 @@ func TestGenerator_WithGuards(t *testing.T) {
 		"initial": "closed",
 		"states": {
 			"closed": {
-				"on": { "OPEN": { "target": "open", "guard": "canOpen" } }
+				"id": "closed",
+				"type": "atomic",
+				"transitions": [ { "event": "OPEN", "target": "open", "guard": "canOpen" } ]
 			},
 			"open": {
-				"on": { "CLOSE": { "target": "closed", "cond": "canClose" } }
+				"id": "open",
+				"type": "atomic",
+				"transitions": [ { "event": "CLOSE", "target": "closed", "guard": "canClose" } ]
 			}
 		}
 	}`
@@ -168,9 +182,12 @@ func TestGenerator_FinalState(t *testing.T) {
 		"initial": "active",
 		"states": {
 			"active": {
-				"on": { "COMPLETE": "done" }
+				"id": "active",
+				"type": "atomic",
+				"transitions": [ { "event": "COMPLETE", "target": "done" } ]
 			},
 			"done": {
+				"id": "done",
 				"type": "final"
 			}
 		}
@@ -196,13 +213,21 @@ func TestGenerator_HierarchicalStates(t *testing.T) {
 		"initial": "parent",
 		"states": {
 			"parent": {
+				"id": "parent",
+				"type": "compound",
 				"initial": "child1",
-				"states": {
-					"child1": {
-						"on": { "NEXT": "child2" }
-					},
-					"child2": {}
-				}
+				"children": ["child1", "child2"]
+			},
+			"child1": {
+				"id": "child1",
+				"type": "atomic",
+				"parent": "parent",
+				"transitions": [ { "event": "NEXT", "target": "child2" } ]
+			},
+			"child2": {
+				"id": "child2",
+				"type": "atomic",
+				"parent": "parent"
 			}
 		}
 	}`
@@ -238,9 +263,14 @@ func TestGenerator_MultipleTransitionActions(t *testing.T) {
 		"initial": "a",
 		"states": {
 			"a": {
-				"on": { "GO": { "target": "b", "actions": ["action1", "action2"] } }
+				"id": "a",
+				"type": "atomic",
+				"transitions": [ { "event": "GO", "target": "b", "actions": ["action1", "action2"] } ]
 			},
-			"b": {}
+			"b": {
+				"id": "b",
+				"type": "atomic"
+			}
 		}
 	}`
 

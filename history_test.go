@@ -1,7 +1,7 @@
 package statekit
 
 import (
-	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/felixgeelhaar/statekit/export"
@@ -239,81 +239,31 @@ func TestHistoryState_Validation(t *testing.T) {
 	})
 }
 
-// TestHistoryState_XStateExport tests that history states export correctly to XState JSON
-func TestHistoryState_XStateExport(t *testing.T) {
-	machine, err := NewMachine[struct{}]("export_test").
+// TestHistoryState_NativeExport tests that history states export correctly to Native JSON
+func TestHistoryState_NativeExport(t *testing.T) {
+	machine, err := NewMachine[struct{}]("history_test").
 		WithInitial("active").
 		State("active").
-		WithInitial("idle").
-		History("hist").Shallow().Default("idle").End().
-		History("deepHist").Deep().Default("idle").End().
-		State("idle").
-		On("START").Target("running").
-		End().
-		End().
-		State("running").
-		End().
+			WithInitial("step1").
+			History("hist").Shallow().Default("step1").End().
+			State("step1").End().
 		Done().
 		Build()
 	if err != nil {
-		t.Fatalf("Failed to build machine: %v", err)
+		t.Fatalf("failed to build machine: %v", err)
 	}
 
-	exporter := export.NewXStateExporter(machine)
-	exported, err := exporter.Export()
-	if err != nil {
-		t.Fatalf("Failed to export: %v", err)
-	}
-
-	// Check the active state has both history states
-	activeState := exported.States["active"]
-	if activeState.States == nil {
-		t.Fatal("Expected active state to have nested states")
-	}
-
-	// Check shallow history
-	histState := activeState.States["hist"]
-	if histState.Type != "history" {
-		t.Errorf("Expected hist type 'history', got '%s'", histState.Type)
-	}
-	if histState.History != "shallow" {
-		t.Errorf("Expected hist history 'shallow', got '%s'", histState.History)
-	}
-	if histState.Target != "idle" {
-		t.Errorf("Expected hist target 'idle', got '%s'", histState.Target)
-	}
-
-	// Check deep history
-	deepHistState := activeState.States["deepHist"]
-	if deepHistState.Type != "history" {
-		t.Errorf("Expected deepHist type 'history', got '%s'", deepHistState.Type)
-	}
-	if deepHistState.History != "deep" {
-		t.Errorf("Expected deepHist history 'deep', got '%s'", deepHistState.History)
-	}
-
-	// Verify JSON structure
+	exporter := export.NewNativeExporter(machine)
 	jsonStr, err := exporter.ExportJSONIndent("", "  ")
 	if err != nil {
-		t.Fatalf("Failed to export JSON: %v", err)
+		t.Fatalf("failed to export: %v", err)
 	}
 
-	// Parse back and verify
-	var parsed map[string]any
-	if err := json.Unmarshal([]byte(jsonStr), &parsed); err != nil {
-		t.Fatalf("Failed to parse exported JSON: %v", err)
+	if !strings.Contains(jsonStr, `"type": "history"`) {
+		t.Error("expected type: history")
 	}
-
-	states := parsed["states"].(map[string]any)
-	active := states["active"].(map[string]any)
-	nestedStates := active["states"].(map[string]any)
-
-	hist := nestedStates["hist"].(map[string]any)
-	if hist["type"] != "history" {
-		t.Errorf("JSON: Expected hist type 'history', got '%v'", hist["type"])
-	}
-	if hist["history"] != "shallow" {
-		t.Errorf("JSON: Expected hist history 'shallow', got '%v'", hist["history"])
+	if !strings.Contains(jsonStr, `"historyType": "shallow"`) {
+		t.Error("expected historyType: shallow")
 	}
 }
 

@@ -183,7 +183,7 @@ func (i *Interpreter[C]) handleActorDone(entry *actorEntry) {
 
 	// Send done event to parent
 	doneEvent := Event{
-		Type: EventType(fmt.Sprintf("xstate.done.actor.%s", entry.ref.id)),
+		Type: EventType(fmt.Sprintf("statekit.done.actor.%s", entry.ref.id)),
 	}
 
 	// Execute OnDone transition if configured

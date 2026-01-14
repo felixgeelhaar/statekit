@@ -76,7 +76,7 @@ Examples:
 				return nil
 			}
 
-			if err := os.WriteFile(outputFile, code, 0644); err != nil {
+			if err := os.WriteFile(outputFile, code, 0o600); err != nil {
 				return fmt.Errorf("write file: %w", err)
 			}
 

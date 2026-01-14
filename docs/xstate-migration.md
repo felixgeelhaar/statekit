@@ -12,7 +12,7 @@ This guide helps developers familiar with [XState](https://stately.ai/docs/xstat
 | Actor model built-in | Explicit actor spawning |
 | Dynamic interpretation | Static machine definition |
 
-Statekit maintains XState JSON compatibility for visualization, so you can still use [Stately Visualizer](https://stately.ai/viz).
+Statekit provides built-in visualization tools (`statekit viz`), removing the dependency on external services.
 
 ## Quick Reference
 
@@ -743,7 +743,7 @@ machine, _ := statekit.FromStruct[OrderMachine, OrderContext](registry)
 | **Async** | Promises/async-await | Goroutines |
 | **Event payload** | `event.data` | `event.Payload` |
 | **Plugins** | `inspect`, middleware | Plugin interfaces |
-| **Visualization** | Native | XState JSON export |
+| **Visualization** | Native | Native (HTML, Mermaid, TUI) |
 
 ---
 
@@ -756,7 +756,7 @@ machine, _ := statekit.FromStruct[OrderMachine, OrderContext](registry)
 - [ ] Replace `assign()` with direct context pointer mutation
 - [ ] Replace promises with goroutines for async (via services)
 - [ ] Update event payload: `event.data` → `event.Payload`
-- [ ] Export to XState JSON and verify in Stately Visualizer
+- [ ] Use `statekit viz` for visualization
 - [ ] Add plugins for logging/metrics if needed
 
 ---
@@ -764,7 +764,7 @@ machine, _ := statekit.FromStruct[OrderMachine, OrderContext](registry)
 ## See Also
 
 - [Getting Started](getting-started.md)
-- [XState Export](xstate-export.md)
+- [Visualization](visualization.md)
 - [Reflection DSL](reflection-dsl.md)
 - [Plugin System](plugin-system.md)
 - [API Reference](api-reference.md)

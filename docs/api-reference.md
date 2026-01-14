@@ -217,40 +217,31 @@ Build machine with initial context value.
 
 ## Package export
 
-### XStateExporter
+### NativeExporter
+
+Exports machine definitions to Statekit Native JSON.
 
 ```go
-func NewXStateExporter[C any](machine *ir.MachineConfig[C]) *XStateExporter[C]
-
-type XStateExporter[C any] struct { ... }
-
-func (e *XStateExporter[C]) Export() (*XStateMachine, error)
-func (e *XStateExporter[C]) ExportJSON() (string, error)
-func (e *XStateExporter[C]) ExportJSONIndent(prefix, indent string) (string, error)
+func NewNativeExporter[C any](machine *ir.MachineConfig[C]) *NativeExporter[C]
 ```
 
-### XState Types
+```go
+type NativeExporter[C any] struct { ... }
+```
 
 ```go
-type XStateMachine struct {
-    ID      string                `json:"id"`
-    Initial string                `json:"initial,omitempty"`
-    States  map[string]XStateNode `json:"states"`
-}
+func (e *NativeExporter[C]) Export() *viz.VizMachine
+func (e *NativeExporter[C]) ExportJSON() (string, error)
+func (e *NativeExporter[C]) ExportJSONIndent(prefix, indent string) (string, error)
+```
 
-type XStateNode struct {
-    Type    string                      `json:"type,omitempty"`
-    Initial string                      `json:"initial,omitempty"`
-    States  map[string]XStateNode       `json:"states,omitempty"`
-    Entry   []string                    `json:"entry,omitempty"`
-    Exit    []string                    `json:"exit,omitempty"`
-    On      map[string]XStateTransition `json:"on,omitempty"`
-}
+### JSON Types
 
-type XStateTransition struct {
-    Target  string   `json:"target,omitempty"`
-    Actions []string `json:"actions,omitempty"`
-    Guard   string   `json:"guard,omitempty"`
+```go
+type VizMachine struct {
+    ID      string               `json:"id"`
+    Initial string               `json:"initial"`
+    States  map[string]*VizState `json:"states"`
 }
 ```
 
@@ -377,7 +368,7 @@ json, _ := exporter.ExportJSONIndent("", "  ")
 
 ## Package generate
 
-Go code generation from XState JSON.
+Go code generation from Statekit JSON.
 
 ### Generator
 
@@ -391,7 +382,7 @@ type Generator struct {
 }
 
 func (g *Generator) Generate(r io.Reader) ([]byte, error)
-func (g *Generator) GenerateMachine(machine *XStateMachine) ([]byte, error)
+func (g *Generator) GenerateMachine(machine *viz.VizMachine) ([]byte, error)
 ```
 
 ### XState JSON Types

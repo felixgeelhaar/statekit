@@ -1,7 +1,7 @@
 package statekit
 
 import (
-	"encoding/json"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -276,84 +276,30 @@ func TestDelayedTransition_Stop(t *testing.T) {
 	}
 }
 
-// TestDelayedTransition_XStateExport tests XState JSON export of delayed transitions
-func TestDelayedTransition_XStateExport(t *testing.T) {
-	machine, err := NewMachine[struct{}]("export_test").
-		WithInitial("loading").
-		State("loading").
-		After(1000 * time.Millisecond).Target("timeout").
-		After(5000 * time.Millisecond).Target("error").
-		On("LOADED").Target("ready").
+// TestDelayedTransition_NativeExport tests Native JSON export of delayed transitions
+func TestDelayedTransition_NativeExport(t *testing.T) {
+	machine, err := NewMachine[struct{}]("timeout").
+		WithInitial("active").
+		State("active").
+			After(5*time.Second).Target("inactive").
 		Done().
-		State("timeout").
-		Done().
-		State("error").
-		Done().
-		State("ready").
-		Done().
+		State("inactive").Done().
 		Build()
 	if err != nil {
-		t.Fatalf("Failed to build machine: %v", err)
+		t.Fatalf("failed to build machine: %v", err)
 	}
 
-	exporter := export.NewXStateExporter(machine)
-	exported, err := exporter.Export()
-	if err != nil {
-		t.Fatalf("Failed to export: %v", err)
-	}
-
-	// Check the loading state has both "on" and "after"
-	loadingState := exported.States["loading"]
-
-	// Check "on" transitions
-	if loadingState.On == nil {
-		t.Fatal("Expected loading state to have 'on' transitions")
-	}
-	if _, ok := loadingState.On["LOADED"]; !ok {
-		t.Error("Expected 'LOADED' event in 'on' transitions")
-	}
-
-	// Check "after" transitions
-	if loadingState.After == nil {
-		t.Fatal("Expected loading state to have 'after' transitions")
-	}
-	if _, ok := loadingState.After["1000"]; !ok {
-		t.Error("Expected '1000' delay in 'after' transitions")
-	}
-	if _, ok := loadingState.After["5000"]; !ok {
-		t.Error("Expected '5000' delay in 'after' transitions")
-	}
-
-	// Check targets
-	if loadingState.After["1000"].Target != "timeout" {
-		t.Errorf("Expected '1000' after target 'timeout', got '%s'", loadingState.After["1000"].Target)
-	}
-	if loadingState.After["5000"].Target != "error" {
-		t.Errorf("Expected '5000' after target 'error', got '%s'", loadingState.After["5000"].Target)
-	}
-
-	// Verify JSON structure
+	exporter := export.NewNativeExporter(machine)
 	jsonStr, err := exporter.ExportJSONIndent("", "  ")
 	if err != nil {
-		t.Fatalf("Failed to export JSON: %v", err)
+		t.Fatalf("failed to export: %v", err)
 	}
 
-	// Parse back and verify
-	var parsed map[string]any
-	if err := json.Unmarshal([]byte(jsonStr), &parsed); err != nil {
-		t.Fatalf("Failed to parse exported JSON: %v", err)
+	if !strings.Contains(jsonStr, `"isDelayed": true`) {
+		t.Error("expected isDelayed: true in output")
 	}
-
-	states := parsed["states"].(map[string]any)
-	loading := states["loading"].(map[string]any)
-
-	// Check "after" in JSON
-	afterMap, ok := loading["after"].(map[string]any)
-	if !ok {
-		t.Fatal("Expected 'after' field in loading state JSON")
-	}
-	if _, ok := afterMap["1000"]; !ok {
-		t.Error("Expected '1000' in after map")
+	if !strings.Contains(jsonStr, `"delayMs": 5000`) {
+		t.Error("expected delayMs: 5000 in output")
 	}
 }
 

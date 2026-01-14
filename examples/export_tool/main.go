@@ -1,8 +1,8 @@
 //go:build ignore
 
 // This is an example export tool demonstrating how to use statekit's CLI export
-// helper. It creates machines and exports them to XState JSON format for
-// visualization with tools like stately.ai/viz.
+// helper. It creates machines and exports them to Statekit Native JSON format for
+// visualization.
 //
 // Usage:
 //
@@ -39,8 +39,8 @@ func main() {
 
 	// Create exporters
 	machines := map[string]export.MachineExporter{
-		"traffic": export.NewXStateExporter(trafficMachine),
-		"order":   export.NewXStateExporter(orderMachine),
+		"traffic": export.NewNativeExporter(trafficMachine),
+		"order":   export.NewNativeExporter(orderMachine),
 	}
 
 	// Run CLI

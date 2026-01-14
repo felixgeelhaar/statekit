@@ -30,9 +30,9 @@ statekit generate machine.json
 | `--type` | `-t` | Type name for the machine | Inferred from filename |
 | `--context` | `-c` | Context type name | `struct{}` |
 
-## Input Format
+### JSON Types
 
-The generator accepts XState JSON format:
+The generator accepts Statekit Native JSON format:
 
 ```json
 {
@@ -40,29 +40,30 @@ The generator accepts XState JSON format:
   "initial": "pending",
   "states": {
     "pending": {
-      "on": {
-        "SUBMIT": {
-          "target": "validating",
-          "guard": "hasItems"
-        }
-      },
-      "entry": "logPending"
+      "id": "pending",
+      "type": "atomic",
+      "entry": ["logPending"],
+      "transitions": [
+        { "event": "SUBMIT", "target": "validating", "guard": "hasItems" }
+      ]
     },
     "validating": {
-      "on": {
-        "VALID": "processing",
-        "INVALID": "pending"
-      }
+      "id": "validating",
+      "type": "atomic",
+      "transitions": [
+        { "event": "VALID", "target": "processing" },
+        { "event": "INVALID", "target": "pending" }
+      ]
     },
     "processing": {
-      "on": {
-        "COMPLETE": {
-          "target": "completed",
-          "actions": ["notifyCustomer", "updateInventory"]
-        }
-      }
+      "id": "processing",
+      "type": "atomic",
+      "transitions": [
+        { "event": "COMPLETE", "target": "completed", "actions": ["notifyCustomer", "updateInventory"] }
+      ]
     },
     "completed": {
+      "id": "completed",
       "type": "final"
     }
   }
@@ -132,7 +133,7 @@ func BuildOrderMachine() (*statekit.MachineConfig[OrderMachineContext], error) {
 
 ## Workflow
 
-1. **Design** your state machine using [Stately.ai](https://stately.ai) or write XState JSON manually
+1. **Design** your state machine or write JSON manually
 2. **Export** the machine definition as JSON
 3. **Generate** Go code with `statekit generate`
 4. **Implement** the action and guard stubs
@@ -195,7 +196,7 @@ The generator supports:
 
 ### Hierarchical States
 
-Nested states in XState JSON are converted to the statekit builder API:
+Nested states in JSON are converted to the statekit builder API:
 
 ```json
 {
@@ -203,19 +204,28 @@ Nested states in XState JSON are converted to the statekit builder API:
   "initial": "idle",
   "states": {
     "idle": {
-      "on": { "EDIT": "editing" }
+      "id": "idle",
+      "type": "atomic",
+      "transitions": [ { "event": "EDIT", "target": "editing" } ]
     },
     "editing": {
+      "id": "editing",
+      "type": "compound",
       "initial": "typing",
-      "states": {
-        "typing": {
-          "on": { "SAVE": "saving" }
-        },
-        "saving": {
-          "on": { "DONE": "typing" }
-        }
-      },
-      "on": { "CANCEL": "idle" }
+      "children": ["typing", "saving"],
+      "transitions": [ { "event": "CANCEL", "target": "idle" } ]
+    },
+    "typing": {
+      "id": "typing",
+      "type": "atomic",
+      "parent": "editing",
+      "transitions": [ { "event": "SAVE", "target": "saving" } ]
+    },
+    "saving": {
+      "id": "saving",
+      "type": "atomic",
+      "parent": "editing",
+      "transitions": [ { "event": "DONE", "target": "typing" } ]
     }
   }
 }
@@ -267,7 +277,7 @@ os.WriteFile("machine.go", code, 0644)
 
 ## Best Practices
 
-1. **Keep JSON as source of truth** - Store your XState JSON in version control and regenerate Go code when it changes
+1. **Keep JSON as source of truth** - Store your JSON in version control and regenerate Go code when it changes
 
 2. **Don't edit generated code** - Implement actions and guards in separate files; regenerating will overwrite changes
 
