@@ -11,7 +11,7 @@ versioning:
 # Changelog configuration
 changelog:
   file: CHANGELOG.md
-  format: keepachangelog
+  format: keep-a-changelog
 
 # Commit analysis for version bumps
 commits:
