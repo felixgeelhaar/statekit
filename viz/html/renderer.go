@@ -30,7 +30,7 @@ func (r *Renderer) Render(machine *viz.VizMachine) (string, error) {
 	}{
 		// json.Marshal escapes HTML characters by default, so casting to template.JS is safe here.
 		// We need raw JSON for the script tag.
-		//nosec G203
+		// #nosec G203
 		MachineJSON: template.JS(jsonData),
 	}
 
