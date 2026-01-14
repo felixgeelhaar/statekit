@@ -45,7 +45,7 @@ func TestNativeExporter_SimpleMachine(t *testing.T) {
 	if !ok {
 		t.Fatal("expected 'green' state")
 	}
-	
+
 	// Find transition
 	found := false
 	for _, tr := range green.Transitions {
@@ -115,7 +115,7 @@ func TestNativeExporter_WithTransitionActions(t *testing.T) {
 			break
 		}
 	}
-	
+
 	if !found {
 		t.Fatal("expected transition GO")
 	}
@@ -155,7 +155,7 @@ func TestNativeExporter_HierarchicalStates(t *testing.T) {
 	if active.Initial != "idle" {
 		t.Errorf("expected initial 'idle', got %s", active.Initial)
 	}
-	
+
 	// In native format, States is flat, but Children contains IDs
 	if len(active.Children) != 2 {
 		t.Fatalf("expected 2 child states, got %d", len(active.Children))
@@ -169,7 +169,7 @@ func TestNativeExporter_HierarchicalStates(t *testing.T) {
 	if idle.Parent != "active" {
 		t.Errorf("expected idle parent 'active', got %s", idle.Parent)
 	}
-	
+
 	working := result.States["working"]
 	if working == nil {
 		t.Fatal("expected working state")

@@ -244,9 +244,9 @@ func TestHistoryState_NativeExport(t *testing.T) {
 	machine, err := NewMachine[struct{}]("history_test").
 		WithInitial("active").
 		State("active").
-			WithInitial("step1").
-			History("hist").Shallow().Default("step1").End().
-			State("step1").End().
+		WithInitial("step1").
+		History("hist").Shallow().Default("step1").End().
+		State("step1").End().
 		Done().
 		Build()
 	if err != nil {

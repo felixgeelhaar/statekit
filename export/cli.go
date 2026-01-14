@@ -113,7 +113,7 @@ func RunCLI(machines map[string]MachineExporter, args []string) error {
 	pretty := fs.Bool("pretty", false, "Pretty-print JSON output")
 	indent := fs.String("indent", "  ", "Indentation string (used with -pretty)")
 
-machineID := fs.String("machine", "", "Export only this machine ID")
+	machineID := fs.String("machine", "", "Export only this machine ID")
 	output := fs.String("o", "", "Output file (default: stdout)")
 	list := fs.Bool("list", false, "List available machine IDs")
 

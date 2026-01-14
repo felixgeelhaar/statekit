@@ -94,8 +94,10 @@ func TestRunCLI_List(t *testing.T) {
 	}
 
 	err := RunCLI(exporters, []string{"-list"})
-	
-	w.Close()
+
+	if closeErr := w.Close(); closeErr != nil {
+		t.Errorf("failed to close pipe writer: %v", closeErr)
+	}
 	os.Stdout = oldStdout
 
 	if err != nil {
@@ -103,7 +105,9 @@ func TestRunCLI_List(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	if _, copyErr := io.Copy(&buf, r); copyErr != nil {
+		t.Errorf("failed to copy from pipe reader: %v", copyErr)
+	}
 	output := buf.String()
 
 	if output == "" {
@@ -123,8 +127,14 @@ func TestRunCLI_Export(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name())
-	tmpfile.Close()
+	defer func() {
+		if removeErr := os.Remove(tmpfile.Name()); removeErr != nil {
+			t.Errorf("failed to remove temp file: %v", removeErr)
+		}
+	}()
+	if closeErr := tmpfile.Close(); closeErr != nil {
+		t.Errorf("failed to close temp file: %v", closeErr)
+	}
 
 	// Run CLI with -o
 	err = RunCLI(exporters, []string{"-o", tmpfile.Name(), "-machine", "machine1"})

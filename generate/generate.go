@@ -59,7 +59,7 @@ func (g *Generator) GenerateMachine(machine *viz.VizMachine) ([]byte, error) {
 
 	// Build template data
 
-data := templateData{
+	data := templateData{
 		Package:     g.PackageName,
 		TypeName:    g.TypeName,
 		ContextType: g.ContextType,
@@ -151,12 +151,12 @@ func (g *Generator) buildStates(vm *viz.VizMachine, stateIDs []string, indent in
 		}
 
 		sd := stateData{
-			ID:         state.ID,
-			Initial:    state.Initial,
-			IsFinal:    state.Type == viz.VizStateFinal,
-			IsParallel: state.Type == viz.VizStateParallel,
-			IsHistory:  state.Type == viz.VizStateHistory,
-			Indent:     indent,
+			ID:           state.ID,
+			Initial:      state.Initial,
+			IsFinal:      state.Type == viz.VizStateFinal,
+			IsParallel:   state.Type == viz.VizStateParallel,
+			IsHistory:    state.Type == viz.VizStateHistory,
+			Indent:       indent,
 			EntryActions: state.Entry,
 			ExitActions:  state.Exit,
 		}

@@ -281,7 +281,7 @@ func TestDelayedTransition_NativeExport(t *testing.T) {
 	machine, err := NewMachine[struct{}]("timeout").
 		WithInitial("active").
 		State("active").
-			After(5*time.Second).Target("inactive").
+		After(5 * time.Second).Target("inactive").
 		Done().
 		State("inactive").Done().
 		Build()

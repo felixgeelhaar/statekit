@@ -346,12 +346,12 @@ func TestParallelState_NativeExport(t *testing.T) {
 	machine, err := NewMachine[struct{}]("parallel").
 		WithInitial("active").
 		State("active").Parallel().
-			Region("r1").WithInitial("s1").
-				State("s1").EndState().
-			EndRegion().
-			Region("r2").WithInitial("s2").
-				State("s2").EndState().
-			EndRegion().
+		Region("r1").WithInitial("s1").
+		State("s1").EndState().
+		EndRegion().
+		Region("r2").WithInitial("s2").
+		State("s2").EndState().
+		EndRegion().
 		Done().
 		Build()
 	if err != nil {
