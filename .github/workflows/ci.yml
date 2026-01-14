@@ -43,7 +43,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version: '1.25'
           cache: true
 
       - name: Install coverctl
@@ -83,13 +83,18 @@ jobs:
           go-version: '1.24'
           cache: true
 
+      - name: Install Engines
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+
       - name: Install VerdictSec
         run: go install github.com/felixgeelhaar/verdictsec/cmd/verdict@latest
 
       - name: Run VerdictSec Security Scan
         run: |
-          verdict scan --json -o verdict-results.json || true
-          verdict scan --sarif -o verdict-results.sarif || true
+          verdict scan --json -o verdict-results.json
+          verdict scan --sarif -o verdict-results.sarif
 
       - name: Upload VerdictSec SARIF
         uses: github/codeql-action/upload-sarif@v4
