@@ -321,23 +321,27 @@ function drawArrow(
 
     // Offset label perpendicular to arrow direction to avoid overlap with reverse arrows
     const perpAngle = angle + Math.PI / 2;
-    const offset = 15;  // Offset distance
+    const offset = 18;  // Offset distance
     const labelX = midX + Math.cos(perpAngle) * offset;
     const labelY = midY + Math.sin(perpAngle) * offset;
 
-    ctx.font = '600 10px monospace';
+    ctx.font = '600 9px monospace';
     const textWidth = ctx.measureText(label).width;
+    const paddingX = 10;
+    const paddingY = 6;
+    const pillWidth = textWidth + paddingX * 2;
+    const pillHeight = 18;
 
-    // Background pill
+    // Background pill - centered on label position
     ctx.fillStyle = colors.bg;
     ctx.beginPath();
-    ctx.roundRect(labelX - textWidth / 2 - 6, labelY - 10, textWidth + 12, 20, 4);
+    ctx.roundRect(labelX - pillWidth / 2, labelY - pillHeight / 2, pillWidth, pillHeight, 4);
     ctx.fill();
     ctx.strokeStyle = colors.border;
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    // Text
+    // Text - centered in pill
     ctx.fillStyle = colors.arrow;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
