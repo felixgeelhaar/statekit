@@ -223,21 +223,24 @@ function drawState(
 
   // Draw label
   ctx.fillStyle = isActive ? stateColor : colors.text;
-  ctx.font = `600 ${type === 'history' ? 10 : 12}px var(--font-mono), monospace`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   if (type === 'history') {
+    ctx.font = '600 10px var(--font-mono), monospace';
     ctx.fillText('H', pos.x, pos.y);
-  } else {
-    ctx.fillText(id, pos.x, pos.y);
-  }
-
-  // Draw type indicator for compound states
-  if (hasChildren && type !== 'history') {
-    ctx.font = '500 9px var(--font-mono), monospace';
+  } else if (hasChildren) {
+    // For compound states: draw label at the top
+    ctx.font = '600 11px var(--font-mono), monospace';
+    ctx.fillText(id, pos.x, y + 20);
+    // Draw type indicator below the label
+    ctx.font = '500 8px var(--font-mono), monospace';
     ctx.fillStyle = colors.textMuted;
-    ctx.fillText(type.toUpperCase(), pos.x, y + 12);
+    ctx.fillText(type.toUpperCase(), pos.x, y + 32);
+  } else {
+    // Atomic states: draw label in center
+    ctx.font = '600 12px var(--font-mono), monospace';
+    ctx.fillText(id, pos.x, pos.y);
   }
 
   // Draw final state indicator (inner circle)
