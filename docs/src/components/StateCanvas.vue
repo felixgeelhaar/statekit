@@ -227,19 +227,19 @@ function drawState(
   ctx.textBaseline = 'middle';
 
   if (type === 'history') {
-    ctx.font = '600 10px var(--font-mono), monospace';
+    ctx.font = '600 10px monospace';
     ctx.fillText('H', pos.x, pos.y);
   } else if (hasChildren) {
     // For compound states: draw label at the top
-    ctx.font = '600 11px var(--font-mono), monospace';
+    ctx.font = '600 11px monospace';
     ctx.fillText(id, pos.x, y + 20);
     // Draw type indicator below the label
-    ctx.font = '500 8px var(--font-mono), monospace';
+    ctx.font = '500 8px monospace';
     ctx.fillStyle = colors.textMuted;
     ctx.fillText(type.toUpperCase(), pos.x, y + 32);
   } else {
     // Atomic states: draw label in center
-    ctx.font = '600 12px var(--font-mono), monospace';
+    ctx.font = '600 12px monospace';
     ctx.fillText(id, pos.x, pos.y);
   }
 
@@ -319,15 +319,20 @@ function drawArrow(
     const midX = (startX + endX) / 2;
     const midY = (startY + endY) / 2;
 
-    ctx.font = '500 10px var(--font-mono), monospace';
+    ctx.font = '600 11px monospace';
     const textWidth = ctx.measureText(label).width;
 
-    // Background
+    // Background pill
     ctx.fillStyle = colors.bg;
-    ctx.fillRect(midX - textWidth / 2 - 4, midY - 8, textWidth + 8, 16);
+    ctx.beginPath();
+    ctx.roundRect(midX - textWidth / 2 - 6, midY - 10, textWidth + 12, 20, 4);
+    ctx.fill();
+    ctx.strokeStyle = colors.border;
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     // Text
-    ctx.fillStyle = colors.accent;
+    ctx.fillStyle = colors.arrow;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, midX, midY);
