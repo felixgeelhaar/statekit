@@ -185,6 +185,12 @@ function calculatePositions() {
   const paddingLeft = 250;  // More padding from left edge to avoid sidebar overlap
   const paddingTop = 100;
 
+  // Child state dimensions
+  const childStateWidth = 90;
+  const childStateHeight = 36;
+  const childPadding = 12;
+  const compoundLabelHeight = 45;  // Space for compound state label
+
   // Group states by parent
   const groups: Record<string, string[]> = {};
   const rootStates: string[] = [];
@@ -199,6 +205,14 @@ function calculatePositions() {
     }
   });
 
+  // Calculate compound state sizes based on children
+  function getCompoundSize(childCount: number): { width: number; height: number } {
+    // Arrange children in a single column for better readability
+    const innerWidth = childStateWidth + childPadding * 2;
+    const innerHeight = childCount * childStateHeight + (childCount + 1) * childPadding + compoundLabelHeight;
+    return { width: innerWidth, height: innerHeight };
+  }
+
   // Position root states in a grid
   const cols = Math.ceil(Math.sqrt(rootStates.length));
   const cellWidth = (width - paddingLeft - 100) / cols;
@@ -210,31 +224,36 @@ function calculatePositions() {
     const row = Math.floor(i / cols);
     const col = i % cols;
     const state = machine.value!.states[id];
+    const childCount = groups[id]?.length || 0;
+
+    // Calculate size based on whether it has children
+    let stateWidth = 140;
+    let stateHeight = 60;
+
+    if (childCount > 0) {
+      const size = getCompoundSize(childCount);
+      stateWidth = size.width;
+      stateHeight = size.height;
+    }
 
     positions[id] = {
       x: paddingLeft + col * cellWidth + cellWidth / 2,
       y: paddingTop + row * cellHeight + cellHeight / 2,
-      width: state.children ? 200 : 140,
-      height: state.children ? 160 : 60
+      width: stateWidth,
+      height: stateHeight
     };
 
-    // Position children inside parent
+    // Position children inside parent (single column layout)
     if (groups[id]) {
       const children = groups[id];
       const parentPos = positions[id];
-      const childCols = Math.ceil(Math.sqrt(children.length));
-      const childWidth = (parentPos.width - 40) / childCols;
-      const childHeight = (parentPos.height - 60) / Math.ceil(children.length / childCols);
 
       children.forEach((childId, j) => {
-        const cRow = Math.floor(j / childCols);
-        const cCol = j % childCols;
-
         positions[childId] = {
-          x: parentPos.x - parentPos.width/2 + 20 + cCol * childWidth + childWidth / 2,
-          y: parentPos.y - parentPos.height/2 + 40 + cRow * childHeight + childHeight / 2,
-          width: 100,
-          height: 40
+          x: parentPos.x,
+          y: parentPos.y - parentPos.height/2 + compoundLabelHeight + childPadding + j * (childStateHeight + childPadding) + childStateHeight / 2,
+          width: childStateWidth,
+          height: childStateHeight
         };
       });
     }
