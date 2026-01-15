@@ -319,13 +319,19 @@ function drawArrow(
     const midX = (startX + endX) / 2;
     const midY = (startY + endY) / 2;
 
-    ctx.font = '600 11px monospace';
+    // Offset label perpendicular to arrow direction to avoid overlap with reverse arrows
+    const perpAngle = angle + Math.PI / 2;
+    const offset = 15;  // Offset distance
+    const labelX = midX + Math.cos(perpAngle) * offset;
+    const labelY = midY + Math.sin(perpAngle) * offset;
+
+    ctx.font = '600 10px monospace';
     const textWidth = ctx.measureText(label).width;
 
     // Background pill
     ctx.fillStyle = colors.bg;
     ctx.beginPath();
-    ctx.roundRect(midX - textWidth / 2 - 6, midY - 10, textWidth + 12, 20, 4);
+    ctx.roundRect(labelX - textWidth / 2 - 6, labelY - 10, textWidth + 12, 20, 4);
     ctx.fill();
     ctx.strokeStyle = colors.border;
     ctx.lineWidth = 1;
@@ -335,7 +341,7 @@ function drawArrow(
     ctx.fillStyle = colors.arrow;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, midX, midY);
+    ctx.fillText(label, labelX, labelY);
   }
 }
 

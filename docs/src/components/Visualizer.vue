@@ -189,9 +189,10 @@ function calculatePositions() {
 
   // Child state dimensions
   const childStateWidth = 90;
-  const childStateHeight = 36;
-  const childPadding = 12;
-  const compoundLabelHeight = 45;  // Space for compound state label
+  const childStateHeight = 32;
+  const childGap = 50;  // Space between children for arrow labels
+  const compoundPadding = 20;
+  const compoundLabelHeight = 40;  // Space for compound state label
 
   // Group states by parent
   const groups: Record<string, string[]> = {};
@@ -209,9 +210,9 @@ function calculatePositions() {
 
   // Calculate compound state sizes based on children
   function getCompoundSize(childCount: number): { width: number; height: number } {
-    // Arrange children in a single column for better readability
-    const innerWidth = childStateWidth + childPadding * 2;
-    const innerHeight = childCount * childStateHeight + (childCount + 1) * childPadding + compoundLabelHeight;
+    // Arrange children in a single column with space for arrow labels between them
+    const innerWidth = childStateWidth + compoundPadding * 2;
+    const innerHeight = compoundLabelHeight + childCount * childStateHeight + (childCount - 1) * childGap + compoundPadding * 2;
     return { width: innerWidth, height: innerHeight };
   }
 
@@ -248,15 +249,16 @@ function calculatePositions() {
       height: stateHeight
     };
 
-    // Position children inside parent (single column layout)
+    // Position children inside parent (single column layout with gaps for labels)
     if (groups[id]) {
       const children = groups[id];
       const parentPos = positions[id];
+      const startY = parentPos.y - parentPos.height/2 + compoundLabelHeight + compoundPadding;
 
       children.forEach((childId, j) => {
         positions[childId] = {
           x: parentPos.x,
-          y: parentPos.y - parentPos.height/2 + compoundLabelHeight + childPadding + j * (childStateHeight + childPadding) + childStateHeight / 2,
+          y: startY + j * (childStateHeight + childGap) + childStateHeight / 2,
           width: childStateWidth,
           height: childStateHeight
         };
