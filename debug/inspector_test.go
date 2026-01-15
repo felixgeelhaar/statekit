@@ -6,6 +6,7 @@ import (
 
 	"github.com/felixgeelhaar/statekit"
 	"github.com/felixgeelhaar/statekit/debug"
+	"github.com/felixgeelhaar/statekit/internal/ir"
 )
 
 type TestContext struct {
@@ -13,7 +14,7 @@ type TestContext struct {
 	Allowed bool
 }
 
-func buildTestMachine() *statekit.MachineConfig[TestContext] {
+func buildTestMachine() *ir.MachineConfig[TestContext] {
 	machine, err := statekit.NewMachine[TestContext]("test").
 		WithInitial("idle").
 		WithContext(TestContext{Allowed: true}).

@@ -19,6 +19,9 @@ type Inspector[C any] struct {
 
 // NewInspector creates a new Inspector for the given interpreter.
 // The machine parameter is required for accessing machine configuration.
+// Note: The machine parameter accepts *ir.MachineConfig[C] which is returned by
+// the builder's Build() method. The statekit.MachineConfig[C] type alias is
+// equivalent but Go's generic type inference requires the exact type.
 func NewInspector[C any](interp *statekit.Interpreter[C], machine *ir.MachineConfig[C]) *Inspector[C] {
 	return &Inspector[C]{
 		interp:  interp,
