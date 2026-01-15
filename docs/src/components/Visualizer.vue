@@ -180,10 +180,12 @@ function calculatePositions() {
   if (!machine.value || !canvasRef.value) return;
 
   const states = Object.keys(machine.value.states);
-  const width = 900;
-  const height = 600;
-  const paddingLeft = 250;  // More padding from left edge to avoid sidebar overlap
-  const paddingTop = 100;
+  const width = 700;
+  const height = 500;
+  const paddingLeft = 80;
+  const paddingTop = 80;
+  const paddingRight = 80;
+  const paddingBottom = 80;
 
   // Child state dimensions
   const childStateWidth = 90;
@@ -215,8 +217,11 @@ function calculatePositions() {
 
   // Position root states in a grid
   const cols = Math.ceil(Math.sqrt(rootStates.length));
-  const cellWidth = (width - paddingLeft - 100) / cols;
-  const cellHeight = (height - paddingTop - 50) / Math.ceil(rootStates.length / cols);
+  const rows = Math.ceil(rootStates.length / cols);
+  const availableWidth = width - paddingLeft - paddingRight;
+  const availableHeight = height - paddingTop - paddingBottom;
+  const cellWidth = availableWidth / cols;
+  const cellHeight = availableHeight / rows;
 
   const positions: Record<string, StatePosition> = {};
 
