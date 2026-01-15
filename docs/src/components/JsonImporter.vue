@@ -114,36 +114,38 @@ function importJson() {
 
 function loadSample() {
   const sample: MachineConfig = {
-    id: 'trafficLight',
-    initial: 'green',
+    id: 'documentWorkflow',
+    initial: 'draft',
     states: {
-      green: {
+      draft: {
         type: 'atomic',
-        transitions: [{ event: 'TIMER', target: 'yellow' }]
+        transitions: [{ event: 'SUBMIT', target: 'review' }]
       },
-      yellow: {
-        type: 'atomic',
-        transitions: [{ event: 'TIMER', target: 'red' }]
-      },
-      red: {
+      review: {
         type: 'compound',
-        initial: 'walk',
-        children: ['walk', 'wait', 'stop'],
-        transitions: [{ event: 'TIMER', target: 'green' }]
+        initial: 'pending',
+        children: ['pending', 'inProgress', 'approved'],
+        transitions: [
+          { event: 'APPROVE', target: 'published' },
+          { event: 'REJECT', target: 'draft' }
+        ]
       },
-      walk: {
+      pending: {
         type: 'atomic',
-        parent: 'red',
-        transitions: [{ event: 'PED_TIMER', target: 'wait' }]
+        parent: 'review',
+        transitions: [{ event: 'ASSIGN', target: 'inProgress' }]
       },
-      wait: {
+      inProgress: {
         type: 'atomic',
-        parent: 'red',
-        transitions: [{ event: 'PED_TIMER', target: 'stop' }]
+        parent: 'review',
+        transitions: [{ event: 'COMPLETE', target: 'approved' }]
       },
-      stop: {
+      approved: {
         type: 'atomic',
-        parent: 'red'
+        parent: 'review'
+      },
+      published: {
+        type: 'final'
       }
     }
   };

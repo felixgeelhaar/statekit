@@ -18,6 +18,8 @@
       />
 
       <StateHistory :history="history" />
+
+      <MachineJson :machine="machine" />
     </aside>
 
     <!-- Canvas Area -->
@@ -130,6 +132,7 @@ import SimulationPanel from './SimulationPanel.vue';
 import StateHistory from './StateHistory.vue';
 import StateCanvas from './StateCanvas.vue';
 import KeyboardShortcuts from './KeyboardShortcuts.vue';
+import MachineJson from './MachineJson.vue';
 
 // State
 const machine = ref<MachineConfig | null>(null);
