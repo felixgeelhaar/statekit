@@ -308,7 +308,24 @@ function resetView() {
 // Tooltip
 function handleStateHover(data: { state: { id: string; type: string } | null; x: number; y: number }) {
   hoveredState.value = data.state;
-  tooltipStyle.value = { left: `${data.x + 10}px`, top: `${data.y + 10}px` };
+
+  // Calculate tooltip position, keeping it within viewport
+  const tooltipWidth = 120;
+  const tooltipHeight = 50;
+  const padding = 10;
+
+  let left = data.x + padding;
+  let top = data.y + padding;
+
+  // Constrain to viewport
+  if (left + tooltipWidth > window.innerWidth - padding) {
+    left = data.x - tooltipWidth - padding;
+  }
+  if (top + tooltipHeight > window.innerHeight - padding) {
+    top = data.y - tooltipHeight - padding;
+  }
+
+  tooltipStyle.value = { left: `${left}px`, top: `${top}px` };
 }
 
 // Keyboard shortcuts
