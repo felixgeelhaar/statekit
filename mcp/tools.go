@@ -16,7 +16,7 @@ import (
 
 // CreateMachineInput is the input for the create_machine tool.
 type CreateMachineInput struct {
-	Definition json.RawMessage `json:"definition" jsonschema:"description=Statekit Native JSON machine definition"`
+	Definition map[string]any `json:"definition" jsonschema:"description=Statekit Native JSON machine definition"`
 }
 
 // MachineIDInput identifies a machine by ID.
@@ -33,7 +33,7 @@ type SendEventInput struct {
 
 // ValidateMachineInput validates a machine definition.
 type ValidateMachineInput struct {
-	Definition json.RawMessage `json:"definition" jsonschema:"description=Statekit Native JSON machine definition"`
+	Definition map[string]any `json:"definition" jsonschema:"description=Statekit Native JSON machine definition"`
 }
 
 // ExportMachineInput exports a machine in a given format.
@@ -79,7 +79,11 @@ type ValidateOutput struct {
 
 func handleCreateMachine(reg *Registry) func(CreateMachineInput) (CreateMachineOutput, error) {
 	return func(input CreateMachineInput) (CreateMachineOutput, error) {
-		vm, err := viz.ParseNativeJSON(input.Definition)
+		data, err := json.Marshal(input.Definition)
+		if err != nil {
+			return CreateMachineOutput{}, fmt.Errorf("marshal definition: %w", err)
+		}
+		vm, err := viz.ParseNativeJSON(data)
 		if err != nil {
 			return CreateMachineOutput{}, fmt.Errorf("parse definition: %w", err)
 		}
@@ -180,7 +184,14 @@ func handleVisualizeMachine(reg *Registry) func(MachineIDInput) (json.RawMessage
 
 func handleValidateMachine(_ *Registry) func(ValidateMachineInput) (ValidateOutput, error) {
 	return func(input ValidateMachineInput) (ValidateOutput, error) {
-		vm, err := viz.ParseNativeJSON(input.Definition)
+		data, err := json.Marshal(input.Definition)
+		if err != nil {
+			return ValidateOutput{
+				Valid:  false,
+				Errors: []string{fmt.Sprintf("marshal error: %v", err)},
+			}, nil
+		}
+		vm, err := viz.ParseNativeJSON(data)
 		if err != nil {
 			return ValidateOutput{
 				Valid:  false,

@@ -15,11 +15,17 @@ var trafficLightJSON = `{
 	}
 }`
 
+func trafficLightDef() map[string]any {
+	var m map[string]any
+	_ = json.Unmarshal([]byte(trafficLightJSON), &m)
+	return m
+}
+
 func setupRegistry(t *testing.T) *Registry {
 	t.Helper()
 	reg := NewRegistry()
 	handler := handleCreateMachine(reg)
-	_, err := handler(CreateMachineInput{Definition: json.RawMessage(trafficLightJSON)})
+	_, err := handler(CreateMachineInput{Definition: trafficLightDef()})
 	if err != nil {
 		t.Fatalf("create machine: %v", err)
 	}
@@ -30,7 +36,7 @@ func TestHandleCreateMachine(t *testing.T) {
 	reg := NewRegistry()
 	handler := handleCreateMachine(reg)
 
-	out, err := handler(CreateMachineInput{Definition: json.RawMessage(trafficLightJSON)})
+	out, err := handler(CreateMachineInput{Definition: trafficLightDef()})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -144,7 +150,7 @@ func TestHandleVisualizeMachine(t *testing.T) {
 func TestHandleValidateMachine(t *testing.T) {
 	handler := handleValidateMachine(nil)
 
-	out, err := handler(ValidateMachineInput{Definition: json.RawMessage(trafficLightJSON)})
+	out, err := handler(ValidateMachineInput{Definition: trafficLightDef()})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -156,12 +162,13 @@ func TestHandleValidateMachine(t *testing.T) {
 func TestHandleValidateMachine_Invalid(t *testing.T) {
 	handler := handleValidateMachine(nil)
 
-	out, err := handler(ValidateMachineInput{Definition: json.RawMessage(`{invalid`)})
+	// Pass a map that won't produce a valid machine (missing id, initial, states)
+	out, err := handler(ValidateMachineInput{Definition: map[string]any{"foo": "bar"}})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if out.Valid {
-		t.Error("expected invalid for bad JSON")
+		t.Error("expected invalid for bad definition")
 	}
 }
 
