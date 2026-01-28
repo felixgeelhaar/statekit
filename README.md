@@ -23,7 +23,8 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 - **Testing Utilities** — Assertions, recorders, and helpers for testing machines
 - **Prometheus Metrics** — Production monitoring with metrics and health checks
 - **Static Analysis** — Lint rules for detecting structural issues
-- **Zero Dependencies** — Pure Go, no external runtime dependencies
+- **MCP Server** — Create, manage, and visualize machines via Model Context Protocol
+- **Zero Dependencies** — Pure Go, no external runtime dependencies (core library)
 
 ## Installation
 
@@ -233,10 +234,45 @@ jsonStr, _ := exporter.ExportJSONIndent("", "  ")
 fmt.Println(jsonStr)
 ```
 
+## MCP Server
+
+Statekit includes a built-in [Model Context Protocol](https://modelcontextprotocol.io/) server for AI-assisted state machine development. Create, manage, and visualize machines directly from Claude Code or any MCP host.
+
+```bash
+# Add to your MCP configuration
+go install github.com/felixgeelhaar/statekit/cmd/statekit-mcp@latest
+```
+
+```json
+{
+  "mcpServers": {
+    "statekit": {
+      "command": "statekit-mcp"
+    }
+  }
+}
+```
+
+**Available tools:**
+
+| Tool | Description |
+|------|-------------|
+| `create_machine` | Create a machine from a Native JSON definition |
+| `list_machines` | List all running machine instances |
+| `get_state` | Get current state, done status, and state path |
+| `send_event` | Send an event to trigger a transition |
+| `get_context` | Get the machine's context data |
+| `visualize_machine` | Get visualization data with interactive MCP App |
+| `validate_machine` | Validate a definition using lint rules |
+| `export_machine` | Export as JSON, Mermaid, or ASCII |
+
+The `visualize_machine` tool includes an interactive Vue.js + Cytoscape.js visualizer that MCP Apps hosts render inline.
+
 ## Additional Packages
 
 | Package | Description |
 |---------|-------------|
+| [`mcp`](./mcp) | MCP server for AI-assisted state machine management |
 | [`statetest`](./statetest) | Testing utilities: assertions, recorders, helpers |
 | [`debug`](./debug) | Runtime inspection and state graph analysis |
 | [`metrics`](./metrics) | Prometheus metrics for monitoring |
