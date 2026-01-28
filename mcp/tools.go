@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 
@@ -16,7 +17,7 @@ import (
 
 // CreateMachineInput is the input for the create_machine tool.
 type CreateMachineInput struct {
-	Definition map[string]any `json:"definition" jsonschema:"description=Statekit Native JSON machine definition"`
+	Definition map[string]any `json:"definition" jsonschema:"description=JSON object with id (optional, auto-generated if empty), initial (string), and states (object mapping state IDs to state definitions)"`
 }
 
 // MachineIDInput identifies a machine by ID.
@@ -33,7 +34,7 @@ type SendEventInput struct {
 
 // ValidateMachineInput validates a machine definition.
 type ValidateMachineInput struct {
-	Definition map[string]any `json:"definition" jsonschema:"description=Statekit Native JSON machine definition"`
+	Definition map[string]any `json:"definition" jsonschema:"description=JSON object with id, initial (string), and states (object mapping state IDs to state definitions)"`
 }
 
 // ExportMachineInput exports a machine in a given format.
@@ -77,8 +78,18 @@ type ValidateOutput struct {
 
 // Tool handlers
 
+// DeleteMachineOutput is returned after deleting a machine.
+type DeleteMachineOutput struct {
+	Deleted bool `json:"deleted"`
+}
+
 func handleCreateMachine(reg *Registry) func(CreateMachineInput) (CreateMachineOutput, error) {
 	return func(input CreateMachineInput) (CreateMachineOutput, error) {
+		// Auto-generate ID if missing or empty
+		if id, _ := input.Definition["id"].(string); id == "" {
+			input.Definition["id"] = generateUUID()
+		}
+
 		data, err := json.Marshal(input.Definition)
 		if err != nil {
 			return CreateMachineOutput{}, fmt.Errorf("marshal definition: %w", err)
@@ -98,6 +109,15 @@ func handleCreateMachine(reg *Registry) func(CreateMachineInput) (CreateMachineO
 			CurrentState: string(inst.interp.State().Value),
 		}, nil
 	}
+}
+
+// generateUUID returns a random UUID v4 string.
+func generateUUID() string {
+	var b [16]byte
+	_, _ = rand.Read(b[:])
+	b[6] = (b[6] & 0x0f) | 0x40 // version 4
+	b[8] = (b[8] & 0x3f) | 0x80 // variant 1
+	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }
 
 func handleListMachines(reg *Registry) func(ListMachinesInput) ([]MachineInfo, error) {
@@ -163,7 +183,7 @@ func handleGetContext(reg *Registry) func(MachineIDInput) (Ctx, error) {
 	}
 }
 
-func handleVisualizeMachine(reg *Registry) func(MachineIDInput) (json.RawMessage, error) {
+func handleGetMachineData(reg *Registry) func(MachineIDInput) (json.RawMessage, error) {
 	return func(input MachineIDInput) (json.RawMessage, error) {
 		inst, ok := reg.Get(input.MachineID)
 		if !ok {
@@ -248,6 +268,29 @@ func handleExportMachine(reg *Registry) func(ExportMachineInput) (string, error)
 		default:
 			return "", fmt.Errorf("unknown format %q (supported: json, mermaid, ascii)", input.Format)
 		}
+	}
+}
+
+func handleResetMachine(reg *Registry) func(MachineIDInput) (CreateMachineOutput, error) {
+	return func(input MachineIDInput) (CreateMachineOutput, error) {
+		if err := reg.Reset(input.MachineID); err != nil {
+			return CreateMachineOutput{}, err
+		}
+		inst, _ := reg.Get(input.MachineID)
+		return CreateMachineOutput{
+			ID:           input.MachineID,
+			CurrentState: string(inst.interp.State().Value),
+		}, nil
+	}
+}
+
+func handleDeleteMachine(reg *Registry) func(MachineIDInput) (DeleteMachineOutput, error) {
+	return func(input MachineIDInput) (DeleteMachineOutput, error) {
+		deleted := reg.Delete(input.MachineID)
+		if !deleted {
+			return DeleteMachineOutput{}, fmt.Errorf("machine %q not found", input.MachineID)
+		}
+		return DeleteMachineOutput{Deleted: true}, nil
 	}
 }
 

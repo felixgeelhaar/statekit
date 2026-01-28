@@ -134,9 +134,9 @@ func TestHandleGetContext(t *testing.T) {
 	_ = ctx
 }
 
-func TestHandleVisualizeMachine(t *testing.T) {
+func TestHandleGetMachineData(t *testing.T) {
 	reg := setupRegistry(t)
-	handler := handleVisualizeMachine(reg)
+	handler := handleGetMachineData(reg)
 
 	data, err := handler(MachineIDInput{MachineID: "traffic-light"})
 	if err != nil {
@@ -204,5 +204,95 @@ func TestHandleExportMachine_UnknownFormat(t *testing.T) {
 	_, err := handler(ExportMachineInput{MachineID: "traffic-light", Format: "pdf"})
 	if err == nil {
 		t.Fatal("expected error for unknown format")
+	}
+}
+
+func TestHandleResetMachine(t *testing.T) {
+	reg := setupRegistry(t)
+
+	// Advance state
+	sendHandler := handleSendEvent(reg)
+	_, _ = sendHandler(SendEventInput{MachineID: "traffic-light", Event: "TIMER"})
+
+	// Verify not in initial state
+	inst, _ := reg.Get("traffic-light")
+	if string(inst.interp.State().Value) == "green" {
+		t.Fatal("expected state to have changed from green")
+	}
+
+	// Reset
+	handler := handleResetMachine(reg)
+	out, err := handler(MachineIDInput{MachineID: "traffic-light"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if out.CurrentState != "green" {
+		t.Errorf("state = %q, want green", out.CurrentState)
+	}
+}
+
+func TestHandleResetMachine_NotFound(t *testing.T) {
+	reg := NewRegistry()
+	handler := handleResetMachine(reg)
+
+	_, err := handler(MachineIDInput{MachineID: "nonexistent"})
+	if err == nil {
+		t.Fatal("expected error for missing machine")
+	}
+}
+
+func TestHandleDeleteMachine(t *testing.T) {
+	reg := setupRegistry(t)
+	handler := handleDeleteMachine(reg)
+
+	out, err := handler(MachineIDInput{MachineID: "traffic-light"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !out.Deleted {
+		t.Error("expected deleted = true")
+	}
+
+	// Verify gone
+	_, ok := reg.Get("traffic-light")
+	if ok {
+		t.Error("expected machine to be removed")
+	}
+}
+
+func TestHandleDeleteMachine_NotFound(t *testing.T) {
+	reg := NewRegistry()
+	handler := handleDeleteMachine(reg)
+
+	_, err := handler(MachineIDInput{MachineID: "nonexistent"})
+	if err == nil {
+		t.Fatal("expected error for missing machine")
+	}
+}
+
+func TestHandleCreateMachine_AutoGenerateID(t *testing.T) {
+	reg := NewRegistry()
+	handler := handleCreateMachine(reg)
+
+	def := map[string]any{
+		"initial": "on",
+		"states": map[string]any{
+			"on":  map[string]any{"id": "on", "type": "atomic", "transitions": []any{}},
+			"off": map[string]any{"id": "off", "type": "atomic", "transitions": []any{}},
+		},
+	}
+
+	out, err := handler(CreateMachineInput{Definition: def})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if out.ID == "" {
+		t.Error("expected auto-generated ID")
+	}
+	if len(out.ID) < 10 {
+		t.Errorf("ID %q looks too short for a UUID", out.ID)
+	}
+	if out.CurrentState != "on" {
+		t.Errorf("state = %q, want on", out.CurrentState)
 	}
 }

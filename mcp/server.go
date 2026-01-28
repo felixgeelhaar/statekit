@@ -47,11 +47,11 @@ func registerTools(srv *server.Server, reg *Registry) {
 		ReadOnly().
 		Handler(handleGetContext(reg))
 
-	srv.Tool("visualize_machine").
-		Description("Get visualization data for a machine instance").
+	srv.Tool("get_machine_data").
+		Description("Get the full machine definition data as JSON for a running instance").
 		ReadOnly().
 		UIResource("ui://statekit/visualizer").
-		Handler(handleVisualizeMachine(reg))
+		Handler(handleGetMachineData(reg))
 
 	srv.Tool("validate_machine").
 		Description("Validate a Statekit Native JSON machine definition for structural issues").
@@ -62,4 +62,12 @@ func registerTools(srv *server.Server, reg *Registry) {
 		Description("Export a machine in JSON, Mermaid, or ASCII format").
 		ReadOnly().
 		Handler(handleExportMachine(reg))
+
+	srv.Tool("reset_machine").
+		Description("Reset a machine instance back to its initial state").
+		Handler(handleResetMachine(reg))
+
+	srv.Tool("delete_machine").
+		Description("Delete a machine instance and stop its interpreter").
+		Handler(handleDeleteMachine(reg))
 }

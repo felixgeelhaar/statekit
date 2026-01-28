@@ -99,6 +99,35 @@ func (r *Registry) Delete(id string) bool {
 	return true
 }
 
+// Reset stops a machine and rebuilds it from its stored definition.
+func (r *Registry) Reset(id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	inst, ok := r.machines[id]
+	if !ok {
+		return fmt.Errorf("machine %q not found", id)
+	}
+
+	inst.interp.Stop()
+
+	machine, err := buildFromViz(inst.vizData)
+	if err != nil {
+		return fmt.Errorf("rebuild machine: %w", err)
+	}
+
+	interp := statekit.NewInterpreter(machine)
+	interp.Start()
+
+	r.machines[id] = &instance{
+		interp:    interp,
+		machine:   machine,
+		vizData:   inst.vizData,
+		createdAt: inst.createdAt,
+	}
+	return nil
+}
+
 // MachineInfo is a summary of a machine instance.
 type MachineInfo struct {
 	ID           string `json:"id"`
