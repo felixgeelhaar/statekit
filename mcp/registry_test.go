@@ -53,7 +53,7 @@ func TestRegistry_Create(t *testing.T) {
 
 func TestRegistry_Get(t *testing.T) {
 	reg := NewRegistry()
-	reg.Create(trafficLightViz())
+	_ = reg.Create(trafficLightViz())
 
 	inst, ok := reg.Get("traffic-light")
 	if !ok {
@@ -71,7 +71,7 @@ func TestRegistry_Get(t *testing.T) {
 
 func TestRegistry_List(t *testing.T) {
 	reg := NewRegistry()
-	reg.Create(trafficLightViz())
+	_ = reg.Create(trafficLightViz())
 
 	list := reg.List()
 	if len(list) != 1 {
@@ -87,7 +87,7 @@ func TestRegistry_List(t *testing.T) {
 
 func TestRegistry_Delete(t *testing.T) {
 	reg := NewRegistry()
-	reg.Create(trafficLightViz())
+	_ = reg.Create(trafficLightViz())
 
 	if !reg.Delete("traffic-light") {
 		t.Fatal("expected delete to succeed")

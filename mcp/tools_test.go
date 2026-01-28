@@ -124,10 +124,8 @@ func TestHandleGetContext(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	// Context should be nil map for default
-	if ctx == nil {
-		// That's fine — default context is nil map
-	}
+	// Context should be nil map for default — just verify no error
+	_ = ctx
 }
 
 func TestHandleVisualizeMachine(t *testing.T) {
