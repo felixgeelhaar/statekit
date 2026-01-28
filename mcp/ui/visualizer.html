@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statekit Visualizer</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; height: 100vh; overflow: hidden; background: #fff; color: #1a1a1a; }
+        #app { display: flex; width: 100%; height: 100%; }
+        .sidebar { width: 320px; background: #f8f9fa; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #e0e0e0; }
+        .sidebar-header h1 { font-size: 16px; font-weight: 600; }
+        .sidebar-header .machine-id { font-size: 13px; color: #666; margin-top: 4px; }
+        .sidebar-body { flex: 1; overflow-y: auto; padding: 16px; }
+        .panel { margin-bottom: 20px; }
+        .panel-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; }
+        .state-badge { display: inline-block; padding: 4px 10px; background: #228be6; color: #fff; border-radius: 4px; font-size: 14px; font-weight: 500; }
+        .state-badge.done { background: #40c057; }
+        .state-path { font-size: 12px; color: #888; margin-top: 4px; }
+        .event-btn { display: block; width: 100%; padding: 8px 12px; margin-bottom: 6px; background: #fff; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; text-align: left; transition: border-color 0.15s, box-shadow 0.15s; }
+        .event-btn:hover { border-color: #228be6; box-shadow: 0 0 0 2px rgba(34,139,230,0.15); }
+        .event-btn .event-name { font-weight: 600; font-size: 13px; }
+        .event-btn .event-target { font-size: 12px; color: #666; margin-top: 2px; }
+        .event-btn .event-guard { font-size: 11px; color: #999; font-style: italic; }
+        .no-events { color: #999; font-style: italic; font-size: 13px; }
+        .context-display { font-family: "SF Mono", Monaco, "Cascadia Code", monospace; font-size: 12px; background: #eee; padding: 10px; border-radius: 6px; overflow: auto; max-height: 200px; white-space: pre-wrap; word-break: break-word; }
+        .graph-container { flex: 1; position: relative; }
+        #cy { width: 100%; height: 100%; }
+        .status-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: rgba(248,249,250,0.9); border-top: 1px solid #e0e0e0; font-size: 11px; color: #888; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Statekit Visualizer</h1>
+                <div class="machine-id" v-if="machine">{{ machine.id }}</div>
+            </div>
+            <div class="sidebar-body" v-if="machine">
+                <div class="panel">
+                    <div class="panel-title">Current State</div>
+                    <span class="state-badge" :class="{ done: isDone }">{{ currentState }}</span>
+                    <div class="state-path" v-if="statePath.length > 1">{{ statePath.join(' > ') }}</div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Available Events</div>
+                    <div v-if="availableTransitions.length === 0" class="no-events">No events available</div>
+                    <button
+                        v-for="t in availableTransitions"
+                        :key="t.event + t.target"
+                        class="event-btn"
+                        @click="sendEvent(t.event)"
+                    >
+                        <div class="event-name">{{ t.event }}</div>
+                        <div class="event-target">&rarr; {{ t.target }}</div>
+                        <div class="event-guard" v-if="t.guard">[{{ t.guard }}]</div>
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Context</div>
+                    <pre class="context-display">{{ contextDisplay }}</pre>
+                </div>
+            </div>
+            <div class="sidebar-body" v-else>
+                <p style="color: #888;">Waiting for machine data...</p>
+            </div>
+        </div>
+        <div class="graph-container">
+            <div id="cy"></div>
+            <div class="status-bar" v-if="machine">
+                <span>{{ Object.keys(machine.states).length }} states</span>
+                <span>{{ transitionCount }} transitions</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const { createApp, ref, computed, watch, onMounted, nextTick } = Vue;
+
+    createApp({
+        setup() {
+            const machine = ref(null);
+            const currentState = ref('');
+            const isDone = ref(false);
+            const machineContext = ref({});
+            let cy = null;
+
+            // Resolve initial state recursively
+            function resolveInitial(stateId) {
+                if (!machine.value) return stateId;
+                const state = machine.value.states[stateId];
+                if (state && state.type === 'compound' && state.initial) {
+                    return resolveInitial(state.initial);
+                }
+                return stateId;
+            }
+
+            const statePath = computed(() => {
+                if (!machine.value || !currentState.value) return [];
+                const path = [];
+                let id = currentState.value;
+                while (id) {
+                    path.unshift(id);
+                    const s = machine.value.states[id];
+                    id = s ? s.parent : null;
+                }
+                return path;
+            });
+
+            const availableTransitions = computed(() => {
+                if (!machine.value || !currentState.value) return [];
+                const transitions = [];
+                let stateId = currentState.value;
+                while (stateId) {
+                    const state = machine.value.states[stateId];
+                    if (state && state.transitions) {
+                        state.transitions.forEach(t => {
+                            transitions.push({ ...t, source: stateId });
+                        });
+                    }
+                    stateId = state ? state.parent : null;
+                }
+                return transitions;
+            });
+
+            const transitionCount = computed(() => {
+                if (!machine.value) return 0;
+                let count = 0;
+                Object.values(machine.value.states).forEach(s => {
+                    if (s.transitions) count += s.transitions.length;
+                });
+                return count;
+            });
+
+            const contextDisplay = computed(() => {
+                return JSON.stringify(machineContext.value, null, 2);
+            });
+
+            function initGraph() {
+                if (!machine.value) return;
+
+                const elements = [];
+
+                // Nodes
+                Object.values(machine.value.states).forEach(state => {
+                    const classes = [];
+                    if (state.type === 'final') classes.push('final');
+                    if (machine.value.initial === state.id) classes.push('initial');
+
+                    elements.push({
+                        data: {
+                            id: state.id,
+                            label: state.id,
+                            parent: state.parent || undefined
+                        },
+                        classes
+                    });
+                });
+
+                // Edges
+                Object.values(machine.value.states).forEach(state => {
+                    if (state.transitions) {
+                        state.transitions.forEach(t => {
+                            elements.push({
+                                data: {
+                                    source: state.id,
+                                    target: t.target,
+                                    label: t.event + (t.guard ? ' [' + t.guard + ']' : '')
+                                }
+                            });
+                        });
+                    }
+                });
+
+                if (cy) cy.destroy();
+
+                cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    elements,
+                    boxSelectionEnabled: false,
+                    autounselectify: true,
+                    style: [
+                        { selector: 'node', style: { 'content': 'data(label)', 'text-valign': 'center', 'text-halign': 'center', 'background-color': '#fff', 'border-width': 2, 'border-color': '#333', 'width': 'label', 'height': 'label', 'padding': '12px', 'shape': 'round-rectangle', 'font-size': '14px' }},
+                        { selector: 'node.active', style: { 'background-color': '#e7f5ff', 'border-color': '#228be6', 'color': '#228be6' }},
+                        { selector: 'node.initial', style: { 'border-width': 4 }},
+                        { selector: 'node.final', style: { 'border-style': 'double', 'border-width': 4 }},
+                        { selector: 'node:parent', style: { 'background-color': '#f8f9fa', 'border-color': '#adb5bd', 'text-valign': 'top', 'text-halign': 'center', 'padding': '20px' }},
+                        { selector: 'edge', style: { 'curve-style': 'bezier', 'width': 2, 'target-arrow-shape': 'triangle', 'line-color': '#999', 'target-arrow-color': '#999', 'label': 'data(label)', 'font-size': '11px', 'text-rotation': 'autorotate', 'text-background-color': '#fff', 'text-background-opacity': 1, 'text-background-padding': '2px' }}
+                    ],
+                    layout: { name: 'dagre', rankDir: 'TB', padding: 50 }
+                });
+
+                highlightCurrent();
+            }
+
+            function highlightCurrent() {
+                if (!cy || !machine.value) return;
+                cy.nodes().removeClass('active');
+                let id = currentState.value;
+                while (id) {
+                    cy.getElementById(id).addClass('active');
+                    const s = machine.value.states[id];
+                    id = s ? s.parent : null;
+                }
+            }
+
+            function sendEvent(eventType) {
+                // Try MCP tool call if available
+                if (window.parent !== window) {
+                    try {
+                        window.parent.postMessage({
+                            jsonrpc: '2.0',
+                            method: 'tools/call',
+                            params: {
+                                name: 'send_event',
+                                arguments: {
+                                    machine_id: machine.value.id,
+                                    event: eventType
+                                }
+                            }
+                        }, '*');
+                        return;
+                    } catch (e) {
+                        // Fall through to client-side simulation
+                    }
+                }
+
+                // Client-side simulation fallback
+                const transitions = availableTransitions.value.filter(t => t.event === eventType);
+                if (transitions.length > 0) {
+                    const t = transitions[0];
+                    const target = machine.value.states[t.target];
+                    if (target) {
+                        if (target.type === 'history') {
+                            currentState.value = resolveInitial(target.historyDefault || machine.value.initial);
+                        } else {
+                            currentState.value = resolveInitial(t.target);
+                        }
+                    }
+                }
+            }
+
+            // Listen for data from MCP host or direct injection
+            window.addEventListener('message', (event) => {
+                const data = event.data;
+                if (data && data.type === 'statekit:machine') {
+                    machine.value = data.machine;
+                    currentState.value = resolveInitial(data.machine.initial);
+                    if (data.currentState) {
+                        currentState.value = data.currentState;
+                    }
+                    nextTick(() => initGraph());
+                } else if (data && data.type === 'statekit:state-update') {
+                    if (data.currentState) {
+                        currentState.value = data.currentState;
+                        isDone.value = !!data.done;
+                    }
+                    if (data.context !== undefined) {
+                        machineContext.value = data.context;
+                    }
+                    highlightCurrent();
+                }
+            });
+
+            // Check for inline data (set before Vue mounts)
+            onMounted(() => {
+                if (window.__STATEKIT_MACHINE__) {
+                    machine.value = window.__STATEKIT_MACHINE__;
+                    currentState.value = resolveInitial(machine.value.initial);
+                    nextTick(() => initGraph());
+                }
+            });
+
+            watch(currentState, () => highlightCurrent());
+
+            return {
+                machine,
+                currentState,
+                isDone,
+                statePath,
+                availableTransitions,
+                transitionCount,
+                contextDisplay,
+                sendEvent
+            };
+        }
+    }).mount('#app');
+    </script>
+</body>
+</html>
