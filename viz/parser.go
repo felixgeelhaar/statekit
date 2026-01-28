@@ -5,21 +5,23 @@ import (
 	"fmt"
 )
 
-// rawState mirrors VizState but adds a States field for nested JSON input.
+// rawState mirrors VizState but adds fields for nested and XState shorthand input.
 type rawState struct {
-	ID             string                `json:"id"`
-	Type           VizStateType          `json:"type"`
-	Initial        string                `json:"initial,omitempty"`
-	Parent         string                `json:"parent,omitempty"`
-	Children       []string              `json:"children,omitempty"`
-	Transitions    []VizTransition       `json:"transitions,omitempty"`
-	Entry          []string              `json:"entry,omitempty"`
-	Exit           []string              `json:"exit,omitempty"`
-	HistoryType    string                `json:"historyType,omitempty"`
-	HistoryDefault string                `json:"historyDefault,omitempty"`
-	Invocations    []VizInvoke           `json:"invocations,omitempty"`
-	Depth          int                   `json:"depth,omitempty"`
-	States         map[string]*rawState  `json:"states,omitempty"`
+	ID             string               `json:"id"`
+	Type           VizStateType         `json:"type"`
+	Initial        string               `json:"initial,omitempty"`
+	Parent         string               `json:"parent,omitempty"`
+	Children       []string             `json:"children,omitempty"`
+	Transitions    []VizTransition      `json:"transitions,omitempty"`
+	Entry          []string             `json:"entry,omitempty"`
+	Exit           []string             `json:"exit,omitempty"`
+	HistoryType    string               `json:"historyType,omitempty"`
+	HistoryDefault string               `json:"historyDefault,omitempty"`
+	Invocations    []VizInvoke          `json:"invocations,omitempty"`
+	Depth          int                  `json:"depth,omitempty"`
+	States         map[string]*rawState `json:"states,omitempty"`
+	// XState shorthand: "on": {"EVENT": "target"} or "on": {"EVENT": {"target": "..."}}
+	On map[string]json.RawMessage `json:"on,omitempty"`
 }
 
 type rawMachine struct {
@@ -56,13 +58,22 @@ func ParseNativeJSON(data []byte) (*VizMachine, error) {
 // flattenState recursively flattens a rawState and its nested children
 // into the VizMachine flat states map.
 func flattenState(vm *VizMachine, id string, rs *rawState, parentID string) {
+	// Convert XState "on" shorthand to transitions
+	transitions := rs.Transitions
+	for event, raw := range rs.On {
+		t := parseOnTransition(event, raw)
+		if t != nil {
+			transitions = append(transitions, *t)
+		}
+	}
+
 	vs := &VizState{
 		ID:             id,
 		Type:           rs.Type,
 		Initial:        rs.Initial,
 		Parent:         parentID,
 		Children:       rs.Children,
-		Transitions:    rs.Transitions,
+		Transitions:    transitions,
 		Entry:          rs.Entry,
 		Exit:           rs.Exit,
 		HistoryType:    rs.HistoryType,
@@ -92,6 +103,35 @@ func flattenState(vm *VizMachine, id string, rs *rawState, parentID string) {
 	}
 
 	vm.States[id] = vs
+}
+
+// parseOnTransition converts an XState "on" entry to a VizTransition.
+// Supports:
+//   - string: "on": {"EVENT": "target"}
+//   - object: "on": {"EVENT": {"target": "...", "guard": "..."}}
+func parseOnTransition(event string, raw json.RawMessage) *VizTransition {
+	// Try string first: "EVENT": "target"
+	var target string
+	if err := json.Unmarshal(raw, &target); err == nil {
+		return &VizTransition{Event: event, Target: target}
+	}
+
+	// Try object: "EVENT": {"target": "...", "guard": "...", "actions": [...]}
+	var obj struct {
+		Target  string   `json:"target"`
+		Guard   string   `json:"guard,omitempty"`
+		Actions []string `json:"actions,omitempty"`
+	}
+	if err := json.Unmarshal(raw, &obj); err == nil && obj.Target != "" {
+		return &VizTransition{
+			Event:   event,
+			Target:  obj.Target,
+			Guard:   obj.Guard,
+			Actions: obj.Actions,
+		}
+	}
+
+	return nil
 }
 
 // calculateDepths sets the Depth field for all states.
