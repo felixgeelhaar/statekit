@@ -29,5 +29,11 @@ vendor/
 # Relicta release state
 .relicta/
 
+# Roady state
+.roady/
+
+# Statekit MCP binary
+statekit-mcp
+
 # OS files
 .DS_Store
