@@ -143,6 +143,85 @@
     <script>
     const { createApp, ref, computed, watch, onMounted, nextTick } = Vue;
 
+    // --- MCP App Bridge ---
+    const _mcpPending = {};
+    let _mcpNextId = 1;
+    let _mcpMachineId = null;
+    let _mcpAppMode = false;
+
+    function _mcpSend(msg) {
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage(msg, '*');
+        }
+    }
+
+    function callServerTool(name, args) {
+        const id = _mcpNextId++;
+        const msg = { jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } };
+        return new Promise((resolve, reject) => {
+            _mcpPending[id] = { resolve, reject };
+            _mcpSend(msg);
+        });
+    }
+
+    window.addEventListener('message', (ev) => {
+        const msg = ev.data;
+        if (!msg || !msg.jsonrpc) return;
+
+        // JSON-RPC response (has id, no method)
+        if (msg.id != null && !msg.method) {
+            const pending = _mcpPending[msg.id];
+            if (pending) {
+                delete _mcpPending[msg.id];
+                if (msg.error) pending.reject(msg.error);
+                else pending.resolve(msg.result);
+            }
+            return;
+        }
+
+        // JSON-RPC requests/notifications from host
+        if (msg.method === 'ui/initialize') {
+            _mcpAppMode = true;
+            _mcpSend({ jsonrpc: '2.0', id: msg.id, result: { capabilities: {} } });
+            return;
+        }
+
+        if (msg.method === 'ui/notifications/tool-input') {
+            if (msg.params && msg.params.arguments && msg.params.arguments.machine_id) {
+                _mcpMachineId = msg.params.arguments.machine_id;
+            }
+            return;
+        }
+
+        if (msg.method === 'ui/notifications/tool-result') {
+            try {
+                const content = msg.params && msg.params.content;
+                if (Array.isArray(content) && content.length > 0 && content[0].text) {
+                    const data = JSON.parse(content[0].text);
+                    // Check if this looks like a VizMachine
+                    if (data.id && data.states) {
+                        if (window._statekitApp) {
+                            window._statekitApp.loadMachine(data);
+                        }
+                    }
+                }
+            } catch (e) { /* ignore parse errors */ }
+            return;
+        }
+
+        if (msg.method === 'ui/notifications/theme-changed') {
+            if (msg.params && msg.params.colorScheme) {
+                const isLight = msg.params.colorScheme === 'light';
+                document.documentElement.classList.toggle('light', isLight);
+                if (window._statekitApp) {
+                    window._statekitApp.setDarkMode(!isLight);
+                }
+            }
+            return;
+        }
+    });
+    // --- End MCP App Bridge ---
+
     createApp({
         setup() {
             const machine = ref(null);
@@ -154,6 +233,21 @@
             const transitionHistory = ref([]);
             const historyList = ref(null);
             let cy = null;
+
+            // Expose helpers for MCP bridge
+            window._statekitApp = {
+                loadMachine(data) {
+                    machine.value = data;
+                    if (data.id) _mcpMachineId = data.id;
+                    currentState.value = resolveInitial(data.initial);
+                    nextTick(() => initGraph());
+                },
+                setDarkMode(val) {
+                    darkMode.value = val;
+                    localStorage.setItem('statekit-theme', val ? 'dark' : 'light');
+                    if (cy) updateCyStyles();
+                }
+            };
 
             // Theme
             const savedTheme = localStorage.getItem('statekit-theme');
@@ -351,24 +445,31 @@
             }
 
             function sendEvent(eventType) {
-                // Try MCP tool call if available
-                if (window.parent !== window) {
-                    try {
-                        window.parent.postMessage({
-                            jsonrpc: '2.0',
-                            method: 'tools/call',
-                            params: {
-                                name: 'send_event',
-                                arguments: {
-                                    machine_id: machine.value.id,
-                                    event: eventType
+                // Use MCP App bridge when running inside an MCP host
+                if (_mcpAppMode && _mcpMachineId) {
+                    const machineId = _mcpMachineId;
+                    callServerTool('send_event', { machine_id: machineId, event: eventType })
+                        .then(result => {
+                            try {
+                                const content = result && result.content;
+                                if (Array.isArray(content) && content.length > 0 && content[0].text) {
+                                    const output = JSON.parse(content[0].text);
+                                    const from = currentState.value;
+                                    if (output.currentState) {
+                                        previousState.value = from;
+                                        currentState.value = output.currentState;
+                                        isDone.value = !!output.done;
+                                        if (output.transitioned && from !== output.currentState) {
+                                            addHistoryEntry(eventType, from, output.currentState);
+                                            animateTransition(from, output.currentState, eventType);
+                                        }
+                                        highlightCurrent();
+                                    }
                                 }
-                            }
-                        }, '*');
-                        return;
-                    } catch (e) {
-                        // Fall through to client-side simulation
-                    }
+                            } catch (e) { /* ignore parse errors */ }
+                        })
+                        .catch(() => { /* ignore errors */ });
+                    return;
                 }
 
                 // Client-side simulation fallback
