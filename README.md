@@ -24,6 +24,7 @@ Define and execute statecharts in Go — visualize them with XState tooling.
 - **Prometheus Metrics** — Production monitoring with metrics and health checks
 - **Static Analysis** — Lint rules for detecting structural issues
 - **MCP Server** — Create, manage, and visualize machines via Model Context Protocol
+- **MCP Apps Visualizer** — Interactive visualizer renders inline in Claude Desktop and MCP hosts
 - **Zero Dependencies** — Pure Go, no external runtime dependencies (core library)
 
 ## Installation
@@ -266,7 +267,7 @@ go install github.com/felixgeelhaar/statekit/cmd/statekit-mcp@latest
 | `validate_machine` | Validate a definition using lint rules |
 | `export_machine` | Export as JSON, Mermaid, or ASCII |
 
-The `visualize_machine` tool includes an interactive Vue.js + Cytoscape.js visualizer that MCP Apps hosts render inline.
+The `visualize_machine` tool includes an interactive Vue.js + Cytoscape.js visualizer that MCP Apps hosts render inline — with dark mode, transition animations, and a full state history log. All JS dependencies are bundled inline for CSP-compatible rendering in any MCP host.
 
 ## Additional Packages
 
