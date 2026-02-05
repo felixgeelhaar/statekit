@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/felixgeelhaar/mcp-go v1.6.0
+	github.com/felixgeelhaar/mcp-go v1.6.4
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/cobra v1.10.2
 	go.opentelemetry.io/otel v1.39.0
