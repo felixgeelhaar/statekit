@@ -82,32 +82,31 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Install Engines
+      - name: Install Nox
         run: |
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
-          go install golang.org/x/vuln/cmd/govulncheck@latest
+          curl -sL https://github.com/nox-hq/nox/releases/download/v0.7.0/nox_0.7.0_linux_amd64.tar.gz | tar xz
+          sudo mv nox /usr/local/bin/
 
-      - name: Install VerdictSec
-        run: go install github.com/felixgeelhaar/verdictsec/cmd/verdict@latest
+      - name: Run Nox Security Scan
+        run: nox scan . -format json,sarif -output nox-results
 
-      - name: Run VerdictSec Security Scan
-        run: |
-          verdict scan --json -o verdict-results.json
-          verdict scan --sarif -o verdict-results.sarif
-
-      - name: Upload VerdictSec SARIF
+      - name: Upload Nox SARIF
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: verdict-results.sarif
-        if: always() && hashFiles('verdict-results.sarif') != ''
+          sarif_file: nox-results/findings.sarif
+        if: always() && hashFiles('nox-results/findings.sarif') != ''
         continue-on-error: true
 
-      - name: Upload VerdictSec results
+      - name: Annotate PR
+        if: github.event_name == 'pull_request'
+        run: nox annotate -input nox-results/findings.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Nox results
         uses: actions/upload-artifact@v6
         with:
           name: security-scan-results
-          path: |
-            verdict-results.json
-            verdict-results.sarif
+          path: nox-results/
         if: always()
 
