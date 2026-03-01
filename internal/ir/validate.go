@@ -53,9 +53,9 @@ func (e *ValidationError) Error() string {
 	}
 
 	var b strings.Builder
-	b.WriteString(fmt.Sprintf("validation failed with %d issues:\n", len(e.Issues)))
+	fmt.Fprintf(&b, "validation failed with %d issues:\n", len(e.Issues))
 	for i, issue := range e.Issues {
-		b.WriteString(fmt.Sprintf("  %d. %s\n", i+1, issue.String()))
+		fmt.Fprintf(&b, "  %d. %s\n", i+1, issue.String())
 	}
 	return b.String()
 }

@@ -224,14 +224,14 @@ func (i *Inspector[C]) Path() []statekit.StateID {
 func (i *Inspector[C]) Dump() string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("Machine: %s\n", i.machine.ID))
-	sb.WriteString(fmt.Sprintf("Current State: %s\n", i.interp.State().Value))
-	sb.WriteString(fmt.Sprintf("Is Done: %v\n", i.interp.Done()))
+	fmt.Fprintf(&sb, "Machine: %s\n", i.machine.ID)
+	fmt.Fprintf(&sb, "Current State: %s\n", i.interp.State().Value)
+	fmt.Fprintf(&sb, "Is Done: %v\n", i.interp.Done())
 	sb.WriteString("\n")
 
 	// Path
 	path := i.Path()
-	sb.WriteString(fmt.Sprintf("Path: %s\n", strings.Join(toStringSlice(path), " -> ")))
+	fmt.Fprintf(&sb, "Path: %s\n", strings.Join(toStringSlice(path), " -> "))
 	sb.WriteString("\n")
 
 	// Available events
@@ -249,7 +249,7 @@ func (i *Inspector[C]) Dump() string {
 		} else {
 			marker = " (blocked by guard)"
 		}
-		sb.WriteString(fmt.Sprintf("  - %s%s\n", e, marker))
+		fmt.Fprintf(&sb, "  - %s%s\n", e, marker)
 	}
 
 	return sb.String()
@@ -259,41 +259,41 @@ func (i *Inspector[C]) Dump() string {
 func (i *Inspector[C]) DumpMachine() string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("Machine: %s\n", i.machine.ID))
-	sb.WriteString(fmt.Sprintf("Initial: %s\n", i.machine.Initial))
-	sb.WriteString(fmt.Sprintf("States: %d\n", len(i.machine.States)))
+	fmt.Fprintf(&sb, "Machine: %s\n", i.machine.ID)
+	fmt.Fprintf(&sb, "Initial: %s\n", i.machine.Initial)
+	fmt.Fprintf(&sb, "States: %d\n", len(i.machine.States))
 	sb.WriteString("\n")
 
 	// List all states
 	states := i.AllStates()
 	for _, stateID := range states {
 		info := i.StateInfo(stateID)
-		sb.WriteString(fmt.Sprintf("State: %s\n", info.ID))
-		sb.WriteString(fmt.Sprintf("  Type: %s\n", info.Type))
+		fmt.Fprintf(&sb, "State: %s\n", info.ID)
+		fmt.Fprintf(&sb, "  Type: %s\n", info.Type)
 		if info.Parent != "" {
-			sb.WriteString(fmt.Sprintf("  Parent: %s\n", info.Parent))
+			fmt.Fprintf(&sb, "  Parent: %s\n", info.Parent)
 		}
 		if info.Initial != "" {
-			sb.WriteString(fmt.Sprintf("  Initial: %s\n", info.Initial))
+			fmt.Fprintf(&sb, "  Initial: %s\n", info.Initial)
 		}
 		if len(info.Children) > 0 {
-			sb.WriteString(fmt.Sprintf("  Children: %s\n", strings.Join(toStringSlice(info.Children), ", ")))
+			fmt.Fprintf(&sb, "  Children: %s\n", strings.Join(toStringSlice(info.Children), ", "))
 		}
 		if len(info.Entry) > 0 {
-			sb.WriteString(fmt.Sprintf("  Entry: %s\n", strings.Join(info.Entry, ", ")))
+			fmt.Fprintf(&sb, "  Entry: %s\n", strings.Join(info.Entry, ", "))
 		}
 		if len(info.Exit) > 0 {
-			sb.WriteString(fmt.Sprintf("  Exit: %s\n", strings.Join(info.Exit, ", ")))
+			fmt.Fprintf(&sb, "  Exit: %s\n", strings.Join(info.Exit, ", "))
 		}
 		if len(info.Transitions) > 0 {
 			sb.WriteString("  Transitions:\n")
 			for _, t := range info.Transitions {
-				sb.WriteString(fmt.Sprintf("    %s -> %s", t.Event, t.Target))
+				fmt.Fprintf(&sb, "    %s -> %s", t.Event, t.Target)
 				if t.Guard != "" {
-					sb.WriteString(fmt.Sprintf(" [%s]", t.Guard))
+					fmt.Fprintf(&sb, " [%s]", t.Guard)
 				}
 				if len(t.Actions) > 0 {
-					sb.WriteString(fmt.Sprintf(" / %s", strings.Join(t.Actions, ", ")))
+					fmt.Fprintf(&sb, " / %s", strings.Join(t.Actions, ", "))
 				}
 				sb.WriteString("\n")
 			}
