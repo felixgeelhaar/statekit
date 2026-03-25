@@ -256,6 +256,182 @@
       "severity": "high",
       "reason": "Accepted: actions/upload-pages-artifact pinned to major version tag",
       "created_at": "2026-03-25T06:41:22.483607Z"
+    },
+    {
+      "fingerprint": "2a3ab7172ebe030a112c310d0247440f3a88c75b626a0988f6d70bf938e6e4ac",
+      "rule_id": "SEC-384",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Braintree API key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "c3d7b9b8dc3a0bc4eb39fb4bf16ca6dc322d60364953037c5010baeba6d0b709",
+      "rule_id": "SEC-384",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Braintree API key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "948fe75536707f1ace05d7c3384fe2d9841d370c667bfe7c66256dae0dadf6eb",
+      "rule_id": "SEC-505",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Maven Repository Token - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "bce1473b326122e83122d0330e7856c0aac111ef7a09cd563656d9d8d6b751f7",
+      "rule_id": "SEC-505",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Maven Repository Token - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "e0825094082a7155918ad19bbb24aca685d6c55fa5587180398f0de4834228b3",
+      "rule_id": "SEC-506",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected NuGet API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "3bd277ce6ca443c45873e6c0ccdb5cd3f981085198b1a09bec778cb57cf5fb82",
+      "rule_id": "SEC-506",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected NuGet API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "b17b4b1fb7af0096f54276652348d8dee5857d26ece6b6c9d4628ebb61453fa1",
+      "rule_id": "SEC-525",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected DigitalOcean API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "d3834eea16439c92d9aee0ffbd107e97f52318d75e71fecc74a41b8f093268bb",
+      "rule_id": "SEC-525",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected DigitalOcean API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "c5f91b36f1789d2833471736e6ea0e7f3e96b624042bfab4f6cb003523c24540",
+      "rule_id": "SEC-543",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Datadog API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "fc005400cd891de323c978d38257c5032ca6651d472bdb14124c8b6f5ee14b74",
+      "rule_id": "SEC-543",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Datadog API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "cbaa3bf96328fb78680bcf26807d2ebbca82253914de49a2a2c7caa82891089f",
+      "rule_id": "SEC-545",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "68dc02f272a1ba2e4c269927c76cf7072cb3c60f6fb45cabbb22d2be09a7ff97",
+      "rule_id": "SEC-545",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "d20747b21528f1b434b440bec3fe9fb0e115709bf142ad199b214563f3d713c2",
+      "rule_id": "SEC-545",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "000530dfc799318c6af6214bf5126d4121451c024c7c0f4b067f1f56acb73973",
+      "rule_id": "SEC-545",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "6ae1c57dc169276fb595513565d6882af59c93a6f5dc20e39925c328ecce602b",
+      "rule_id": "SEC-621",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected SendGrid API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "d261970621795da102d2e924ac11884c1cb597768b4cc3e4369c3ff275fa9347",
+      "rule_id": "SEC-621",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected SendGrid API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "de038222685b1d2dbb47654d3150d1ca0f5665360aa0c1b1fbbea1967c24eb7a",
+      "rule_id": "SEC-629",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected LOB API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "8a33f9b3000f23300c3c0d6cd5d47403d23c248d57804bf4907a4c3ec49bc12a",
+      "rule_id": "SEC-629",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected LOB API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "51a930745a04c6b742811d86326e33f56aaa08542bdce70680cfbf828542f587",
+      "rule_id": "SEC-678",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Datadog API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "c9b1393763efc33895571e79ce24ff487dc4d6eca1fd564fd084b0c11f75aa51",
+      "rule_id": "SEC-678",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Datadog API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "b71c1c0978c7d21d63f69e11770928d6cf18285171f686889e7652e9f277f708",
+      "rule_id": "SEC-679",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Grafana API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
+    },
+    {
+      "fingerprint": "77843c19bd6352147e272122d02cff74c8283bec79533187a6ba9d11ba90efe3",
+      "rule_id": "SEC-679",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: Detected Grafana API Key - example code/documentation in README.md",
+      "created_at": "2026-03-25T08:30:00.000000Z"
     }
   ]
 }
