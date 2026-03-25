@@ -1,0 +1,13 @@
+# Nox own files (baseline contains fingerprint hashes that trigger entropy rules)
+.nox/
+
+# Vendored third-party JavaScript (minified, triggers false positives)
+mcp/ui/vendor/
+
+# Docs build artifacts and npm lock file
+docs/node_modules/
+docs/dist/
+docs/package-lock.json
+
+# Go checksum file (hashes flagged as secrets)
+go.sum
