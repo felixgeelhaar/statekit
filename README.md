@@ -5,27 +5,58 @@
 [![CI](https://github.com/felixgeelhaar/statekit/actions/workflows/ci.yml/badge.svg)](https://github.com/felixgeelhaar/statekit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Go-native statechart execution engine with XState JSON compatibility for visualization.**
+**Stop modeling order, payment, and incident lifecycles with switch statements and ad-hoc FSMs.** Statekit is a typed statechart library for Go: hierarchical states, guards, actions, delayed and parallel transitions, with built-in visualization and lint.
 
-Define and execute statecharts in Go — visualize them with XState tooling.
+```go
+machine, _ := statekit.NewMachine[Order]("checkout").
+    WithInitial("cart").
+    State("cart").On("CHECKOUT").Target("processing").Done().
+    State("processing").On("PAID").Target("shipped").Done().
+    State("shipped").Final().Done().
+    Build()
 
-## Features
+interp := statekit.NewInterpreter(machine)
+defer interp.Close()
+interp.Start()
+interp.Send(statekit.Event{Type: "CHECKOUT"})
+```
 
-- **Fluent Builder API** — Type-safe machine construction with Go generics
-- **Hierarchical States** — Compound/nested states with event bubbling
-- **History States** — Shallow and deep history for resuming previous states
-- **Delayed Transitions** — Timer-based automatic transitions
-- **Parallel States** — Orthogonal regions active simultaneously
-- **Reflection DSL** — Define machines using struct tags
-- **Guards & Actions** — Conditional transitions and side effects
-- **Native Visualization** — Interactive HTML simulator, Mermaid diagrams, and TUI
-- **Build-time Validation** — Catch configuration errors before runtime
-- **Testing Utilities** — Assertions, recorders, and helpers for testing machines
-- **Prometheus Metrics** — Production monitoring with metrics and health checks
-- **Static Analysis** — Lint rules for detecting structural issues
-- **MCP Server** — Create, manage, and visualize machines via Model Context Protocol
-- **MCP Apps Visualizer** — Interactive visualizer renders inline in Claude Desktop and MCP hosts
-- **Zero Dependencies** — Pure Go, no external runtime dependencies (core library)
+A working machine in 10 lines. Hierarchy and parallel states scale from there. `statekit viz` renders any machine to ASCII, Mermaid, an interactive HTML simulator, or a TUI.
+
+## Why
+
+- **Type-safe over typed** — `[C any]` context, typed events, typed actions and guards. No `interface{}` casts at action time.
+- **Statecharts, not just FSMs** — compound, parallel, history, and delayed transitions handle the workflows that flat FSM libraries can't model without manual bookkeeping.
+- **Visualization as a feature** — every machine renders to multiple formats from one source of truth. Stately.ai-compatible JSON for round-trip editing.
+- **Static analysis** — `lint.Lint(machine)` catches unreachable states, dead ends, non-determinism, missing OnError on Invoke, and more — at build time.
+- **Determinism for tests** — inject a `FakeClock` to make timer-driven behavior reproducible. No `time.Sleep` flakes.
+
+## Core features
+
+- Hierarchical states with event bubbling
+- History states (shallow and deep)
+- Delayed transitions and parallel/orthogonal regions
+- Guards, actions, entry/exit hooks
+- Reflection DSL — define machines with struct tags
+- Build-time validation
+- Visualization: ASCII, Mermaid, interactive HTML, TUI
+- Static analysis (`lint`)
+- Snapshot / Restore
+- Plugin system with lifecycle hooks
+- Testing utilities (`statetest`)
+- HTTP integration, OpenTelemetry tracing, Prometheus metrics, Kubernetes health probes
+- Code generation from Native JSON
+
+## Advanced (Tier 2 — see [stability tiers](./docs/stability.md))
+
+These ship in v1.0 but reserve room to iterate within v1.x:
+
+- **Actor model** — `Spawn`, supervision strategies (Escalate / Recover / Restart / Stop)
+- **Persistent interpreter** — event-sourced state, snapshot-on-final, configurable strategies
+- **Distributed execution** — `StreamLock` interface (Redis / etcd / PostgreSQL) + `DistributedInterpreter`
+- **Machine composition** — `InvokeMachine` for typed child-machine composition
+- **MCP integration** — `mcp.NewServer` for AI-assisted authoring; `mcp.ExposeInterpreter` to drive a running machine from an agent
+- **AI plugins** — `aiplugin.TokenCounter`, `aiplugin.PromptRecorder` for LLM observability and replay-based debugging
 
 ## Installation
 
@@ -294,6 +325,7 @@ See the [examples](./examples) directory:
 | [pedestrian_light](./examples/pedestrian_light) | Hierarchical states with event bubbling |
 | [order_workflow](./examples/order_workflow) | Reflection DSL for business workflows |
 | [incident_lifecycle](./examples/incident_lifecycle) | Complex IT incident management |
+| [llm_agent](./examples/llm_agent) | Deterministic RAG pipeline with HITL approval |
 
 ## API Reference
 
