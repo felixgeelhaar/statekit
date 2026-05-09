@@ -11,6 +11,7 @@ type testContext struct {
 }
 
 func TestMachineBuilder_Basic(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[testContext]("trafficLight").
 		WithInitial("green").
 		State("green").Done().
@@ -27,6 +28,7 @@ func TestMachineBuilder_Basic(t *testing.T) {
 }
 
 func TestMachineBuilder_WithContext(t *testing.T) {
+	t.Parallel()
 	ctx := testContext{Count: 42}
 	machine, err := NewMachine[testContext]("test").
 		WithInitial("idle").
@@ -42,6 +44,7 @@ func TestMachineBuilder_WithContext(t *testing.T) {
 }
 
 func TestMachineBuilder_WithStates(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[testContext]("trafficLight").
 		WithInitial("green").
 		State("green").
@@ -80,6 +83,7 @@ func TestMachineBuilder_WithStates(t *testing.T) {
 }
 
 func TestMachineBuilder_FinalState(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[testContext]("workflow").
 		WithInitial("active").
 		State("active").
@@ -99,6 +103,7 @@ func TestMachineBuilder_FinalState(t *testing.T) {
 }
 
 func TestMachineBuilder_WithActions(t *testing.T) {
+	t.Parallel()
 	actionCalled := false
 	action := func(ctx *testContext, e Event) {
 		actionCalled = true
@@ -151,6 +156,7 @@ func TestMachineBuilder_WithActions(t *testing.T) {
 }
 
 func TestMachineBuilder_WithGuards(t *testing.T) {
+	t.Parallel()
 	guard := func(ctx testContext, e Event) bool {
 		return ctx.Count > 0
 	}
@@ -189,6 +195,7 @@ func TestMachineBuilder_WithGuards(t *testing.T) {
 }
 
 func TestMachineBuilder_MultipleTransitions(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[testContext]("test").
 		WithInitial("idle").
 		State("idle").

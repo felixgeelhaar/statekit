@@ -3,6 +3,7 @@ package statekit
 import "testing"
 
 func TestState_Matches(t *testing.T) {
+	t.Parallel()
 	state := State[struct{}]{
 		Value: "green",
 	}
@@ -17,6 +18,7 @@ func TestState_Matches(t *testing.T) {
 }
 
 func TestStateType_ReExports(t *testing.T) {
+	t.Parallel()
 	// Verify constants are properly re-exported
 	if StateTypeAtomic.String() != "atomic" {
 		t.Errorf("expected 'atomic', got %v", StateTypeAtomic.String())
@@ -30,6 +32,7 @@ func TestStateType_ReExports(t *testing.T) {
 }
 
 func TestEvent_Creation(t *testing.T) {
+	t.Parallel()
 	event := Event{
 		Type:    "TIMER",
 		Payload: map[string]int{"count": 1},

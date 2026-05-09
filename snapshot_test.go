@@ -13,6 +13,7 @@ type snapshotContext struct {
 }
 
 func TestSnapshot_Simple(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[snapshotContext]("test").
 		WithInitial("idle").
 		WithContext(snapshotContext{Count: 0, Name: "initial"}).
@@ -53,6 +54,7 @@ func TestSnapshot_Simple(t *testing.T) {
 }
 
 func TestSnapshot_Restore(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[snapshotContext]("test").
 		WithInitial("idle").
 		WithContext(snapshotContext{Count: 0}).
@@ -95,6 +97,7 @@ func TestSnapshot_Restore(t *testing.T) {
 }
 
 func TestSnapshot_RestoreWithHistory(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[struct{}]("player").
 		WithInitial("playing").
 		State("playing").
@@ -134,6 +137,7 @@ func TestSnapshot_RestoreWithHistory(t *testing.T) {
 }
 
 func TestSnapshot_RestoreWithParallel(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("editor").
 		WithInitial("active").
 		State("active").Parallel().
@@ -191,6 +195,7 @@ func TestSnapshot_RestoreWithParallel(t *testing.T) {
 }
 
 func TestSnapshot_RestoreMachineMismatch(t *testing.T) {
+	t.Parallel()
 	machine1, _ := NewMachine[struct{}]("machine1").
 		WithInitial("idle").
 		State("idle").Done().
@@ -222,6 +227,7 @@ func TestSnapshot_RestoreMachineMismatch(t *testing.T) {
 }
 
 func TestSnapshot_RestoreInvalidState(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -251,6 +257,7 @@ func TestSnapshot_RestoreInvalidState(t *testing.T) {
 }
 
 func TestSnapshot_JSONSerialization(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[snapshotContext]("test").
 		WithInitial("idle").
 		WithContext(snapshotContext{Count: 42, Name: "test"}).
@@ -290,6 +297,7 @@ func TestSnapshot_JSONSerialization(t *testing.T) {
 }
 
 func TestSnapshot_RestoreWithDelayedTransition(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[struct{}]("test").
 		WithInitial("waiting").
 		State("waiting").
@@ -324,6 +332,7 @@ func TestSnapshot_RestoreWithDelayedTransition(t *testing.T) {
 }
 
 func TestSnapshot_RestoreCancelsExistingTimers(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[struct{}]("test").
 		WithInitial("state1").
 		State("state1").
@@ -364,6 +373,7 @@ func TestSnapshot_RestoreCancelsExistingTimers(t *testing.T) {
 }
 
 func TestRestoreError_Error(t *testing.T) {
+	t.Parallel()
 	err := &RestoreError{
 		Code:    "TEST_CODE",
 		Message: "test message",

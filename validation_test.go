@@ -8,6 +8,7 @@ import (
 )
 
 func TestBuild_Validation_MissingInitial(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("test").
 		State("idle").Done().
 		Build()
@@ -27,6 +28,7 @@ func TestBuild_Validation_MissingInitial(t *testing.T) {
 }
 
 func TestBuild_Validation_InitialNotFound(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("nonexistent").
 		State("idle").Done().
@@ -47,6 +49,7 @@ func TestBuild_Validation_InitialNotFound(t *testing.T) {
 }
 
 func TestBuild_Validation_InvalidTransitionTarget(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
@@ -69,6 +72,7 @@ func TestBuild_Validation_InvalidTransitionTarget(t *testing.T) {
 }
 
 func TestBuild_Validation_MissingAction(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
@@ -91,6 +95,7 @@ func TestBuild_Validation_MissingAction(t *testing.T) {
 }
 
 func TestBuild_Validation_MissingGuard(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
@@ -114,6 +119,7 @@ func TestBuild_Validation_MissingGuard(t *testing.T) {
 }
 
 func TestBuild_Validation_ErrorMessage(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("test").
 		WithInitial("nonexistent").
 		State("idle").Done().

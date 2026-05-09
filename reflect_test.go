@@ -17,6 +17,7 @@ type SimpleReflectMachine struct {
 }
 
 func TestFromStruct_Simple(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]()
 
 	machine, err := FromStruct[SimpleReflectMachine, ReflectTestContext](registry)
@@ -63,6 +64,7 @@ type ActionReflectMachine struct {
 }
 
 func TestFromStruct_WithActions(t *testing.T) {
+	t.Parallel()
 	enterIdleCalled := false
 	exitIdleCalled := false
 	enterRunningCalled := false
@@ -123,6 +125,7 @@ type GuardReflectMachine struct {
 }
 
 func TestFromStruct_WithGuards(t *testing.T) {
+	t.Parallel()
 	canStart := false
 
 	registry := NewActionRegistry[ReflectTestContext]().
@@ -166,6 +169,7 @@ type FinalReflectMachine struct {
 }
 
 func TestFromStruct_WithFinalState(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]()
 
 	machine, err := FromStruct[FinalReflectMachine, ReflectTestContext](registry)
@@ -216,6 +220,7 @@ type HierarchicalReflectMachine struct {
 }
 
 func TestFromStruct_Hierarchical(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]()
 
 	machine, err := FromStruct[HierarchicalReflectMachine, ReflectTestContext](registry)
@@ -279,6 +284,7 @@ type ContextReflectMachine struct {
 }
 
 func TestFromStructWithContext(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]().
 		WithAction("incrementCount", func(ctx *ReflectTestContext, e Event) {
 			ctx.Count++
@@ -311,6 +317,7 @@ func TestFromStructWithContext(t *testing.T) {
 
 // Test parity with fluent builder
 func TestFromStruct_ParityWithBuilder(t *testing.T) {
+	t.Parallel()
 	// Build with fluent API
 	builderMachine, err := NewMachine[ReflectTestContext]("traffic").
 		WithInitial("green").
@@ -388,6 +395,7 @@ type InvalidMachine struct {
 }
 
 func TestFromStruct_ValidationError(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]()
 
 	_, err := FromStruct[InvalidMachine, ReflectTestContext](registry)
@@ -403,6 +411,7 @@ type MissingActionMachine struct {
 }
 
 func TestFromStruct_MissingAction(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]()
 
 	_, err := FromStruct[MissingActionMachine, ReflectTestContext](registry)
@@ -419,6 +428,7 @@ type MissingGuardMachine struct {
 }
 
 func TestFromStruct_MissingGuard(t *testing.T) {
+	t.Parallel()
 	registry := NewActionRegistry[ReflectTestContext]()
 
 	_, err := FromStruct[MissingGuardMachine, ReflectTestContext](registry)

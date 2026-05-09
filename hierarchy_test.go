@@ -6,6 +6,7 @@ import (
 
 // TestHierarchical_BuildNestedStates tests building a machine with nested states
 func TestHierarchical_BuildNestedStates(t *testing.T) {
+	t.Parallel()
 	// Structure:
 	// active (compound)
 	// ├── idle (atomic)
@@ -61,6 +62,7 @@ func TestHierarchical_BuildNestedStates(t *testing.T) {
 
 // TestHierarchical_StartEntersLeaf tests that Start() enters the initial leaf state
 func TestHierarchical_StartEntersLeaf(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
@@ -84,6 +86,7 @@ func TestHierarchical_StartEntersLeaf(t *testing.T) {
 
 // TestHierarchical_StartEntersDeepLeaf tests entering a deeply nested initial leaf
 func TestHierarchical_StartEntersDeepLeaf(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("level1").
 		State("level1").
@@ -108,6 +111,7 @@ func TestHierarchical_StartEntersDeepLeaf(t *testing.T) {
 
 // TestHierarchical_MatchesAncestors tests that Matches() returns true for ancestors
 func TestHierarchical_MatchesAncestors(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
@@ -146,6 +150,7 @@ func TestHierarchical_MatchesAncestors(t *testing.T) {
 
 // TestHierarchical_TransitionWithinCompound tests transitions between siblings
 func TestHierarchical_TransitionWithinCompound(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
@@ -184,6 +189,7 @@ func TestHierarchical_TransitionWithinCompound(t *testing.T) {
 
 // TestHierarchical_TransitionToCompoundEntersLeaf tests that transitioning to a compound state enters its initial leaf
 func TestHierarchical_TransitionToCompoundEntersLeaf(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").
@@ -230,6 +236,7 @@ type orderContext struct {
 
 // TestHierarchical_EntryExitOrder tests that entry/exit actions are called in correct order
 func TestHierarchical_EntryExitOrder(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[orderContext]("test").
 		WithInitial("idle").
 		WithContext(orderContext{}).
@@ -333,6 +340,7 @@ func TestHierarchical_EntryExitOrder(t *testing.T) {
 
 // TestHierarchical_EventBubblesUp tests that events bubble up to parent states
 func TestHierarchical_EventBubblesUp(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
@@ -375,6 +383,7 @@ func TestHierarchical_EventBubblesUp(t *testing.T) {
 
 // TestHierarchical_ChildTransitionTakesPriority tests that child state transitions take priority over parent
 func TestHierarchical_ChildTransitionTakesPriority(t *testing.T) {
+	t.Parallel()
 	handled := ""
 
 	machine, err := NewMachine[struct{}]("test").
@@ -411,6 +420,7 @@ func TestHierarchical_ChildTransitionTakesPriority(t *testing.T) {
 
 // TestHierarchical_TransitionToSibling tests transitions between siblings in a compound state
 func TestHierarchical_TransitionToSibling(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[orderContext]("test").
 		WithInitial("active").
 		WithContext(orderContext{}).
