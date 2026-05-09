@@ -2,11 +2,15 @@
   <div
     ref="containerRef"
     class="canvas-container"
-    @mousedown="handleMouseDown"
-    @mousemove="handleMouseMove"
-    @mouseup="handleMouseUp"
-    @mouseleave="handleMouseUp"
+    @pointerdown="handlePointerDown"
+    @pointermove="handlePointerMove"
+    @pointerup="handlePointerUp"
+    @pointercancel="handlePointerUp"
+    @pointerleave="handlePointerUp"
     @wheel="handleWheel"
+    @touchstart.prevent="handleTouchStart"
+    @touchmove.prevent="handleTouchMove"
+    @touchend="handleTouchEnd"
   >
     <canvas ref="canvasRef"></canvas>
 
@@ -100,20 +104,20 @@ function resetView() {
 
 defineExpose({ zoomIn, zoomOut, resetView });
 
-// Mouse handlers
-function handleMouseDown(e: MouseEvent) {
-  if (e.button === 0) {
-    isPanning.value = true;
-    lastMouseX.value = e.clientX;
-    lastMouseY.value = e.clientY;
-  }
+// Pointer handlers — unified mouse + pen + single-finger touch.
+function handlePointerDown(e: PointerEvent) {
+  // Only primary mouse button drives panning; touch and pen always pan.
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  isPanning.value = true;
+  lastMouseX.value = e.clientX;
+  lastMouseY.value = e.clientY;
+  (e.target as HTMLElement)?.setPointerCapture?.(e.pointerId);
 }
 
-function handleMouseMove(e: MouseEvent) {
+function handlePointerMove(e: PointerEvent) {
   const rect = containerRef.value?.getBoundingClientRect();
   if (!rect) return;
 
-  // Handle panning
   if (isPanning.value) {
     offsetX.value += e.clientX - lastMouseX.value;
     offsetY.value += e.clientY - lastMouseY.value;
@@ -123,12 +127,14 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  // Handle hover
+  // Hover applies only to mouse-like pointers; touch shouldn't
+  // surface tooltips while idling.
+  if (e.pointerType !== 'mouse') return;
+
   const x = (e.clientX - rect.left - offsetX.value) / scale.value;
   const y = (e.clientY - rect.top - offsetY.value) / scale.value;
 
   let hoveredState: { id: string; type: string } | null = null;
-
   if (props.machine) {
     for (const [id, pos] of Object.entries(props.statePositions)) {
       if (
@@ -147,8 +153,41 @@ function handleMouseMove(e: MouseEvent) {
   emit('state-hover', { state: hoveredState, x: e.clientX, y: e.clientY });
 }
 
-function handleMouseUp() {
+function handlePointerUp() {
   isPanning.value = false;
+}
+
+// Pinch-to-zoom for touch. Tracks distance between two fingers and
+// scales relative to the gesture origin.
+let pinchStartDistance = 0;
+let pinchStartScale = 1;
+
+function touchDistance(t: TouchList): number {
+  if (t.length < 2) return 0;
+  const dx = t[0].clientX - t[1].clientX;
+  const dy = t[0].clientY - t[1].clientY;
+  return Math.hypot(dx, dy);
+}
+
+function handleTouchStart(e: TouchEvent) {
+  if (e.touches.length === 2) {
+    pinchStartDistance = touchDistance(e.touches);
+    pinchStartScale = scale.value;
+    isPanning.value = false;
+  }
+}
+
+function handleTouchMove(e: TouchEvent) {
+  if (e.touches.length === 2 && pinchStartDistance > 0) {
+    const dist = touchDistance(e.touches);
+    const factor = dist / pinchStartDistance;
+    scale.value = Math.max(0.3, Math.min(3, pinchStartScale * factor));
+    render();
+  }
+}
+
+function handleTouchEnd() {
+  pinchStartDistance = 0;
 }
 
 function handleWheel(e: WheelEvent) {

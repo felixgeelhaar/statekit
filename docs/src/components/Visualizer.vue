@@ -137,14 +137,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, onErrorCaptured } from 'vue';
-import type { MachineConfig, StatePosition, HistoryItem } from '../utils/types';
+import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue';
+import type { MachineConfig, StatePosition } from '../utils/types';
 import JsonImporter from './JsonImporter.vue';
 import SimulationPanel from './SimulationPanel.vue';
 import StateHistory from './StateHistory.vue';
 import StateCanvas from './StateCanvas.vue';
 import KeyboardShortcuts from './KeyboardShortcuts.vue';
 import MachineJson from './MachineJson.vue';
+import { useToasts } from '../composables/useToasts';
+import { useSimulation } from '../composables/useSimulation';
+
+// State
+const machine = ref<MachineConfig | null>(null);
+const statePositions = ref<Record<string, StatePosition>>({});
+const shortcutsVisible = ref(false);
+
+// Canvas refs
+const canvasRef = ref<InstanceType<typeof StateCanvas> | null>(null);
+
+// Tooltip
+const hoveredState = ref<{ id: string; type: string } | null>(null);
+const tooltipStyle = ref({ left: '0px', top: '0px' });
+
+// Toasts (extracted to composable)
+const { toasts, show: showToast, dismiss: dismissToast } = useToasts();
+
+// Simulation (extracted to composable)
+const sim = useSimulation(machine);
+const currentState = sim.currentState;
+const history = sim.history;
+const isSimulating = sim.isSimulating;
 
 // Catch descendant Vue errors so a malformed render doesn't blank
 // the page; surface them as an error toast instead.
@@ -156,48 +179,6 @@ onErrorCaptured((err) => {
   );
   return false; // suppress further propagation
 });
-
-// State
-const machine = ref<MachineConfig | null>(null);
-const currentState = ref<string | null>(null);
-const history = ref<HistoryItem[]>([]);
-const isSimulating = ref(false);
-const statePositions = ref<Record<string, StatePosition>>({});
-const shortcutsVisible = ref(false);
-
-// Canvas refs
-const canvasRef = ref<InstanceType<typeof StateCanvas> | null>(null);
-
-// Tooltip
-const hoveredState = ref<{ id: string; type: string } | null>(null);
-const tooltipStyle = ref({ left: '0px', top: '0px' });
-
-// Toasts
-interface Toast {
-  id: number;
-  message: string;
-  type: 'success' | 'error';
-}
-const toasts = ref<Toast[]>([]);
-let toastId = 0;
-
-function showToast(message: string, type: 'success' | 'error' = 'success') {
-  const id = ++toastId;
-  toasts.value.push({ id, message, type });
-
-  // Errors stay until the user dismisses or another action displaces
-  // them (UX review: 3s auto-dismiss is too short to read a stack
-  // trace). Successes auto-dismiss as before.
-  if (type === 'success') {
-    setTimeout(() => {
-      toasts.value = toasts.value.filter(t => t.id !== id);
-    }, 3000);
-  }
-}
-
-function dismissToast(id: number) {
-  toasts.value = toasts.value.filter(t => t.id !== id);
-}
 
 // Machine loading
 function handleMachineLoad(loadedMachine: MachineConfig) {
@@ -301,65 +282,22 @@ function calculatePositions() {
   statePositions.value = positions;
 }
 
-// Simulation
-
-// Resolve to initial leaf state if compound. Caps depth to prevent
-// infinite loops when initial chains contain cycles (malformed JSON).
-function resolveInitialLeaf(start: string): string {
-  if (!machine.value) return start;
-  let current = start;
-  const seen = new Set<string>();
-  while (machine.value.states[current]?.initial) {
-    if (seen.has(current)) {
-      console.warn('statekit: cycle detected in initial chain at', current);
-      break;
-    }
-    seen.add(current);
-    current = machine.value.states[current].initial!;
-  }
-  return current;
-}
+// Simulation thin wrappers — the heavy lifting lives in
+// composables/useSimulation. These exist so the component can also
+// announce final-state toasts when an event reaches a terminal node.
 
 function startSimulation() {
-  if (!machine.value) return;
-
-  isSimulating.value = true;
-  currentState.value = resolveInitialLeaf(machine.value.initial);
-
-  history.value = [{ event: 'START', to: currentState.value }];
+  sim.start();
 }
 
 function resetSimulation() {
-  isSimulating.value = false;
-  currentState.value = null;
-  history.value = [];
+  sim.reset();
 }
 
 function sendEvent(eventType: string) {
-  if (!isSimulating.value || !currentState.value || !machine.value) return;
-
-  // Find transition (bubble up through hierarchy)
-  let transition = null;
-  let searchState: string | undefined = currentState.value;
-
-  while (searchState && !transition) {
-    const s = machine.value.states[searchState];
-    if (s?.transitions) {
-      transition = s.transitions.find(t => t.event === eventType);
-    }
-    searchState = s?.parent;
-  }
-
-  if (transition?.target) {
-    const prevState = currentState.value;
-    currentState.value = resolveInitialLeaf(transition.target);
-
-    history.value.unshift({ event: eventType, from: prevState, to: currentState.value });
-
-    // Check if final state
-    if (machine.value.states[currentState.value]?.type === 'final') {
-      showToast('Reached final state: ' + currentState.value, 'success');
-    }
+  const next = sim.send(eventType);
+  if (next && machine.value?.states[next]?.type === 'final') {
+    showToast('Reached final state: ' + next, 'success');
   }
 }
 
@@ -431,22 +369,7 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 function getAvailableEvents(): string[] {
-  if (!currentState.value || !machine.value) return [];
-
-  const events = new Set<string>();
-  let searchState: string | undefined = currentState.value;
-
-  while (searchState) {
-    const state = machine.value.states[searchState];
-    if (state?.transitions) {
-      state.transitions.forEach(t => {
-        if (t.event) events.add(t.event);
-      });
-    }
-    searchState = state?.parent;
-  }
-
-  return Array.from(events).sort();
+  return sim.availableEvents();
 }
 
 onMounted(() => {
