@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://felixgeelhaar.github.io/statekit/sitemap.xml

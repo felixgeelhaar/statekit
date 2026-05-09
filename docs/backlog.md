@@ -130,3 +130,105 @@ Followup to DX polish. Two name footguns require breaking changes: (1) Done() re
 Followup to synthetic clock injection. Now that Clock interface + FakeClock + WithClock option exist, convert delayed_test.go (5 wall-clock sleeps 30-100ms) and supervision tests in actor_test.go to use FakeClock.Advance(). Eliminates flake risk on shared CI runners. Mechanical change per file. Source: Quality review followup to commit 66ac9cf.
 
 ---
+
+## Reposition away from "XState for Go" — two ports already exist
+
+ICP signal: dstotijn/go-xstate and CorrectRoadH/XState-For-Golang already occupy the "XState port" framing. Update README hero from "XState compatibility" lead to "statecharts for Go" lead. Frame XState/Stately compat as a feature (round-trip via XStateExporter), not as the identity. Show HN headline candidate: "Statekit — Go statecharts with hierarchy, parallel states, visual debugger" not "XState for Go". Source: ICP signal sweep — competing ports already exist with the same framing.
+
+---
+
+## README "Coming from looplab/fsm or qmuntal/stateless?" callout
+
+ICP signal: looplab #40 (persistence pain), looplab #86 (generics request), looplab #115 (context cancellation bug), qmuntal #77 (halt FSM pain), qmuntal #94 (Mermaid export missing), qmuntal #98/#99 (OnEntry hierarchy bugs). Add a 5-bullet README section: "Tired of FSM that can't persist? Tired of InTransitionError after context cancellation? Tired of broken self-transitions?" — directly addressing the verbatim pain. Link to existing migration guides. Source: ICP signal sweep — top open issues across both incumbents.
+
+---
+
+## Verify context-cancellation correctness — counter-test for looplab #115
+
+looplab/fsm #115 reports a bug where ctx.Err leaves FSM in InTransitionError state with no recovery path. Add an explicit test in interpreter_test.go that exercises this scenario in statekit and confirms our interpreter recovers correctly: send event with cancelled context, verify subsequent events still process. Test doubles as a public differentiator and a regression guard. Source: ICP signal sweep — direct quote from looplab #115.
+
+---
+
+## Verify Snapshot is gob/JSON-encodable — counter-test for looplab #40
+
+looplab/fsm #40 reports that the FSM type has no exported fields, blocking gob encoding for production persistence. Add an explicit test that takes interp.Snapshot(), serializes it via json.Marshal AND encoding/gob, deserializes, and Restore()s into a fresh interpreter. Demonstrates that statekit's snapshot is publicly serializable. Lifts the result to a docs/snapshot-serialization.md or a section in api-reference.md. Source: ICP signal sweep — direct quote from looplab #40.
+
+---
+
+## Add transition-budget lint rule — directly addresses qmuntal #77
+
+qmuntal #77 author needs to halt workflow execution after N transitions (runaway prevention). Add a lint rule "missing-transition-budget" or document the recommended pattern: use Action+Guard pair with attempt counter (the stripe_webhook example pattern). Could also ship as a new aiplugin.RetryBudget[C] plugin that wraps OnEvent and emits a HALT event when count exceeds threshold. Source: ICP signal sweep — direct quote from qmuntal #77.
+
+---
+
+## DM 4 candidate interviewees from competitor issues
+
+User-driven action. Reach out via GitHub to four authors of public pain issues: looplab/fsm #40 (persistence pain, multi-FSM use case), looplab/fsm #109 (external state storage + instance reuse), looplab/fsm #115 (context cancellation bug), qmuntal/stateless #77 (workflow execution + retry budget). 30-min interview each. Real signal at low cost since they self-identified the pain. Source: ICP signal sweep.
+
+---
+
+## README two-narrative thread — backend wedge + AI wedge
+
+ICP signal: Go AI agent runtime is open territory (only tRPC-Agent-Go exists; LangGraph/AutoGen/CrewAI are Python). Pair the Stripe webhook example (proves backend wedge) with llm_agent example (proves AI wedge) in a coherent README arc: "Statekit fits two jobs that look similar — backend workflow logic and deterministic agent runtime." Cite the existing examples explicitly. Source: ICP signal sweep — Vellum 2026 industry articulation matches statekit's narrative verbatim.
+
+---
+
+## Build landing page at / — move visualizer to /play
+
+Top consensus action across UX/GTM/Product/Frontend reviews. Replace visualizer-as-homepage with real landing: hero ("Statecharts for Go"), 10-line code sample lifted from README, `go get` install block, dual-job section (backend workflows + AI agents), comparison table vs looplab/qmuntal/Temporal, CTAs (GitHub star + Quickstart + Try Visualizer). Move existing Visualizer.vue to /play route. Source: 4-expert website review.
+
+---
+
+## Publish 30+ docs via Astro content collection
+
+30+ markdown docs (getting-started, hierarchical-states, guards-actions, migration-from-*, stability, etc.) exist in repo but only the visualizer is rendered as site. Wire Astro content collection or @astrojs/starlight so /docs/* renders. Migration pages = highest intent capture for SEO ("looplab fsm alternative", "go statechart library"). Source: 4-expert website review — content asset wasted.
+
+---
+
+## OG card, Twitter meta, sitemap, per-page titles
+
+Site is share-invisible. Title is "Statekit Visualizer" — kills SEO for "go state machine", "go statechart library", "looplab fsm alternative". Add: OG image with "Statecharts for Go" + code snippet, Twitter card meta, sitemap.xml, structured data (SoftwareSourceCode JSON-LD), per-page <title> + <meta description>. Source: GTM review — distribution leak.
+
+---
+
+## Visualizer accessibility sweep — WCAG 2.2 AA
+
+Multiple WCAG hits identified by UX review: 2.4.7 outline:none with no :focus-visible replacement; 4.1.2 icon-only buttons missing aria-label, modal missing role=dialog/aria-modal/focus trap, toast container missing aria-live=polite; 1.4.3 --text-muted #484f58 on #0a0e14 ≈ 3.5:1 (fails 4.5:1); 2.1.1 canvas pan/zoom mouse-only; 2.3.3 no @media (prefers-reduced-motion: reduce). Fix: global :focus-visible rule, prefers-reduced-motion guard, aria-labels on toolbar/modal-close/header buttons, role="dialog" + aria-modal + focus-trap on KeyboardShortcuts modal, role="status" + aria-live="polite" on toast container, bump --text-muted to #7d8590 (≥4.5:1), add pointer/touch handlers on StateCanvas. Source: UX review.
+
+---
+
+## Convert Visualizer to Astro island + auto-load sample
+
+Frontend review: index.astro:13-19 boots Vue manually via createApp in inline script, bypassing Astro islands. Vue runtime + entire visualizer hydrate eagerly even though canvas not in viewport on mobile. Convert <Visualizer /> to Astro Vue island with client:idle (or client:visible). Defer 76KB Vue runtime past LCP, ~30% TTI improvement. Also: auto-load sample machine on first visit (localStorage flag) — kills empty-state bounce per UX review (Jakob's law violation). Source: Frontend + UX reviews.
+
+---
+
+## Visualizer robustness — infinite-loop guard + roundRect fallback + error boundary
+
+Frontend review: (1) Visualizer.vue:280-282 + :313-315 use `while (states[currentState].initial)` — infinite loop if initial chain cycles. Add cycle detection. (2) StateCanvas.vue:209 ctx.roundRect not in older Safari (<16) — silent throw breaks render. Add fillRect fallback or Path2D polyfill. (3) No app.config.errorHandler — Vue throws yield blank page. Add global error handler that surfaces to toast + console. (4) MachineJson.vue:43 navigator.clipboard.writeText unhandled rejection in older browsers / insecure context. Add try/catch with fallback. (5) json-validator.ts doesn't validate cyclic initial chains or that children[] matches actual parent refs. Source: Frontend review.
+
+---
+
+## Share URL + copy-as-Mermaid + copy-as-Go-builder
+
+Product review: viral primitive. Add URL hash with LZ-compressed JSON (?m=...) so users can share machines via permalink. Add three copy buttons: copy permalink, copy as Mermaid (uses existing viz/mermaid renderer), copy as Go builder (synthesize statekit.NewMachine[...] code from Native JSON). Unlocks HN/Twitter/blog embeds. Source: Product review.
+
+---
+
+## Visualizer mobile + persistent JSON errors
+
+UX review: mobile dead. components.css:10-15 only swaps grid columns at <1024px, sidebar stacks above canvas pushing it below fold. Visualizer.vue:182-188 hardcoded width=700/height=500 ignores viewport. StateCanvas.vue:127 wheel/drag — no touch handlers. Fix: pointer events for pan/zoom, drawer or tabs for sidebar on mobile, viewport-relative layout. Also: JSON error UX is 3s toast that disappears. Visualizer.vue:165-167. Add persistent inline error block under textarea with line/column hint + link to JSON schema; sticky toasts for errors. Source: UX review.
+
+---
+
+## Refactor Visualizer.vue + StateCanvas.vue god components
+
+Frontend review: Visualizer.vue (424 LOC) mixes state ownership, layout calc (calculatePositions 92 LOC), simulation engine, tooltip positioning, toast manager, keyboard handler. StateCanvas.vue (424 LOC) has render logic that should move to pure utils. Extract: composables/useSimulation.ts, composables/useLayout.ts, composables/useToasts.ts, composables/useKeyboard.ts; utils/canvas-renderer.ts (pure drawState/drawArrow/drawTransitions). DRY transition-bubble logic duplicated between Visualizer.vue:298-309 and SimulationPanel.vue:91-103. Source: Frontend review.
+
+---
+
+## Frontend test infrastructure — Vitest + Playwright + astro check in CI
+
+Frontend review: zero CI safety net for visualizer. Add Vitest unit tests for json-validator.ts + new composables, Playwright e2e for paste-JSON → simulate → verify state badge, @astrojs/check + typescript in devDeps so CI can type-check. Pin caret deps to exact versions for reproducible builds. Source: Frontend review.
+
+---
