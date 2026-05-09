@@ -23,11 +23,36 @@ interp.Send(statekit.Event{Type: "CHECKOUT"})
 
 A working machine in 10 lines. Hierarchy and parallel states scale from there. `statekit viz` renders any machine to ASCII, Mermaid, an interactive HTML simulator, or a TUI.
 
+## Two jobs
+
+Statekit fits two adjacent shapes that look similar from outside:
+
+- **Backend domain workflows** — order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across `switch event.Type { ... }` and accumulate bugs around partial failure, retry, and idempotency. See [`examples/stripe_webhook`](./examples/stripe_webhook) for a webhook-saga template with idempotency, retry budget, and the outbox pattern.
+- **Deterministic AI agent runtime** — RAG pipelines, tool-call workflows, multi-step agents with human-in-the-loop. Statecharts give you reproducibility (event sourcing replays the run without re-calling the model), bounded blast radius (OnError routing), and audit-grade observability (prompt + token snapshots). See [`examples/llm_agent`](./examples/llm_agent) and the [`ai`](./ai) + [`aiplugin`](./aiplugin) packages.
+
+Both jobs benefit from the same primitives — typed context, hierarchy, lint, visualization, snapshots — so one library, one mental model.
+
+## Coming from another FSM library?
+
+If you're using one of the incumbent Go FSM libraries and have hit a ceiling, this is the migration path:
+
+- **Need persistence** that doesn't choke on unexported fields? Statekit's `Snapshot` round-trips through `encoding/json` and `encoding/gob` (see [snapshot serialization tests](./snapshot_serialization_test.go)).
+- **Need recovery** after a service or context error without ending up in a stuck-transition limbo? Statekit's `OnError` routes cleanly; the interpreter accepts events again immediately (see [cancellation recovery tests](./cancellation_recovery_test.go)).
+- **Need hierarchy** (compound, parallel, history)? First-class. Lint catches structural bugs the flat-FSM libraries can't even check for.
+- **Need typed everything**? `[C any]` context threads through actions, guards, and services — no `interface{}` casts at handler time.
+- **Need a Mermaid / ASCII / interactive HTML diagram**? `statekit viz` ships them.
+
+Step-by-step migration guides:
+
+- [From looplab/fsm](./docs/migration-from-looplab-fsm.md)
+- [From qmuntal/stateless](./docs/migration-from-qmuntal-stateless.md)
+- [From XState (JS)](./docs/xstate-migration.md)
+
 ## Why
 
 - **Type-safe over typed** — `[C any]` context, typed events, typed actions and guards. No `interface{}` casts at action time.
 - **Statecharts, not just FSMs** — compound, parallel, history, and delayed transitions handle the workflows that flat FSM libraries can't model without manual bookkeeping.
-- **Visualization as a feature** — every machine renders to multiple formats from one source of truth. Stately.ai-compatible JSON for round-trip editing.
+- **Visualization as a feature** — every machine renders to multiple formats from one source of truth. XState v5 export for [Stately Studio](https://stately.ai/studio) round-trip editing.
 - **Static analysis** — `lint.Lint(machine)` catches unreachable states, dead ends, non-determinism, missing OnError on Invoke, and more — at build time.
 - **Determinism for tests** — inject a `FakeClock` to make timer-driven behavior reproducible. No `time.Sleep` flakes.
 
