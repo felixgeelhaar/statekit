@@ -28,6 +28,33 @@ import { ref, watch, onMounted, onUnmounted } from 'vue';
 import type { MachineConfig, StatePosition, CanvasColors } from '../utils/types';
 import { defaultColors } from '../utils/types';
 
+// Safari < 16 ships without ctx.roundRect; fall back to a manual
+// rounded path so the visualizer doesn't silently break.
+function roundRectCompat(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, r);
+    return;
+  }
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+  ctx.lineTo(x + radius, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
 const props = defineProps<{
   machine: MachineConfig | null;
   currentState: string | null;
@@ -206,7 +233,7 @@ function drawState(
   if (type === 'history') {
     ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
   } else {
-    ctx.roundRect(x, y, pos.width, pos.height, radius);
+    roundRectCompat(ctx, x, y, pos.width, pos.height, radius);
   }
 
   // Fill
@@ -328,7 +355,7 @@ function drawArrow(
     // Background pill - centered on arrow midpoint
     ctx.fillStyle = colors.bg;
     ctx.beginPath();
-    ctx.roundRect(labelX - pillWidth / 2, labelY - pillHeight / 2, pillWidth, pillHeight, 4);
+    roundRectCompat(ctx, labelX - pillWidth / 2, labelY - pillHeight / 2, pillWidth, pillHeight, 4);
     ctx.fill();
     ctx.strokeStyle = colors.border;
     ctx.lineWidth = 1;

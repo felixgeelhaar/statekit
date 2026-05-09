@@ -38,13 +38,32 @@ const formattedJson = computed(() => {
   return JSON.stringify(props.machine, null, 2);
 });
 
-function copyJson() {
+async function copyJson() {
   if (!props.machine) return;
-  navigator.clipboard.writeText(formattedJson.value);
-  copied.value = true;
-  setTimeout(() => {
-    copied.value = false;
-  }, 2000);
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(formattedJson.value);
+    } else {
+      // Older browsers / insecure context: fall back to a temporary
+      // textarea + execCommand. Last resort, but better than a
+      // silent failure.
+      const ta = document.createElement('textarea');
+      ta.value = formattedJson.value;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.warn('statekit: clipboard copy failed', err);
+  }
 }
 </script>
 

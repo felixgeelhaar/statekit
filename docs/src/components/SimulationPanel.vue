@@ -88,9 +88,11 @@ const availableEvents = computed(() => {
   if (!props.currentState || !props.machine) return [];
 
   const events = new Set<string>();
+  const visited = new Set<string>();
   let searchState: string | undefined = props.currentState;
 
-  while (searchState) {
+  while (searchState && !visited.has(searchState)) {
+    visited.add(searchState);
     const state = props.machine.states[searchState];
     if (state?.transitions) {
       state.transitions.forEach(t => {

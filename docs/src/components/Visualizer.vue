@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, onErrorCaptured } from 'vue';
 import type { MachineConfig, StatePosition, HistoryItem } from '../utils/types';
 import JsonImporter from './JsonImporter.vue';
 import SimulationPanel from './SimulationPanel.vue';
@@ -134,6 +134,17 @@ import StateHistory from './StateHistory.vue';
 import StateCanvas from './StateCanvas.vue';
 import KeyboardShortcuts from './KeyboardShortcuts.vue';
 import MachineJson from './MachineJson.vue';
+
+// Catch descendant Vue errors so a malformed render doesn't blank
+// the page; surface them as an error toast instead.
+onErrorCaptured((err) => {
+  console.error('statekit: visualizer error', err);
+  showToast(
+    err instanceof Error ? err.message : 'Something went wrong rendering the machine',
+    'error',
+  );
+  return false; // suppress further propagation
+});
 
 // State
 const machine = ref<MachineConfig | null>(null);
@@ -271,16 +282,29 @@ function calculatePositions() {
 }
 
 // Simulation
+
+// Resolve to initial leaf state if compound. Caps depth to prevent
+// infinite loops when initial chains contain cycles (malformed JSON).
+function resolveInitialLeaf(start: string): string {
+  if (!machine.value) return start;
+  let current = start;
+  const seen = new Set<string>();
+  while (machine.value.states[current]?.initial) {
+    if (seen.has(current)) {
+      console.warn('statekit: cycle detected in initial chain at', current);
+      break;
+    }
+    seen.add(current);
+    current = machine.value.states[current].initial!;
+  }
+  return current;
+}
+
 function startSimulation() {
   if (!machine.value) return;
 
   isSimulating.value = true;
-  currentState.value = machine.value.initial;
-
-  // Resolve to initial leaf state if compound
-  while (machine.value.states[currentState.value]?.initial) {
-    currentState.value = machine.value.states[currentState.value].initial!;
-  }
+  currentState.value = resolveInitialLeaf(machine.value.initial);
 
   history.value = [{ event: 'START', to: currentState.value }];
 }
@@ -308,12 +332,7 @@ function sendEvent(eventType: string) {
 
   if (transition?.target) {
     const prevState = currentState.value;
-    currentState.value = transition.target;
-
-    // Resolve to initial leaf if compound
-    while (machine.value.states[currentState.value]?.initial) {
-      currentState.value = machine.value.states[currentState.value].initial!;
-    }
+    currentState.value = resolveInitialLeaf(transition.target);
 
     history.value.unshift({ event: eventType, from: prevState, to: currentState.value });
 
