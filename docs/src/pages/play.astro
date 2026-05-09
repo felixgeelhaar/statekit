@@ -1,6 +1,7 @@
 ---
 import Layout from '../components/Layout.astro';
 import Header from '../components/Header.astro';
+import Visualizer from '../components/Visualizer.vue';
 ---
 
 <Layout
@@ -10,17 +11,9 @@ import Header from '../components/Header.astro';
 >
   <div class="app">
     <Header active="play" />
-    <div id="visualizer-mount"></div>
+    <Visualizer client:idle />
   </div>
 </Layout>
-
-<script>
-  import { createApp } from 'vue';
-  import Visualizer from '../components/Visualizer.vue';
-
-  const app = createApp(Visualizer);
-  app.mount('#visualizer-mount');
-</script>
 
 <style>
   .app {
@@ -29,10 +22,6 @@ import Header from '../components/Header.astro';
     grid-template-rows: auto 1fr;
     height: 100vh;
     background: var(--bg);
-  }
-
-  #visualizer-mount {
-    display: contents;
   }
 
   :global(.visualizer-content) {

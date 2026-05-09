@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import type { MachineConfig } from '../utils/types';
 import { parseMachineJSON } from '../utils/json-validator';
 
@@ -74,6 +74,24 @@ const emit = defineEmits<{
 const jsonInput = ref('');
 const isDragging = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
+
+// Auto-load sample on first visit so the canvas is never empty.
+// Persisted to localStorage so we don't override returning users
+// who paste their own machine.
+const FIRST_VISIT_KEY = 'statekit:visualizer:visited';
+onMounted(() => {
+  if (typeof window === 'undefined') return;
+  try {
+    if (!window.localStorage.getItem(FIRST_VISIT_KEY)) {
+      window.localStorage.setItem(FIRST_VISIT_KEY, '1');
+      loadSample();
+    }
+  } catch {
+    // localStorage may be unavailable (private mode, embedded). Just
+    // load the sample anyway — empty canvas is the worse default.
+    loadSample();
+  }
+});
 
 function handleDrop(e: DragEvent) {
   isDragging.value = false;
