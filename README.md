@@ -329,6 +329,8 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 - [Hierarchical States](./docs/hierarchical-states.md)
 - [Guards & Actions](./docs/guards-actions.md)
 - [XState Migration](./docs/xstate-migration.md)
+- [Migration from looplab/fsm](./docs/migration-from-looplab-fsm.md)
+- [Migration from qmuntal/stateless](./docs/migration-from-qmuntal-stateless.md)
 - [Reflection DSL](./docs/reflection-dsl.md)
 - [Testing](./docs/testing.md)
 - [Observability](./docs/observability.md)
