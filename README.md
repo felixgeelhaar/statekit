@@ -328,7 +328,7 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 - [Getting Started](./docs/getting-started.md)
 - [Hierarchical States](./docs/hierarchical-states.md)
 - [Guards & Actions](./docs/guards-actions.md)
-- [XState Export](./docs/xstate-export.md)
+- [XState Migration](./docs/xstate-migration.md)
 - [Reflection DSL](./docs/reflection-dsl.md)
 - [Testing](./docs/testing.md)
 - [Observability](./docs/observability.md)
