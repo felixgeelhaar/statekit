@@ -33,7 +33,11 @@ type Interpreter[C any] struct {
 	// Timer management for delayed transitions (v2.0)
 	// Maps timer key (stateID:index) to active timer
 	// Protected by mu (single mutex to prevent deadlocks)
-	timers map[string]*time.Timer
+	timers map[string]Timer
+
+	// clock supplies AfterFunc; defaults to systemClock (wall clock)
+	// and can be overridden via WithClock for deterministic tests.
+	clock Clock
 
 	// Parallel state tracking (v2.0)
 	// When inside a parallel state, this holds the parallel state ID
@@ -65,9 +69,19 @@ type transitionSource[C any] struct {
 	transition *ir.TransitionConfig
 }
 
+// Option configures a new Interpreter at construction time.
+type Option[C any] func(*Interpreter[C])
+
+// WithClock overrides the interpreter's Clock. The default is the
+// wall-clock; pass a FakeClock to make timer-driven behavior
+// deterministic in tests.
+func WithClock[C any](c Clock) Option[C] {
+	return func(i *Interpreter[C]) { i.clock = c }
+}
+
 // NewInterpreter creates a new interpreter for the given machine configuration
-func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
-	return &Interpreter[C]{
+func NewInterpreter[C any](machine *ir.MachineConfig[C], opts ...Option[C]) *Interpreter[C] {
+	i := &Interpreter[C]{
 		machine: machine,
 		state: State[C]{
 			Context:          machine.Context,
@@ -75,12 +89,17 @@ func NewInterpreter[C any](machine *ir.MachineConfig[C]) *Interpreter[C] {
 		},
 		shallowHistory:        make(map[ir.StateID]ir.StateID),
 		deepHistory:           make(map[ir.StateID]ir.StateID),
-		timers:                make(map[string]*time.Timer),
+		timers:                make(map[string]Timer),
 		activeServices:        make(map[string]context.CancelFunc),
 		actorRegistry:         make(map[ActorID]*actorEntry),
 		actorsByState:         make(map[StateID][]ActorID),
 		activeInvokedMachines: make(map[string]ir.ChildInterpreter),
+		clock:                 systemClock{},
 	}
+	for _, opt := range opts {
+		opt(i)
+	}
+	return i
 }
 
 // Use registers a plugin with the interpreter.
@@ -763,7 +782,7 @@ func (i *Interpreter[C]) scheduleDelayedTransitions(stateID ir.StateID) {
 		// Capture transition for closure
 		capturedTrans := trans
 
-		timer := time.AfterFunc(trans.Delay, func() {
+		timer := i.clock.AfterFunc(trans.Delay, func() {
 			i.mu.Lock()
 			defer i.mu.Unlock()
 
