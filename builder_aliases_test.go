@@ -8,14 +8,20 @@ import "testing"
 func TestBuilderAliases(t *testing.T) {
 	t.Parallel()
 
-	// Type-equivalence checks via assignments — these compile only if
-	// the aliases resolve to the same underlying type.
-	var ib *InvokeBuilder[struct{}]
-	var isb *InvokeServiceBuilder[struct{}] = ib
+	// Type-equivalence checks via direct assignment — these compile
+	// only if the aliases resolve to the same underlying type.
+	var (
+		ib  *InvokeBuilder[struct{}]
+		isb *InvokeServiceBuilder[struct{}]
+	)
+	isb = ib
 	_ = isb
 
-	var mib *MachineInvokeBuilder[struct{}]
-	var imb *InvokeMachineBuilder[struct{}] = mib
+	var (
+		mib *MachineInvokeBuilder[struct{}]
+		imb *InvokeMachineBuilder[struct{}]
+	)
+	imb = mib
 	_ = imb
 }
 

@@ -27,7 +27,7 @@ func TestSaga_HappyPath(t *testing.T) {
 	machine := buildSaga(idem, ful)
 
 	interp := statekit.NewInterpreter(machine)
-	defer interp.Close()
+	defer func() { _ = interp.Close() }()
 	interp.Start()
 
 	interp.Send(statekit.Event{Type: EvtReceived, Payload: PaymentIntentEvent{
@@ -52,7 +52,7 @@ func TestSaga_IdempotencyShortCircuit(t *testing.T) {
 	// First processing.
 	{
 		interp := statekit.NewInterpreter(machine)
-		defer interp.Close()
+		defer func() { _ = interp.Close() }()
 		interp.Start()
 		interp.Send(statekit.Event{Type: EvtReceived, Payload: PaymentIntentEvent{
 			ID: "evt_dup", OrderID: "ord_dup", AmountUSD: 10,
@@ -62,7 +62,7 @@ func TestSaga_IdempotencyShortCircuit(t *testing.T) {
 
 	// Replay — should short-circuit to succeeded without fulfilling.
 	interp := statekit.NewInterpreter(machine)
-	defer interp.Close()
+	defer func() { _ = interp.Close() }()
 	interp.Start()
 	interp.Send(statekit.Event{Type: EvtReceived, Payload: PaymentIntentEvent{
 		ID: "evt_dup", OrderID: "ord_dup", AmountUSD: 10,
@@ -84,7 +84,7 @@ func TestSaga_RetriesExhaust(t *testing.T) {
 	machine := buildSaga(idem, ful)
 
 	interp := statekit.NewInterpreter(machine)
-	defer interp.Close()
+	defer func() { _ = interp.Close() }()
 	interp.Start()
 
 	// OrderID is empty → fulfilment errors.
