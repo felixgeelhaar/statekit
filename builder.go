@@ -43,6 +43,10 @@ type StateBuilder[C any] struct {
 }
 
 // InvokeBuilder provides a fluent API for constructing service invocations (v3.0)
+//
+// The name is kept for backward compatibility; use the
+// InvokeServiceBuilder alias for clearer intent next to
+// InvokeMachineBuilder.
 type InvokeBuilder[C any] struct {
 	state        *StateBuilder[C]
 	id           string
@@ -53,7 +57,16 @@ type InvokeBuilder[C any] struct {
 	onErrAction  ActionType
 }
 
+// InvokeServiceBuilder is a clearer alias for InvokeBuilder. Prefer
+// this name in new code — it parallels InvokeMachineBuilder so the
+// two service/machine invocation paths are self-documenting.
+type InvokeServiceBuilder[C any] = InvokeBuilder[C]
+
 // MachineInvokeBuilder provides a fluent API for constructing child machine invocations (v0.14)
+//
+// The name is kept for backward compatibility; use the
+// InvokeMachineBuilder alias for clearer intent next to
+// InvokeServiceBuilder.
 type MachineInvokeBuilder[C any] struct {
 	state        *StateBuilder[C]
 	id           string
@@ -64,6 +77,11 @@ type MachineInvokeBuilder[C any] struct {
 	onErrAction  ActionType
 	autoForward  []EventType
 }
+
+// InvokeMachineBuilder is a clearer alias for MachineInvokeBuilder.
+// Prefer this name in new code — it parallels InvokeServiceBuilder so
+// the two service/machine invocation paths are self-documenting.
+type InvokeMachineBuilder[C any] = MachineInvokeBuilder[C]
 
 // HistoryBuilder provides a fluent API for constructing history states
 type HistoryBuilder[C any] struct {
@@ -323,12 +341,21 @@ func (b *StateBuilder[C]) On(event EventType) *TransitionBuilder[C] {
 	return tb
 }
 
-// Done completes the state definition and returns to the parent builder
-// For nested states, returns to the parent StateBuilder
-// For root states, returns to the MachineBuilder
+// Done completes the state definition and returns the root MachineBuilder.
+//
+// Watch out: when called from a nested StateBuilder, Done() teleports the
+// chain all the way back to the machine root, skipping any intermediate
+// parent states. This is rarely what you want for nested states. Prefer
+// End() for "back one level" or EndMachine() for "back to the root" — both
+// are clearer at a glance.
 func (b *StateBuilder[C]) Done() *MachineBuilder[C] {
-	// If this is a nested state, we need to return the machine builder
-	// but the caller should use End() for better clarity
+	return b.machine
+}
+
+// EndMachine completes the state definition and returns the root
+// MachineBuilder. Equivalent to Done() but its name makes the intent
+// unambiguous when reading nested-state-builder chains.
+func (b *StateBuilder[C]) EndMachine() *MachineBuilder[C] {
 	return b.machine
 }
 
@@ -608,6 +635,13 @@ func (b *TransitionBuilder[C]) After(d time.Duration) *TransitionBuilder[C] {
 
 // Done completes the state definition and returns to the machine builder
 func (b *TransitionBuilder[C]) Done() *MachineBuilder[C] {
+	return b.state.Done()
+}
+
+// EndMachine completes the state definition and returns to the
+// MachineBuilder. Equivalent to Done() but its name makes the intent
+// unambiguous in nested-state-builder chains.
+func (b *TransitionBuilder[C]) EndMachine() *MachineBuilder[C] {
 	return b.state.Done()
 }
 
