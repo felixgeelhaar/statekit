@@ -357,7 +357,10 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 
 ## Documentation
 
+The [docs index](./docs/README.md) organizes everything by Diataxis category (tutorials, how-to, reference, explanation). Quick links:
+
 - [Getting Started](./docs/getting-started.md)
+- [Choosing an API](./docs/choosing-an-api.md) — builder vs reflection DSL vs codegen
 - [Hierarchical States](./docs/hierarchical-states.md)
 - [Guards & Actions](./docs/guards-actions.md)
 - [XState Migration](./docs/xstate-migration.md)
