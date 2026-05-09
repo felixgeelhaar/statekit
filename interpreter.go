@@ -699,6 +699,13 @@ func (i *Interpreter[C]) resolveHistoryTarget(historyState *ir.StateConfig) ir.S
 
 // --- Timer management for delayed transitions (v2.0) ---
 
+// Close implements io.Closer by calling Stop. Enables idiomatic
+// `defer interp.Close()` cleanup.
+func (i *Interpreter[C]) Close() error {
+	i.Stop()
+	return nil
+}
+
 // Stop cancels all active timers, services, invoked machines, and actors, then stops the interpreter
 func (i *Interpreter[C]) Stop() {
 	i.mu.Lock()
