@@ -65,6 +65,7 @@
 import { onMounted, ref } from 'vue';
 import type { MachineConfig } from '../utils/types';
 import { parseMachineJSON } from '../utils/json-validator';
+import { readMachineFromHash } from '../utils/share-url';
 
 const emit = defineEmits<{
   load: [machine: MachineConfig];
@@ -75,12 +76,21 @@ const jsonInput = ref('');
 const isDragging = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
-// Auto-load sample on first visit so the canvas is never empty.
-// Persisted to localStorage so we don't override returning users
-// who paste their own machine.
+// On mount, prefer machines in the URL hash (#m=...) so permalinks
+// always render the shared machine. Falls back to auto-loading the
+// sample on first visit (localStorage flag) so the canvas is never
+// empty for new users.
 const FIRST_VISIT_KEY = 'statekit:visualizer:visited';
 onMounted(() => {
   if (typeof window === 'undefined') return;
+
+  const shared = readMachineFromHash();
+  if (shared) {
+    jsonInput.value = JSON.stringify(shared, null, 2);
+    emit('load', shared);
+    return;
+  }
+
   try {
     if (!window.localStorage.getItem(FIRST_VISIT_KEY)) {
       window.localStorage.setItem(FIRST_VISIT_KEY, '1');
