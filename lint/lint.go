@@ -168,6 +168,8 @@ func CheckTyped[C any](l *Linter, machine *ir.MachineConfig[C]) *Result {
 	checkSelfTransitions(l, machine, result)
 	checkUnusedActions(l, machine, result)
 	checkUnusedGuards(l, machine, result)
+	checkInvokeMissingOnError(l, machine, result)
+	checkInvokeIDCollision(l, machine, result)
 
 	// Sort diagnostics by severity, then state
 	sort.Slice(result.Diagnostics, func(i, j int) bool {
@@ -433,15 +435,88 @@ func checkUnusedGuards[C any](l *Linter, machine *ir.MachineConfig[C], result *R
 	}
 }
 
+// checkInvokeMissingOnError warns when invoked services or child machines
+// have no OnError handler — silent failure path in production.
+func checkInvokeMissingOnError[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules["invoke-missing-onerror"] {
+		return
+	}
+
+	for id, state := range machine.States {
+		for _, inv := range state.Invocations {
+			if inv.OnError == nil {
+				name := inv.ID
+				if name == "" {
+					name = string(inv.Src)
+				}
+				result.Diagnostics = append(result.Diagnostics, Diagnostic{
+					Severity: SeverityWarning,
+					Rule:     "invoke-missing-onerror",
+					State:    id,
+					Message:  fmt.Sprintf("invocation %q has no OnError handler — service errors will not transition", name),
+				})
+			}
+		}
+		for _, inv := range state.MachineInvocations {
+			if inv.OnError == nil {
+				name := inv.ID
+				if name == "" {
+					name = inv.MachineRef
+				}
+				result.Diagnostics = append(result.Diagnostics, Diagnostic{
+					Severity: SeverityWarning,
+					Rule:     "invoke-missing-onerror",
+					State:    id,
+					Message:  fmt.Sprintf("machine invocation %q has no OnError handler — child errors will not transition", name),
+				})
+			}
+		}
+	}
+}
+
+// checkInvokeIDCollision detects duplicate invocation IDs within the same state.
+// Collisions cause unpredictable lookup of the active invocation at runtime.
+func checkInvokeIDCollision[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules["invoke-id-collision"] {
+		return
+	}
+
+	for id, state := range machine.States {
+		seen := make(map[string]int)
+		for _, inv := range state.Invocations {
+			if inv.ID != "" {
+				seen[inv.ID]++
+			}
+		}
+		for _, inv := range state.MachineInvocations {
+			if inv.ID != "" {
+				seen[inv.ID]++
+			}
+		}
+		for invID, count := range seen {
+			if count > 1 {
+				result.Diagnostics = append(result.Diagnostics, Diagnostic{
+					Severity: SeverityError,
+					Rule:     "invoke-id-collision",
+					State:    id,
+					Message:  fmt.Sprintf("invocation ID %q is used %d times — IDs must be unique within a state", invID, count),
+				})
+			}
+		}
+	}
+}
+
 // Rule names for reference
 const (
-	RuleUnreachable     = "unreachable"
-	RuleDeadEnd         = "dead-end"
-	RuleNonDeterminism  = "non-determinism"
-	RuleCompoundInitial = "compound-initial"
-	RuleSelfTransition  = "self-transition"
-	RuleUnusedAction    = "unused-action"
-	RuleUnusedGuard     = "unused-guard"
+	RuleUnreachable          = "unreachable"
+	RuleDeadEnd              = "dead-end"
+	RuleNonDeterminism       = "non-determinism"
+	RuleCompoundInitial      = "compound-initial"
+	RuleSelfTransition       = "self-transition"
+	RuleUnusedAction         = "unused-action"
+	RuleUnusedGuard          = "unused-guard"
+	RuleInvokeMissingOnError = "invoke-missing-onerror"
+	RuleInvokeIDCollision    = "invoke-id-collision"
 )
 
 // AllRules returns all available rule names.
@@ -454,5 +529,7 @@ func AllRules() []string {
 		RuleSelfTransition,
 		RuleUnusedAction,
 		RuleUnusedGuard,
+		RuleInvokeMissingOnError,
+		RuleInvokeIDCollision,
 	}
 }

@@ -488,3 +488,110 @@ func TestLint_DeadEnd_ParentHasTransitions(t *testing.T) {
 		}
 	}
 }
+
+func TestLint_InvokeMissingOnError(t *testing.T) {
+	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
+	machine, err := statekit.NewMachine[struct{}]("svc").
+		WithInitial("loading").
+		WithService("fetchData", noop).
+		State("loading").
+		Invoke("fetchData").
+		ID("fetch").
+		OnDone("ready").
+		End(). // No OnError configured → should warn
+		Done().
+		State("ready").Final().
+		Done().
+		Build()
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleInvokeMissingOnError && d.State == "loading" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected invoke-missing-onerror for 'loading', got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_InvokeIDCollision(t *testing.T) {
+	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
+	machine, err := statekit.NewMachine[struct{}]("collision").
+		WithInitial("loading").
+		WithService("a", noop).
+		WithService("b", noop).
+		State("loading").
+		Invoke("a").ID("dup").OnDone("ready").OnError("ready").End().
+		Invoke("b").ID("dup").OnDone("ready").OnError("ready").End().
+		Done().
+		State("ready").Final().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleInvokeIDCollision && d.State == "loading" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected invoke-id-collision for 'loading', got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_InvokeWithOnError_NoWarning(t *testing.T) {
+	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
+	machine, err := statekit.NewMachine[struct{}]("svc-ok").
+		WithInitial("loading").
+		WithService("fetchData", noop).
+		State("loading").
+		Invoke("fetchData").
+		ID("fetch").
+		OnDone("ready").
+		OnError("failed").
+		End().
+		Done().
+		State("ready").Final().Done().
+		State("failed").Final().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("failed to build machine: %v", err)
+	}
+	result := lint.Lint(machine)
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleInvokeMissingOnError {
+			t.Errorf("did not expect invoke-missing-onerror, got: %v", d)
+		}
+	}
+}
+
+func TestLint_AllRulesIncludesNew(t *testing.T) {
+	rules := lint.AllRules()
+	expected := []string{
+		lint.RuleInvokeMissingOnError,
+		lint.RuleInvokeIDCollision,
+	}
+	for _, want := range expected {
+		found := false
+		for _, r := range rules {
+			if r == want {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("AllRules missing %q", want)
+		}
+	}
+	_ = strings.Join // keep import alive
+}
