@@ -1,0 +1,41 @@
+---
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout
+  title="Statekit Visualizer — Try Statecharts in the Browser"
+  description="Paste Statekit Native JSON and visualize, simulate, and step through your state machine in the browser."
+  canonical="/play"
+>
+  <div class="app">
+    <Header active="play" />
+    <div id="visualizer-mount"></div>
+  </div>
+</Layout>
+
+<script>
+  import { createApp } from 'vue';
+  import Visualizer from '../components/Visualizer.vue';
+
+  const app = createApp(Visualizer);
+  app.mount('#visualizer-mount');
+</script>
+
+<style>
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    background: var(--bg);
+  }
+
+  #visualizer-mount {
+    display: contents;
+  }
+
+  :global(.visualizer-content) {
+    display: contents;
+  }
+</style>

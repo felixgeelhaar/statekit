@@ -268,7 +268,7 @@ machine, _ := statekit.NewMachine[Context]("counter").
 
 Statekit provides a native `viz` command to visualize state machines from Go source code or JSON.
 
-Try the [Live Visualizer](https://felixgeelhaar.github.io/statekit/visualizer.html) to paste your JSON and interact with it.
+Try the [Live Visualizer](https://felixgeelhaar.github.io/statekit/play) to paste your JSON and interact with it. The [landing page](https://felixgeelhaar.github.io/statekit/) has the project overview.
 
 ```bash
 # Interactive HTML simulation

@@ -1,37 +1,438 @@
 ---
 import Layout from '../components/Layout.astro';
 import Header from '../components/Header.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Layout title="Statekit Visualizer">
-  <div class="app">
-    <Header />
-    <div id="visualizer-mount"></div>
+<Layout
+  title="Statekit — Statecharts for Go"
+  description="Type-safe statecharts for Go. Hierarchical states, parallel regions, history, delayed transitions, with built-in visualization, lint, and a deterministic test clock."
+  canonical="/"
+>
+  <div class="landing">
+    <Header active="home" />
+
+    <main class="landing-main">
+      <section class="hero">
+        <div class="hero-eyebrow">Statecharts for Go · v1.4.1</div>
+        <h1 class="hero-title">
+          Stop modeling order, payment, and incident lifecycles
+          <span class="hero-emph">with switch statements.</span>
+        </h1>
+        <p class="hero-lede">
+          Statekit is a typed statechart library for Go: hierarchical states, guards,
+          actions, delayed and parallel transitions, with built-in visualization
+          and lint. Same primitives serve backend domain workflows and deterministic
+          AI agent runtimes.
+        </p>
+
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" target="_blank" rel="noopener">Read the docs</a>
+          <a class="btn btn-secondary" href={`${base}/play`}>Try the visualizer</a>
+          <a class="btn btn-ghost" href="https://github.com/felixgeelhaar/statekit" target="_blank" rel="noopener">Star on GitHub</a>
+        </div>
+
+        <pre class="hero-code"><code><span class="tok-comment"># Install</span>
+<span class="tok-prompt">$</span> go get github.com/felixgeelhaar/statekit
+
+<span class="tok-comment">// A working machine in 10 lines</span>
+machine, _ := statekit.<span class="tok-fn">NewMachine</span>[Order](<span class="tok-str">"checkout"</span>).
+    <span class="tok-fn">WithInitial</span>(<span class="tok-str">"cart"</span>).
+    <span class="tok-fn">State</span>(<span class="tok-str">"cart"</span>).<span class="tok-fn">On</span>(<span class="tok-str">"CHECKOUT"</span>).<span class="tok-fn">Target</span>(<span class="tok-str">"processing"</span>).<span class="tok-fn">Done</span>().
+    <span class="tok-fn">State</span>(<span class="tok-str">"processing"</span>).<span class="tok-fn">On</span>(<span class="tok-str">"PAID"</span>).<span class="tok-fn">Target</span>(<span class="tok-str">"shipped"</span>).<span class="tok-fn">Done</span>().
+    <span class="tok-fn">State</span>(<span class="tok-str">"shipped"</span>).<span class="tok-fn">Final</span>().<span class="tok-fn">Done</span>().
+    <span class="tok-fn">Build</span>()
+
+interp := statekit.<span class="tok-fn">NewInterpreter</span>(machine)
+<span class="tok-kw">defer</span> interp.<span class="tok-fn">Close</span>()
+interp.<span class="tok-fn">Start</span>()
+interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="tok-str">"CHECKOUT"</span>&#125;)</code></pre>
+      </section>
+
+      <section class="why" aria-labelledby="why-heading">
+        <h2 id="why-heading" class="section-title">Why Statekit</h2>
+        <div class="why-grid">
+          <div class="why-card">
+            <h3>Type-safe over typed</h3>
+            <p><code>[C any]</code> context, typed events, typed actions and guards. No <code>interface&#123;&#125;</code> casts at handler time.</p>
+          </div>
+          <div class="why-card">
+            <h3>Statecharts, not just FSMs</h3>
+            <p>Compound, parallel, history, and delayed transitions handle the workflows that flat FSM libraries can't model without manual bookkeeping.</p>
+          </div>
+          <div class="why-card">
+            <h3>Visualization as a feature</h3>
+            <p>Every machine renders to ASCII, Mermaid, interactive HTML, or TUI from one source. XState v5 export for Stately Studio round-trip editing.</p>
+          </div>
+          <div class="why-card">
+            <h3>Static analysis</h3>
+            <p><code>lint.Lint(machine)</code> catches unreachable states, dead ends, non-determinism, missing OnError on Invoke — at build time.</p>
+          </div>
+          <div class="why-card">
+            <h3>Determinism for tests</h3>
+            <p>Inject a <code>FakeClock</code> to make timer-driven behavior reproducible. No <code>time.Sleep</code> flakes.</p>
+          </div>
+          <div class="why-card">
+            <h3>Two jobs, one library</h3>
+            <p>Backend domain workflows (Stripe webhook saga template included) and deterministic AI agent runtimes (RAG, HITL, tool-call workflows) share the same primitives.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="compare" aria-labelledby="compare-heading">
+        <h2 id="compare-heading" class="section-title">Coming from another library?</h2>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Concern</th>
+              <th>looplab/fsm</th>
+              <th>qmuntal/stateless</th>
+              <th>Statekit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Generics / typed context</th>
+              <td>open issue</td>
+              <td>open issue</td>
+              <td>first-class</td>
+            </tr>
+            <tr>
+              <th scope="row">Hierarchical states</th>
+              <td>—</td>
+              <td>partial (substates)</td>
+              <td>compound + parallel + history</td>
+            </tr>
+            <tr>
+              <th scope="row">Persistence (gob/JSON)</th>
+              <td><a href="https://github.com/looplab/fsm/issues/40" target="_blank" rel="noopener">#40 unresolved</a></td>
+              <td>manual</td>
+              <td>Snapshot round-trips</td>
+            </tr>
+            <tr>
+              <th scope="row">Cancellation recovery</th>
+              <td><a href="https://github.com/looplab/fsm/issues/115" target="_blank" rel="noopener">#115 stuck</a></td>
+              <td>—</td>
+              <td>OnError routing</td>
+            </tr>
+            <tr>
+              <th scope="row">Runaway prevention</th>
+              <td>—</td>
+              <td><a href="https://github.com/qmuntal/stateless/issues/77" target="_blank" rel="noopener">#77 manual</a></td>
+              <td>aiplugin.TransitionBudget</td>
+            </tr>
+            <tr>
+              <th scope="row">Visualization</th>
+              <td>DOT</td>
+              <td>DOT</td>
+              <td>ASCII / Mermaid / HTML / TUI</td>
+            </tr>
+            <tr>
+              <th scope="row">Static analysis</th>
+              <td>—</td>
+              <td>—</td>
+              <td>lint with 9 rules</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="compare-cta">
+          <a href="https://github.com/felixgeelhaar/statekit/blob/main/docs/migration-from-looplab-fsm.md" target="_blank" rel="noopener">From looplab/fsm →</a>
+          <a href="https://github.com/felixgeelhaar/statekit/blob/main/docs/migration-from-qmuntal-stateless.md" target="_blank" rel="noopener">From qmuntal/stateless →</a>
+          <a href="https://github.com/felixgeelhaar/statekit/blob/main/docs/xstate-migration.md" target="_blank" rel="noopener">From XState →</a>
+        </div>
+      </section>
+
+      <section class="jobs" aria-labelledby="jobs-heading">
+        <h2 id="jobs-heading" class="section-title">Two jobs, one library</h2>
+        <div class="jobs-grid">
+          <article class="job-card">
+            <h3>Backend domain workflows</h3>
+            <p>Order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across <code>switch event.Type</code> and accumulate bugs around partial failure, retry, and idempotency.</p>
+            <a href="https://github.com/felixgeelhaar/statekit/tree/main/examples/stripe_webhook" target="_blank" rel="noopener">See the Stripe webhook saga →</a>
+          </article>
+          <article class="job-card">
+            <h3>Deterministic AI agent runtime</h3>
+            <p>RAG pipelines, tool-call workflows, multi-step agents with human-in-the-loop. Statecharts give you reproducibility, bounded blast radius, and audit-grade observability for LLM-backed systems.</p>
+            <a href="https://github.com/felixgeelhaar/statekit/tree/main/examples/llm_agent" target="_blank" rel="noopener">See the RAG agent example →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="cta-section" aria-labelledby="cta-heading">
+        <h2 id="cta-heading" class="section-title">Ready?</h2>
+        <p class="cta-lede">Drop it into your service. Or paste any Native JSON into the visualizer first.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="https://github.com/felixgeelhaar/statekit#readme" target="_blank" rel="noopener">Quickstart on GitHub</a>
+          <a class="btn btn-secondary" href={`${base}/play`}>Try the visualizer</a>
+        </div>
+      </section>
+
+      <footer class="landing-footer">
+        <p>
+          MIT licensed · v1.4.1 · Built by
+          <a href="https://github.com/felixgeelhaar" target="_blank" rel="noopener">Felix Geelhaar</a>
+        </p>
+      </footer>
+    </main>
   </div>
 </Layout>
 
-<script>
-  import { createApp } from 'vue';
-  import Visualizer from '../components/Visualizer.vue';
-
-  const app = createApp(Visualizer);
-  app.mount('#visualizer-mount');
-</script>
-
 <style>
-  .app {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    grid-template-rows: auto 1fr;
-    height: 100vh;
+  .landing {
+    min-height: 100vh;
     background: var(--bg);
+    color: var(--text);
   }
 
-  #visualizer-mount {
-    display: contents;
+  .landing-main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+    display: grid;
+    gap: 6rem;
   }
 
-  :global(.visualizer-content) {
-    display: contents;
+  .hero {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-cyan, #00d4ff);
+  }
+
+  .hero-title {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    line-height: 1.1;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .hero-emph {
+    color: var(--accent-cyan, #00d4ff);
+    display: block;
+  }
+
+  .hero-lede {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text-secondary, #adbac7);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1.1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--accent-cyan, #00d4ff);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--accent-cyan, #00d4ff);
+    color: #03161e;
+  }
+  .btn-primary:hover { transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border, #2d333b);
+  }
+  .btn-secondary:hover { border-color: var(--accent-cyan, #00d4ff); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary, #adbac7);
+    border-color: transparent;
+  }
+  .btn-ghost:hover { color: var(--text); }
+
+  .hero-code {
+    background: var(--bg-secondary, #0d1117);
+    border: 1px solid var(--border, #2d333b);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    color: var(--text);
+  }
+  .tok-comment { color: #6e7781; font-style: italic; }
+  .tok-prompt { color: #00ff88; }
+  .tok-fn { color: #a855f7; }
+  .tok-str { color: #00d4ff; }
+  .tok-kw { color: #ff7b72; }
+
+  .section-title {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 1.75rem;
+    margin: 0 0 1.5rem;
+    font-weight: 700;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .why-card {
+    background: var(--bg-secondary, #0d1117);
+    border: 1px solid var(--border, #2d333b);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .why-card h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem;
+    color: var(--accent-cyan, #00d4ff);
+  }
+  .why-card p {
+    margin: 0;
+    color: var(--text-secondary, #adbac7);
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+  .why-card code {
+    background: rgba(168, 85, 247, 0.15);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-secondary, #0d1117);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.9rem;
+  }
+  .compare-table th,
+  .compare-table td {
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border, #2d333b);
+  }
+  .compare-table thead th {
+    background: rgba(0, 212, 255, 0.08);
+    font-weight: 600;
+  }
+  .compare-table th[scope="row"] {
+    font-weight: 500;
+    color: var(--text-secondary, #adbac7);
+  }
+  .compare-table tr:last-child td {
+    border-bottom: none;
+  }
+  .compare-table a {
+    color: var(--accent-cyan, #00d4ff);
+  }
+  .compare-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+  .compare-cta a {
+    color: var(--accent-cyan, #00d4ff);
+    text-decoration: none;
+  }
+  .compare-cta a:hover { text-decoration: underline; }
+
+  .jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .job-card {
+    background: var(--bg-secondary, #0d1117);
+    border: 1px solid var(--border, #2d333b);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+  .job-card h3 {
+    margin: 0 0 0.5rem;
+    color: var(--accent-cyan, #00d4ff);
+  }
+  .job-card p {
+    color: var(--text-secondary, #adbac7);
+    line-height: 1.6;
+  }
+  .job-card a {
+    color: var(--accent-cyan, #00d4ff);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .job-card a:hover { text-decoration: underline; }
+
+  .cta-section {
+    text-align: center;
+    padding: 2rem 0;
+  }
+  .cta-section .hero-cta {
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  .cta-lede {
+    color: var(--text-secondary, #adbac7);
+    margin: 0;
+  }
+
+  .landing-footer {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border, #2d333b);
+    text-align: center;
+    color: var(--text-secondary, #adbac7);
+    font-size: 0.9rem;
+  }
+  .landing-footer a {
+    color: var(--accent-cyan, #00d4ff);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn {
+      transition: none;
+    }
+    .btn-primary:hover {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .landing-main {
+      padding: 2.5rem 1rem 4rem;
+      gap: 4rem;
+    }
+    .hero-code {
+      font-size: 0.78rem;
+    }
   }
 </style>
