@@ -5,15 +5,17 @@
     </div>
     <div class="panel-content">
       <!-- File Upload -->
-      <div
+      <button
+        type="button"
         class="file-upload"
         :class="{ dragging: isDragging }"
+        aria-label="Drop JSON file or click to browse"
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop.prevent="handleDrop"
         @click="fileInputRef?.click()"
       >
-        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="17 8 12 3 7 8"/>
           <line x1="12" y1="3" x2="12" y2="15"/>
@@ -26,7 +28,7 @@
           @change="handleFileSelect"
           style="display: none"
         />
-      </div>
+      </button>
 
       <!-- JSON Textarea -->
       <textarea

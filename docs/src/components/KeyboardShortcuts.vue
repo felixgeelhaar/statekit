@@ -1,11 +1,29 @@
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
-      <div class="modal">
+    <div
+      v-if="visible"
+      class="modal-overlay"
+      role="presentation"
+      @click.self="$emit('close')"
+    >
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="shortcuts-modal-title"
+        ref="dialogRef"
+        tabindex="-1"
+        @keydown.esc.stop="$emit('close')"
+        @keydown.tab="trapFocus"
+      >
         <div class="modal-header">
-          <h2 class="modal-title">Keyboard Shortcuts</h2>
-          <button class="modal-close" @click="$emit('close')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <h2 id="shortcuts-modal-title" class="modal-title">Keyboard Shortcuts</h2>
+          <button
+            class="modal-close"
+            aria-label="Close keyboard shortcuts"
+            @click="$emit('close')"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -25,13 +43,51 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { ref, watch, nextTick } from 'vue';
+
+const props = defineProps<{
   visible: boolean;
 }>();
 
 defineEmits<{
   close: [];
 }>();
+
+const dialogRef = ref<HTMLElement | null>(null);
+let triggerEl: HTMLElement | null = null;
+
+watch(
+  () => props.visible,
+  async (open) => {
+    if (open) {
+      triggerEl = document.activeElement as HTMLElement | null;
+      await nextTick();
+      dialogRef.value?.focus();
+    } else if (triggerEl) {
+      triggerEl.focus();
+      triggerEl = null;
+    }
+  },
+);
+
+function trapFocus(e: KeyboardEvent) {
+  const root = dialogRef.value;
+  if (!root) return;
+  const focusables = root.querySelectorAll<HTMLElement>(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  );
+  if (focusables.length === 0) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+  if (e.shiftKey && active === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && active === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
 
 const shortcuts = [
   { key: '?', description: 'Toggle this help' },
