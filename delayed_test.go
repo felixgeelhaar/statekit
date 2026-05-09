@@ -9,23 +9,13 @@ import (
 	"github.com/felixgeelhaar/statekit/export"
 )
 
-// assertEventually polls until condition is true or timeout expires
-//
-//nolint:unparam // timeout parameter is currently constant but kept for test flexibility
-func assertEventually(t *testing.T, condition func() bool, timeout time.Duration, msg string) {
-	t.Helper()
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		if condition() {
-			return
-		}
-		time.Sleep(5 * time.Millisecond)
-	}
-	t.Fatalf("condition not met within %v: %s", timeout, msg)
-}
+// fixedAnchor is the anchor time used by every FakeClock in this file.
+// Using a constant keeps tests deterministic and easy to reason about.
+var fixedAnchor = time.Unix(1_700_000_000, 0)
 
 // TestDelayedTransition_Basic tests a simple delayed transition
 func TestDelayedTransition_Basic(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("delayed_basic").
 		WithInitial("loading").
 		State("loading").
@@ -38,24 +28,29 @@ func TestDelayedTransition_Basic(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Should start in loading
 	if interp.State().Value != "loading" {
 		t.Errorf("Expected initial state 'loading', got %s", interp.State().Value)
 	}
 
-	// Wait for delayed transition using polling
-	assertEventually(t, func() bool {
-		return interp.State().Value == "ready"
-	}, 200*time.Millisecond, "expected state 'ready' after delay")
+	clk.Advance(49 * time.Millisecond)
+	if interp.State().Value != "loading" {
+		t.Errorf("Before deadline: expected 'loading', got %s", interp.State().Value)
+	}
 
-	interp.Stop()
+	clk.Advance(2 * time.Millisecond)
+	if interp.State().Value != "ready" {
+		t.Errorf("Past deadline: expected 'ready', got %s", interp.State().Value)
+	}
 }
 
 // TestDelayedTransition_CancelOnExit tests that timers are canceled when exiting state
 func TestDelayedTransition_CancelOnExit(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("delayed_cancel").
 		WithInitial("waiting").
 		State("waiting").
@@ -71,36 +66,33 @@ func TestDelayedTransition_CancelOnExit(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Should start in waiting
 	if interp.State().Value != "waiting" {
 		t.Errorf("Expected initial state 'waiting', got %s", interp.State().Value)
 	}
 
-	// Cancel before timeout fires
-	time.Sleep(30 * time.Millisecond)
+	// Cancel before the 100ms timeout.
+	clk.Advance(30 * time.Millisecond)
 	interp.Send(Event{Type: "CANCEL"})
-
-	// Should be in cancelled
 	if interp.State().Value != "cancelled" {
 		t.Errorf("Expected state 'cancelled', got %s", interp.State().Value)
 	}
 
-	// Wait past the original timeout
-	time.Sleep(100 * time.Millisecond)
-
-	// Should still be in cancelled (timer was canceled)
+	// Advance past the original timeout — timer should have been canceled
+	// when we left the waiting state.
+	clk.Advance(time.Hour)
 	if interp.State().Value != "cancelled" {
-		t.Errorf("Expected state still 'cancelled', got %s", interp.State().Value)
+		t.Errorf("After cancel + advance: expected still 'cancelled', got %s", interp.State().Value)
 	}
-
-	interp.Stop()
 }
 
 // TestDelayedTransition_WithGuard tests delayed transitions with guards
 func TestDelayedTransition_WithGuard(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		ShouldProceed bool
 	}
@@ -121,22 +113,20 @@ func TestDelayedTransition_WithGuard(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[Context](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Wait for delayed transition (guard will block it)
-	time.Sleep(100 * time.Millisecond)
-
-	// Should still be in waiting because guard returned false
+	clk.Advance(time.Hour)
 	if interp.State().Value != "waiting" {
-		t.Errorf("Expected state 'waiting' (guard blocked), got %s", interp.State().Value)
+		t.Errorf("Guard blocked transition: expected 'waiting', got %s", interp.State().Value)
 	}
-
-	interp.Stop()
 }
 
 // TestDelayedTransition_WithAction tests delayed transitions with actions
 func TestDelayedTransition_WithAction(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		ActionExecuted bool
 	}
@@ -156,24 +146,24 @@ func TestDelayedTransition_WithAction(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[Context](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Action should not have executed yet
 	if interp.State().Context.ActionExecuted {
 		t.Error("Action should not have executed yet")
 	}
 
-	// Wait for delayed transition using polling
-	assertEventually(t, func() bool {
-		return interp.State().Context.ActionExecuted
-	}, 200*time.Millisecond, "expected action to be executed")
-
-	interp.Stop()
+	clk.Advance(60 * time.Millisecond)
+	if !interp.State().Context.ActionExecuted {
+		t.Error("Action should have executed after delay")
+	}
 }
 
 // TestDelayedTransition_Multiple tests multiple delayed transitions from same state
 func TestDelayedTransition_Multiple(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("delayed_multiple").
 		WithInitial("start").
 		State("start").
@@ -189,27 +179,25 @@ func TestDelayedTransition_Multiple(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Wait for first delayed transition (shorter delay fires first)
-	assertEventually(t, func() bool {
-		return interp.State().Value == "first"
-	}, 200*time.Millisecond, "expected state 'first'")
-
-	// Wait past the second delay
-	time.Sleep(100 * time.Millisecond)
-
-	// Should still be in first (second timer was canceled when we left start)
+	clk.Advance(35 * time.Millisecond)
 	if interp.State().Value != "first" {
-		t.Errorf("Expected state still 'first', got %s", interp.State().Value)
+		t.Errorf("Expected 'first' after shorter delay fires, got %s", interp.State().Value)
 	}
 
-	interp.Stop()
+	clk.Advance(time.Hour)
+	if interp.State().Value != "first" {
+		t.Errorf("Second timer should have been canceled on state exit, got %s", interp.State().Value)
+	}
 }
 
 // TestDelayedTransition_InHierarchy tests delayed transitions in nested states
 func TestDelayedTransition_InHierarchy(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("delayed_hierarchy").
 		WithInitial("parent").
 		State("parent").
@@ -226,24 +214,24 @@ func TestDelayedTransition_InHierarchy(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Should start in child
 	if interp.State().Value != "child" {
 		t.Errorf("Expected initial state 'child', got %s", interp.State().Value)
 	}
 
-	// Wait for delayed transition using polling
-	assertEventually(t, func() bool {
-		return interp.State().Value == "done"
-	}, 200*time.Millisecond, "expected state 'done' after delay")
-
-	interp.Stop()
+	clk.Advance(60 * time.Millisecond)
+	if interp.State().Value != "done" {
+		t.Errorf("Expected 'done' after delay, got %s", interp.State().Value)
+	}
 }
 
 // TestDelayedTransition_Stop tests that Stop cancels all timers
 func TestDelayedTransition_Stop(t *testing.T) {
+	t.Parallel()
 	var transitioned atomic.Bool
 
 	machine, err := NewMachine[struct{}]("delayed_stop").
@@ -261,16 +249,12 @@ func TestDelayedTransition_Stop(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
 	interp.Start()
-
-	// Stop immediately
 	interp.Stop()
 
-	// Wait past the delay
-	time.Sleep(100 * time.Millisecond)
-
-	// Transition should not have happened
+	clk.Advance(time.Hour)
 	if transitioned.Load() {
 		t.Error("Transition should not have happened after Stop()")
 	}
@@ -278,6 +262,7 @@ func TestDelayedTransition_Stop(t *testing.T) {
 
 // TestDelayedTransition_NativeExport tests Native JSON export of delayed transitions
 func TestDelayedTransition_NativeExport(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("timeout").
 		WithInitial("active").
 		State("active").
@@ -305,7 +290,9 @@ func TestDelayedTransition_NativeExport(t *testing.T) {
 
 // TestDelayedTransition_Validation tests validation of delayed transitions
 func TestDelayedTransition_Validation(t *testing.T) {
+	t.Parallel()
 	t.Run("zero delay is valid (not a delayed transition)", func(t *testing.T) {
+		t.Parallel()
 		_, err := NewMachine[struct{}]("zero_delay").
 			WithInitial("start").
 			State("start").
@@ -320,6 +307,7 @@ func TestDelayedTransition_Validation(t *testing.T) {
 	})
 
 	t.Run("positive delay is valid", func(t *testing.T) {
+		t.Parallel()
 		_, err := NewMachine[struct{}]("positive_delay").
 			WithInitial("start").
 			State("start").
@@ -336,6 +324,7 @@ func TestDelayedTransition_Validation(t *testing.T) {
 
 // TestDelayedTransition_ChainedBuilder tests fluent API chaining
 func TestDelayedTransition_ChainedBuilder(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("chained").
 		WithInitial("start").
 		State("start").
@@ -355,19 +344,18 @@ func TestDelayedTransition_ChainedBuilder(t *testing.T) {
 		t.Fatalf("Failed to build machine: %v", err)
 	}
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(fixedAnchor)
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
+	defer interp.Stop()
 	interp.Start()
 
-	// Transition via event before timeout
 	interp.Send(Event{Type: "GO"})
 	if interp.State().Value != "middle" {
 		t.Errorf("Expected 'middle', got %s", interp.State().Value)
 	}
 
-	// Wait for delayed transition from middle using polling
-	assertEventually(t, func() bool {
-		return interp.State().Value == "end"
-	}, 200*time.Millisecond, "expected 'end' after delay")
-
-	interp.Stop()
+	clk.Advance(60 * time.Millisecond)
+	if interp.State().Value != "end" {
+		t.Errorf("Expected 'end' after delay, got %s", interp.State().Value)
+	}
 }
