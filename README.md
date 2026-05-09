@@ -89,7 +89,7 @@ These ship in v1.0 but reserve room to iterate within v1.x:
 go get github.com/felixgeelhaar/statekit
 ```
 
-Requires Go 1.24 or later.
+Requires Go 1.25 or later.
 
 ## Quick Start
 
@@ -110,6 +110,7 @@ func main() {
         Build()
 
     interp := statekit.NewInterpreter(machine)
+    defer interp.Close()
     interp.Start()
 
     fmt.Println(interp.State().Value) // "green"
@@ -135,6 +136,7 @@ machine, _ := statekit.NewMachine[struct{}]("editor").
     Build()
 
 interp := statekit.NewInterpreter(machine)
+defer interp.Close()
 interp.Start()
 
 fmt.Println(interp.State().Value)     // "idle"
@@ -183,9 +185,9 @@ machine, _ := statekit.NewMachine[struct{}]("loading").
     Build()
 
 interp := statekit.NewInterpreter(machine)
+defer interp.Close() // Always clean up timers
 interp.Start()
 // Timer starts automatically, canceled if LOADED received
-defer interp.Stop() // Always clean up timers
 ```
 
 ## Parallel States
@@ -208,6 +210,7 @@ machine, _ := statekit.NewMachine[struct{}]("editor").
     Build()
 
 interp := statekit.NewInterpreter(machine)
+defer interp.Close()
 interp.Start()
 interp.Send(statekit.Event{Type: "TOGGLE_BOLD"})
 // bold: on, italic: off (independent regions)
@@ -323,20 +326,24 @@ go install github.com/felixgeelhaar/statekit/cmd/statekit-mcp@latest
 | `validate_machine` | Validate a definition using lint rules |
 | `export_machine` | Export as JSON, Mermaid, or ASCII |
 
+**Inverting the loop:** if you already have a typed `*statekit.Interpreter[C]` running in your service, `mcp.ExposeInterpreter` registers `<prefix>.send_event`, `<prefix>.get_state`, `<prefix>.get_context`, and `<prefix>.matches` so an MCP-speaking agent can drive your machine from outside.
+
 The `visualize_machine` tool includes an interactive Vue.js + Cytoscape.js visualizer that MCP Apps hosts render inline — with dark mode, transition animations, and a full state history log. All JS dependencies are bundled inline for CSP-compatible rendering in any MCP host.
 
 ## Additional Packages
 
 | Package | Description |
 |---------|-------------|
-| [`mcp`](./mcp) | MCP server for AI-assisted state machine management |
+| [`ai`](./ai) | LLM-driven transitions — `Drive` + `Tool` schema (Tier 2) |
+| [`aiplugin`](./aiplugin) | AI plugins — `TokenCounter`, `PromptRecorder`, `TransitionBudget` (Tier 2) |
+| [`mcp`](./mcp) | MCP server + `ExposeInterpreter` for agent-driven workflows (Tier 2) |
 | [`statetest`](./statetest) | Testing utilities: assertions, recorders, helpers |
 | [`debug`](./debug) | Runtime inspection and state graph analysis |
 | [`metrics`](./metrics) | Prometheus metrics for monitoring |
 | [`health`](./health) | Kubernetes liveness/readiness probes |
 | [`lint`](./lint) | Static analysis for detecting structural issues |
-| [`export`](./export) | XState JSON exporter |
-| [`generate`](./generate) | Go code generation from XState JSON |
+| [`export`](./export) | Native + XState v5 JSON exporters |
+| [`generate`](./generate) | Go code generation from Native JSON |
 | [`http`](./http) | HTTP handlers and middleware |
 | [`otel`](./otel) | OpenTelemetry tracing |
 
@@ -376,9 +383,10 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 ## Design Philosophy
 
 - **Go-first Execution** — Explicit, deterministic, testable
-- **Statecharts over FSMs** — Hierarchy enables complex behavior
-- **Visualization as a Feature** — XState compatibility for free tooling
-- **Small Surface Area** — Fewer features, better guarantees
+- **Statecharts over FSMs** — Hierarchy, parallel, history enable complex behavior without manual bookkeeping
+- **Visualization as a Feature** — Multiple renderers + XState v5 export for Stately Studio round-trip
+- **Determinism for tests** — Inject `FakeClock` to remove timer flakes
+- **Stable core, experimental edge** — Tier-1 surface follows semver; Tier-2 features (actor, persistent, distributed, MCP, AI) reserve room to iterate
 
 ## Documentation
 
