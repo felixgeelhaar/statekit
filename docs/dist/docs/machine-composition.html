@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Machine Composition · Statekit</title><meta name="description" content="Machine Composition — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/machine-composition"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/machine-composition"><meta property="og:title" content="Machine Composition · Statekit"><meta property="og:description" content="Machine Composition — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Machine Composition · Statekit"><meta name="twitter:description" content="Machine Composition — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Machine Composition — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link is-active" aria-current="page"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Machine Composition</h1> </header> <div class="markdown-body"> <h1 id="machine-composition-invokemachine">Machine Composition (InvokeMachine)</h1>
+<p>Machine composition allows you to invoke child state machines within a state, with automatic lifecycle management.</p>
+<h2 id="overview">Overview</h2>
+<p>When a state invokes a child machine:</p>
+<ol>
+<li>Child machine starts automatically on state entry</li>
+<li>Child runs independently, processing its own events</li>
+<li>When child reaches a final state, parent can transition via <code>OnDone</code></li>
+<li>Child is automatically stopped when parent exits the invoking state</li>
+</ol>
+<h2 id="basic-usage">Basic Usage</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/internal/ir</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Define child machine</span></span>
+<span class="line"><span style="color:#E1E4E8">childMachine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"working"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"working"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Define parent machine with child invocation</span></span>
+<span class="line"><span style="color:#E1E4E8">parent, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"parent"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">    // Register child machine factory</span></span>
+<span class="line"><span style="color:#B392F0">    WithChildMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8">{}, </span><span style="color:#FFAB70">send</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">ir</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ChildInterpreter</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(childMachine)</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> interp</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">        // Invoke child when entering this state</span></span>
+<span class="line"><span style="color:#B392F0">        InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            ID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"w1"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            OnDone</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(parent)</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Transition to processing - child starts automatically</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#6A737D">// Parent is in "processing", child is in "working"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// When child reaches final state, parent transitions to "completed"</span></span></code></pre>
+<h2 id="builder-api">Builder API</h2>
+<h3 id="withchildmachine">WithChildMachine</h3>
+<p>Register a child machine factory on the machine builder:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">WithChildMachine</span><span style="color:#E1E4E8">(ref </span><span style="color:#F97583">string</span><span style="color:#E1E4E8">, factory ChildMachineFactory[C])</span></span></code></pre>
+<p>The factory function receives:</p>
+<ul>
+<li><code>parentCtx C</code> - The parent machine’s context</li>
+<li><code>parentSend func(Event) error</code> - Function to send events to parent</li>
+</ul>
+<h3 id="invokemachine">InvokeMachine</h3>
+<p>Invoke a registered child machine within a state:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">).  </span><span style="color:#6A737D">// Reference to registered child</span></span>
+<span class="line"><span style="color:#B392F0">        ID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"myWorker"</span><span style="color:#E1E4E8">).       </span><span style="color:#6A737D">// Optional: custom invoke ID</span></span>
+<span class="line"><span style="color:#B392F0">        OnDone</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"success"</span><span style="color:#E1E4E8">).    </span><span style="color:#6A737D">// Optional: transition when child completes</span></span>
+<span class="line"><span style="color:#B392F0">    End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h2 id="factory-pattern">Factory Pattern</h2>
+<p>The factory pattern allows flexible child machine creation:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Child with its own context type</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> WorkerContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    TaskID </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">childMachine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">WorkerContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">    // ... machine definition</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Parent with different context</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ParentContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Items   []</span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">parent, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">ParentContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"parent"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithChildMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> ParentContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">send</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">ir</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ChildInterpreter</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">        // Create child with derived context</span></span>
+<span class="line"><span style="color:#E1E4E8">        childInterp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(childMachine)</span></span>
+<span class="line"><span style="color:#E1E4E8">        childInterp.</span><span style="color:#B392F0">UpdateContext</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">c</span><span style="color:#F97583"> *</span><span style="color:#B392F0">WorkerContext</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            c.TaskID </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ctx.OrderID </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> "-task"</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> childInterp</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h2 id="multiple-invocations">Multiple Invocations</h2>
+<p>A state can invoke multiple child machines:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validator"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">ID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"v1"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processor"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">ID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"p1"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"notifier"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">ID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"n1"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">OnDone</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>All children start when entering the state and stop when exiting.</p>
+<h2 id="ondone-transitions">OnDone Transitions</h2>
+<p>When a child machine reaches a final state, the parent can automatically transition:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"worker"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        OnDone</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"success"</span><span style="color:#E1E4E8">).  </span><span style="color:#6A737D">// Parent transitions to "success" when child completes</span></span>
+<span class="line"><span style="color:#B392F0">    End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>Without <code>OnDone</code>, the parent remains in the current state when the child completes.</p>
+<h2 id="lifecycle-details">Lifecycle Details</h2>
+<h3 id="state-entry">State Entry</h3>
+<ol>
+<li>Parent enters invoking state</li>
+<li>Entry actions execute</li>
+<li>All child machines are started (via factory)</li>
+<li>Child interpreters begin in their initial states</li>
+</ol>
+<h3 id="during-invocation">During Invocation</h3>
+<ul>
+<li>Child machines process events independently</li>
+<li>Parent can continue processing its own events</li>
+<li>Parent can transition to other states (which stops children)</li>
+</ul>
+<h3 id="child-completion">Child Completion</h3>
+<ol>
+<li>Child reaches a final state</li>
+<li>If <code>OnDone</code> is configured, parent receives internal done event</li>
+<li>Parent transitions to the OnDone target state</li>
+<li>Child is stopped and cleaned up</li>
+</ol>
+<h3 id="state-exit">State Exit</h3>
+<ol>
+<li>Parent exits invoking state (via event or OnDone)</li>
+<li>All active children are stopped</li>
+<li>Exit actions execute</li>
+<li>Parent enters new state</li>
+</ol>
+<h2 id="type-erased-children">Type-Erased Children</h2>
+<p>The <code>ChildInterpreter</code> interface allows children with different context types:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ChildInterpreter</span><span style="color:#F97583"> interface</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#B392F0">    Stop</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">bool</span></span>
+<span class="line"><span style="color:#B392F0">    OnDone</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">callback</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>This means parent and child can have completely different context types.</p>
+<h2 id="example-order-processing">Example: Order Processing</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Items   []</span><span style="color:#B392F0">Item</span></span>
+<span class="line"><span style="color:#E1E4E8">    Total   </span><span style="color:#F97583">float64</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> PaymentContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Amount    </span><span style="color:#F97583">float64</span></span>
+<span class="line"><span style="color:#E1E4E8">    Method    </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Confirmed </span><span style="color:#F97583">bool</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Payment machine</span></span>
+<span class="line"><span style="color:#E1E4E8">paymentMachine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">PaymentContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CONFIRM"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"confirmed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"DECLINE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"declined"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"confirmed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"declined"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Order machine with payment invocation</span></span>
+<span class="line"><span style="color:#E1E4E8">orderMachine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cart"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithChildMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">send</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">ir</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ChildInterpreter</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(paymentMachine)</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp.</span><span style="color:#B392F0">UpdateContext</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">c</span><span style="color:#F97583"> *</span><span style="color:#B392F0">PaymentContext</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            c.Amount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ctx.Total</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> interp</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cart"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CHECKOUT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        InvokeMachine</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            ID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pay"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            OnDone</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"shipped"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CANCEL"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cancelled"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"shipped"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cancelled"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><strong>Use meaningful IDs</strong>: The invoke ID helps with debugging and logging</li>
+<li><strong>Handle cancellation</strong>: Parent transitions should gracefully handle child interruption</li>
+<li><strong>Keep factories simple</strong>: Complex initialization should be in child machine setup</li>
+<li><strong>Consider state scope</strong>: Children are tied to their invoking state’s lifecycle</li>
+<li><strong>Test independently</strong>: Test child machines in isolation before composition</li>
+</ol> </div> </article> </div> </div> </body></html>

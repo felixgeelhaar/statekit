@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lint · Statekit</title><meta name="description" content="Lint — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/lint"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/lint"><meta property="og:title" content="Lint · Statekit"><meta property="og:description" content="Lint — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Lint · Statekit"><meta name="twitter:description" content="Lint — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Lint — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link is-active" aria-current="page"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Lint</h1> </header> <div class="markdown-body"> <h1 id="static-analysis-lint">Static Analysis (Lint)</h1>
+<p>The <code>lint</code> package provides static analysis for statekit state machines, detecting potential issues like unreachable states, dead ends, non-deterministic transitions, and other structural problems.</p>
+<h2 id="installation">Installation</h2>
+<p>The lint package is included with statekit:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> get</span><span style="color:#9ECBFF"> github.com/felixgeelhaar/statekit</span></span></code></pre>
+<p>Import the package:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/lint</span><span style="color:#9ECBFF">"</span></span></code></pre>
+<h2 id="quick-start">Quick Start</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">fmt</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/lint</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">        // ... state definitions</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Run lint analysis</span></span>
+<span class="line"><span style="color:#E1E4E8">    result </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> lint.</span><span style="color:#B392F0">Lint</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Check for issues</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">HasErrors</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Errors found:"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> _, d </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">Errors</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">            fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, d)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">HasWarnings</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Warnings found:"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> _, d </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">Warnings</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">            fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, d)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="available-rules">Available Rules</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Rule</th><th>Severity</th><th>Description</th></tr></thead><tbody><tr><td><code>unreachable</code></td><td>Warning</td><td>State cannot be reached from the initial state</td></tr><tr><td><code>dead-end</code></td><td>Warning</td><td>Non-final state has no outgoing transitions</td></tr><tr><td><code>non-determinism</code></td><td>Error</td><td>Multiple unguarded transitions for the same event</td></tr><tr><td><code>compound-initial</code></td><td>Error</td><td>Compound state has children but no initial state</td></tr><tr><td><code>self-transition</code></td><td>Info</td><td>Unguarded self-transition will re-run entry actions</td></tr><tr><td><code>unused-action</code></td><td>Info</td><td>Registered action is never referenced</td></tr><tr><td><code>unused-guard</code></td><td>Info</td><td>Registered guard is never referenced</td></tr></tbody></table>
+<h3 id="rule-details">Rule Details</h3>
+<h4 id="unreachable"><code>unreachable</code></h4>
+<p>Detects states that cannot be reached from the initial state through any transition path.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"example"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"orphan"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">(). </span><span style="color:#6A737D">// Warning: unreachable</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h4 id="dead-end"><code>dead-end</code></h4>
+<p>Detects non-final states with no outgoing transitions (and no parent transitions that could handle events via bubbling).</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"example"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"stuck"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"stuck"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">(). </span><span style="color:#6A737D">// Warning: dead-end (not final, no transitions)</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>Note: This check considers event bubbling - if a parent state has transitions, child states are not flagged as dead ends.</p>
+<h4 id="non-determinism"><code>non-determinism</code></h4>
+<p>Detects states where the same event triggers multiple unguarded transitions.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"example"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">). </span><span style="color:#6A737D">// No guard</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">). </span><span style="color:#6A737D">// No guard - Error: non-determinism!</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>To fix, add guards to make transitions mutually exclusive:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"checkA"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"checkB"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h4 id="compound-initial"><code>compound-initial</code></h4>
+<p>Detects compound states that have children but no defined initial child state.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Error: compound-initial</span></span>
+<span class="line"><span style="color:#6A737D">// Compound state "parent" has children but no initial state</span></span></code></pre>
+<h4 id="self-transition"><code>self-transition</code></h4>
+<p>Warns when a state has an unguarded self-transition and also has entry actions, since the entry actions will re-run on each self-transition.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"example"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"counting"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"increment"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *struct</span><span style="color:#E1E4E8">{}, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {}).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"counting"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"increment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COUNT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"counting"</span><span style="color:#E1E4E8">). </span><span style="color:#6A737D">// Info: will re-run "increment"</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h4 id="unused-action-and-unused-guard"><code>unused-action</code> and <code>unused-guard</code></h4>
+<p>Detects registered actions or guards that are never referenced in any state or transition.</p>
+<h2 id="severity-levels">Severity Levels</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Level</th><th>Description</th></tr></thead><tbody><tr><td><code>Error</code></td><td>Definite problem that will cause issues at runtime</td></tr><tr><td><code>Warning</code></td><td>Likely problem that should be reviewed</td></tr><tr><td><code>Info</code></td><td>Suggestion or observation</td></tr></tbody></table>
+<h2 id="ignoring-rules">Ignoring Rules</h2>
+<p>Configure the linter to skip specific rules:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">linter </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> lint.</span><span style="color:#B392F0">NewLinter</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Ignore</span><span style="color:#E1E4E8">(lint.RuleUnreachable).</span></span>
+<span class="line"><span style="color:#B392F0">    Ignore</span><span style="color:#E1E4E8">(lint.RuleDeadEnd)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">result </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> lint.</span><span style="color:#B392F0">CheckTyped</span><span style="color:#E1E4E8">(linter, machine)</span></span></code></pre>
+<h2 id="result-api">Result API</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">result </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> lint.</span><span style="color:#B392F0">Lint</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check overall status</span></span>
+<span class="line"><span style="color:#E1E4E8">result.</span><span style="color:#B392F0">HasErrors</span><span style="color:#E1E4E8">()   </span><span style="color:#6A737D">// true if any Error-level diagnostics</span></span>
+<span class="line"><span style="color:#E1E4E8">result.</span><span style="color:#B392F0">HasWarnings</span><span style="color:#E1E4E8">() </span><span style="color:#6A737D">// true if any Warning or Error level diagnostics</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get filtered diagnostics</span></span>
+<span class="line"><span style="color:#E1E4E8">result.</span><span style="color:#B392F0">Errors</span><span style="color:#E1E4E8">()      </span><span style="color:#6A737D">// []Diagnostic with SeverityError</span></span>
+<span class="line"><span style="color:#E1E4E8">result.</span><span style="color:#B392F0">Warnings</span><span style="color:#E1E4E8">()    </span><span style="color:#6A737D">// []Diagnostic with SeverityWarning</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// All diagnostics</span></span>
+<span class="line"><span style="color:#E1E4E8">result.Diagnostics   </span><span style="color:#6A737D">// []Diagnostic (sorted by severity, then state)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Human-readable summary</span></span>
+<span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(result.</span><span style="color:#B392F0">String</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#6A737D">// Output:</span></span>
+<span class="line"><span style="color:#6A737D">// Machine "example": 1 error(s), 2 warning(s), 0 info(s)</span></span>
+<span class="line"><span style="color:#6A737D">//   [error] idle: event "GO" has 2 unguarded transitions (non-determinism)</span></span>
+<span class="line"><span style="color:#6A737D">//   [warning] orphan: state is unreachable from initial state (unreachable)</span></span>
+<span class="line"><span style="color:#6A737D">//   [warning] stuck: non-final state has no outgoing transitions (dead-end)</span></span></code></pre>
+<h2 id="diagnostic-structure">Diagnostic Structure</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Diagnostic</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Severity </span><span style="color:#B392F0">Severity</span><span style="color:#6A737D">         // SeverityError, SeverityWarning, SeverityInfo</span></span>
+<span class="line"><span style="color:#E1E4E8">    Rule     </span><span style="color:#F97583">string</span><span style="color:#6A737D">           // Rule identifier (e.g., "unreachable")</span></span>
+<span class="line"><span style="color:#E1E4E8">    State    </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateID</span><span style="color:#6A737D"> // State where issue was found (empty for machine-level)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Event    </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">EventType</span><span style="color:#6A737D"> // Event involved (for transition issues)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Message  </span><span style="color:#F97583">string</span><span style="color:#6A737D">           // Human-readable description</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="integration-with-cicd">Integration with CI/CD</h2>
+<p>Use the linter in your test suite:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestMachine_Lint</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildMyMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    result </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> lint.</span><span style="color:#B392F0">Lint</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">HasErrors</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        t.</span><span style="color:#B392F0">Fatalf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine has lint errors: </span><span style="color:#79B8FF">%v</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, result.</span><span style="color:#B392F0">Errors</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Optionally fail on warnings too</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">HasWarnings</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        t.</span><span style="color:#B392F0">Logf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine has lint warnings: </span><span style="color:#79B8FF">%v</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, result.</span><span style="color:#B392F0">Warnings</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li>
+<p><strong>Run lint in tests</strong>: Add lint checks to your test suite to catch issues early.</p>
+</li>
+<li>
+<p><strong>Fix non-determinism errors</strong>: These indicate undefined behavior at runtime.</p>
+</li>
+<li>
+<p><strong>Review dead ends</strong>: Intentional dead ends should be marked as final states.</p>
+</li>
+<li>
+<p><strong>Remove unused actions/guards</strong>: Clean up registered but unused handlers.</p>
+</li>
+<li>
+<p><strong>Use guards for multi-target events</strong>: When the same event can go to different states, use guards to make the choice explicit.</p>
+</li>
+</ol>
+<h2 id="rule-constants">Rule Constants</h2>
+<p>Use these constants when configuring ignored rules:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">lint.RuleUnreachable     </span><span style="color:#6A737D">// "unreachable"</span></span>
+<span class="line"><span style="color:#E1E4E8">lint.RuleDeadEnd         </span><span style="color:#6A737D">// "dead-end"</span></span>
+<span class="line"><span style="color:#E1E4E8">lint.RuleNonDeterminism  </span><span style="color:#6A737D">// "non-determinism"</span></span>
+<span class="line"><span style="color:#E1E4E8">lint.RuleCompoundInitial </span><span style="color:#6A737D">// "compound-initial"</span></span>
+<span class="line"><span style="color:#E1E4E8">lint.RuleSelfTransition  </span><span style="color:#6A737D">// "self-transition"</span></span>
+<span class="line"><span style="color:#E1E4E8">lint.RuleUnusedAction    </span><span style="color:#6A737D">// "unused-action"</span></span>
+<span class="line"><span style="color:#E1E4E8">lint.RuleUnusedGuard     </span><span style="color:#6A737D">// "unused-guard"</span></span></code></pre>
+<p>Get all rule names:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">rules </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> lint.</span><span style="color:#B392F0">AllRules</span><span style="color:#E1E4E8">() </span><span style="color:#6A737D">// []string</span></span></code></pre> </div> </article> </div> </div> </body></html>

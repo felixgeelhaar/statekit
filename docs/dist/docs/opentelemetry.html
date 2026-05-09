@@ -1,0 +1,517 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Opentelemetry · Statekit</title><meta name="description" content="Opentelemetry — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/opentelemetry"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/opentelemetry"><meta property="og:title" content="Opentelemetry · Statekit"><meta property="og:description" content="Opentelemetry — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Opentelemetry · Statekit"><meta name="twitter:description" content="Opentelemetry — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Opentelemetry — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link is-active" aria-current="page"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Opentelemetry</h1> </header> <div class="markdown-body"> <h1 id="opentelemetry-tracing">OpenTelemetry Tracing</h1>
+<p>The <code>otel</code> package provides OpenTelemetry tracing integration for state machines, enabling observability of state transitions in distributed systems.</p>
+<h2 id="installation">Installation</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> statekotel </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/otel</span><span style="color:#9ECBFF">"</span></span></code></pre>
+<p>You’ll also need the OpenTelemetry SDK:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> get</span><span style="color:#9ECBFF"> go.opentelemetry.io/otel</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> get</span><span style="color:#9ECBFF"> go.opentelemetry.io/otel/sdk</span></span></code></pre>
+<h2 id="quick-start">Quick Start</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">context</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekotel </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/exporters/stdout/stdouttrace</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/sdk/trace</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">    // Set up OpenTelemetry (example with stdout exporter)</span></span>
+<span class="line"><span style="color:#E1E4E8">    exporter, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> stdouttrace.</span><span style="color:#B392F0">New</span><span style="color:#E1E4E8">(stdouttrace.</span><span style="color:#B392F0">WithPrettyPrint</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    tp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> trace.</span><span style="color:#B392F0">NewTracerProvider</span><span style="color:#E1E4E8">(trace.</span><span style="color:#B392F0">WithBatcher</span><span style="color:#E1E4E8">(exporter))</span></span>
+<span class="line"><span style="color:#E1E4E8">    otel.</span><span style="color:#B392F0">SetTracerProvider</span><span style="color:#E1E4E8">(tp)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> tp.</span><span style="color:#B392F0">Shutdown</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create your state machine</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Wrap interpreter with tracing</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"order-workflow"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Start creates a root span</span></span>
+<span class="line"><span style="color:#E1E4E8">    ctx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Each Send creates a child span</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Stop ends the root span</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="tracinginterpreter">TracingInterpreter</h2>
+<p><code>TracingInterpreter</code> wraps a standard interpreter and automatically creates spans for state machine operations.</p>
+<h3 id="creation">Creation</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Basic usage - uses global tracer</span></span>
+<span class="line"><span style="color:#E1E4E8">ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"my-machine"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// With custom tracer</span></span>
+<span class="line"><span style="color:#E1E4E8">tracer </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> otel.</span><span style="color:#B392F0">Tracer</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"my-service"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"my-machine"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekotel.</span><span style="color:#B392F0">WithTracer</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">](tracer),</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre>
+<h3 id="methods">Methods</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th></tr></thead><tbody><tr><td><code>Start(ctx)</code></td><td>Starts interpreter and creates root span</td></tr><tr><td><code>Send(ctx, event)</code></td><td>Processes event with a child span</td></tr><tr><td><code>SendAll(ctx, events)</code></td><td>Processes multiple events, each with a span</td></tr><tr><td><code>State()</code></td><td>Returns current state</td></tr><tr><td><code>Context()</code></td><td>Returns current machine context</td></tr><tr><td><code>Done()</code></td><td>Returns true if in final state</td></tr><tr><td><code>Matches(id)</code></td><td>Checks if current state matches ID</td></tr><tr><td><code>Stop()</code></td><td>Stops interpreter and ends root span</td></tr><tr><td><code>Interpreter()</code></td><td>Returns the underlying interpreter</td></tr></tbody></table>
+<h3 id="example-with-all-methods">Example with All Methods</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"workflow"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Start creates root span "statemachine/workflow"</span></span>
+<span class="line"><span style="color:#E1E4E8">ctx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check current state</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Waiting for submission"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Send events (each creates a span)</span></span>
+<span class="line"><span style="color:#E1E4E8">ti.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Send multiple events</span></span>
+<span class="line"><span style="color:#E1E4E8">ti.</span><span style="color:#B392F0">SendAll</span><span style="color:#E1E4E8">(ctx, []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    {Type: </span><span style="color:#9ECBFF">"VALIDATE"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">    {Type: </span><span style="color:#9ECBFF">"PROCESS"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check completion</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Workflow completed"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get context data</span></span>
+<span class="line"><span style="color:#E1E4E8">machineCtx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Access underlying interpreter if needed</span></span>
+<span class="line"><span style="color:#E1E4E8">underlying </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Stop ends root span</span></span>
+<span class="line"><span style="color:#E1E4E8">ti.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h2 id="span-structure">Span Structure</h2>
+<h3 id="root-span">Root Span</h3>
+<p>Created by <code>Start()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>statemachine/{machineID}</span></span>
+<span class="line"><span>├── Attributes:</span></span>
+<span class="line"><span>│   └── statekit.machine.id: "order-workflow"</span></span>
+<span class="line"><span>└── Events:</span></span>
+<span class="line"><span>    └── state.entered (statekit.state.id: "pending")</span></span></code></pre>
+<h3 id="event-spans">Event Spans</h3>
+<p>Created by <code>Send()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>event/{eventType}</span></span>
+<span class="line"><span>├── Attributes:</span></span>
+<span class="line"><span>│   ├── statekit.machine.id: "order-workflow"</span></span>
+<span class="line"><span>│   ├── statekit.event.type: "SUBMIT"</span></span>
+<span class="line"><span>│   ├── statekit.state.before: "pending"</span></span>
+<span class="line"><span>│   ├── statekit.state.after: "processing"</span></span>
+<span class="line"><span>│   └── statekit.transitioned: true</span></span>
+<span class="line"><span>└── Events:</span></span>
+<span class="line"><span>    └── state.transition (from: "pending", to: "processing")</span></span></code></pre>
+<h3 id="final-state">Final State</h3>
+<p>When reaching a final state:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>event/COMPLETE</span></span>
+<span class="line"><span>├── Attributes: ...</span></span>
+<span class="line"><span>└── Events:</span></span>
+<span class="line"><span>    ├── state.transition (from: "processing", to: "done")</span></span>
+<span class="line"><span>    └── state.final (statekit.state.id: "done")</span></span></code></pre>
+<h3 id="root-span-completion">Root Span Completion</h3>
+<p>When <code>Stop()</code> is called:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>statemachine/order-workflow</span></span>
+<span class="line"><span>├── Attributes:</span></span>
+<span class="line"><span>│   ├── statekit.machine.id: "order-workflow"</span></span>
+<span class="line"><span>│   ├── statekit.state.final: "done"</span></span>
+<span class="line"><span>│   └── statekit.completed: true</span></span>
+<span class="line"><span>└── Status: OK (if completed)</span></span></code></pre>
+<h2 id="tracinghook">TracingHook</h2>
+<p>For simpler integration without wrapping the interpreter:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">tracer </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> otel.</span><span style="color:#B392F0">Tracer</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"my-service"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">hook </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">TracingHook</span><span style="color:#E1E4E8">(tracer)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Call after each transition</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#E1E4E8">stateBefore </span><span style="color:#F97583">:=</span><span style="color:#9ECBFF"> "pending"</span></span>
+<span class="line"><span style="color:#E1E4E8">stateAfter </span><span style="color:#F97583">:=</span><span style="color:#F97583"> string</span><span style="color:#E1E4E8">(interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">hook</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#9ECBFF">"my-machine"</span><span style="color:#E1E4E8">, event, stateBefore, stateAfter)</span></span></code></pre>
+<p>The hook creates a span:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>statemachine/{machineID}/event/{eventType}</span></span>
+<span class="line"><span>├── Attributes:</span></span>
+<span class="line"><span>│   ├── statekit.machine.id: "my-machine"</span></span>
+<span class="line"><span>│   ├── statekit.event.type: "SUBMIT"</span></span>
+<span class="line"><span>│   ├── statekit.state.before: "pending"</span></span>
+<span class="line"><span>│   ├── statekit.state.after: "processing"</span></span>
+<span class="line"><span>│   └── statekit.transitioned: true</span></span></code></pre>
+<h2 id="attribute-helpers">Attribute Helpers</h2>
+<p>Create OpenTelemetry attributes for custom spans:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "</span><span style="color:#B392F0">go.opentelemetry.io/otel/attribute</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// State attributes</span></span>
+<span class="line"><span style="color:#E1E4E8">attrs </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">StateAttributes</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine-1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#6A737D">// Returns:</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.machine.id: "machine-1"</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.state.id: "running"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Event attributes</span></span>
+<span class="line"><span style="color:#E1E4E8">attrs </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">EventAttributes</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine-1"</span><span style="color:#E1E4E8">, event)</span></span>
+<span class="line"><span style="color:#6A737D">// Returns:</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.machine.id: "machine-1"</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.event.type: "SUBMIT"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Transition attributes</span></span>
+<span class="line"><span style="color:#E1E4E8">attrs </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">TransitionAttributes</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine-1"</span><span style="color:#E1E4E8">, event, </span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#6A737D">// Returns:</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.machine.id: "machine-1"</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.event.type: "SUBMIT"</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.state.from: "idle"</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.state.to: "running"</span></span>
+<span class="line"><span style="color:#6A737D">// - statekit.transitioned: true</span></span></code></pre>
+<h3 id="custom-span-example">Custom Span Example</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">tracer </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> otel.</span><span style="color:#B392F0">Tracer</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"my-service"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">ctx, span </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> tracer.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#9ECBFF">"process-order"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    trace.</span><span style="color:#B392F0">WithAttributes</span><span style="color:#E1E4E8">(statekotel.</span><span style="color:#B392F0">StateAttributes</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"order-123"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">defer</span><span style="color:#E1E4E8"> span.</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Do work...</span></span></code></pre>
+<h2 id="integration-examples">Integration Examples</h2>
+<h3 id="with-http-handler">With HTTP Handler</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">net/http</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    statekotel </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/propagation</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> handler</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // Extract trace context from incoming request</span></span>
+<span class="line"><span style="color:#E1E4E8">    ctx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> otel.</span><span style="color:#B392F0">GetTextMapPropagator</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Extract</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        r.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        propagation.</span><span style="color:#B392F0">HeaderCarrier</span><span style="color:#E1E4E8">(r.Header),</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create tracing interpreter</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">(ctx) </span><span style="color:#6A737D">// Links to incoming trace</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Process...</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="with-grpc">With gRPC</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">context</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    statekotel </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">s </span><span style="color:#F97583">*</span><span style="color:#B392F0">server</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">ProcessOrder</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> context</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">req</span><span style="color:#F97583"> *</span><span style="color:#B392F0">pb</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">OrderRequest</span><span style="color:#E1E4E8">) (</span><span style="color:#F97583">*</span><span style="color:#B392F0">pb</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">OrderResponse</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // ctx already has trace context from gRPC interceptor</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">(ctx)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">, Payload: req})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#F97583"> &#x26;</span><span style="color:#B392F0">pb</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">OrderResponse</span><span style="color:#E1E4E8">{State: </span><span style="color:#F97583">string</span><span style="color:#E1E4E8">(ti.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)}, </span><span style="color:#79B8FF">nil</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="with-jaeger">With Jaeger</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/exporters/jaeger</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/sdk/trace</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> initTracer</span><span style="color:#E1E4E8">() (</span><span style="color:#F97583">*</span><span style="color:#B392F0">trace</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">TracerProvider</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    exporter, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> jaeger.</span><span style="color:#B392F0">New</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        jaeger.</span><span style="color:#B392F0">WithCollectorEndpoint</span><span style="color:#E1E4E8">(jaeger.</span><span style="color:#B392F0">WithEndpoint</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"http://localhost:14268/api/traces"</span><span style="color:#E1E4E8">)),</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8">, err</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    tp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> trace.</span><span style="color:#B392F0">NewTracerProvider</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        trace.</span><span style="color:#B392F0">WithBatcher</span><span style="color:#E1E4E8">(exporter),</span></span>
+<span class="line"><span style="color:#E1E4E8">        trace.</span><span style="color:#B392F0">WithResource</span><span style="color:#E1E4E8">(resource.</span><span style="color:#B392F0">NewWithAttributes</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            semconv.SchemaURL,</span></span>
+<span class="line"><span style="color:#E1E4E8">            semconv.ServiceNameKey.</span><span style="color:#B392F0">String</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"my-service"</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        )),</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    otel.</span><span style="color:#B392F0">SetTracerProvider</span><span style="color:#E1E4E8">(tp)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> tp, </span><span style="color:#79B8FF">nil</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="with-otlp-exporter">With OTLP Exporter</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/sdk/trace</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> initTracer</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> context</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">) (</span><span style="color:#F97583">*</span><span style="color:#B392F0">trace</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">TracerProvider</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    exporter, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> otlptracegrpc.</span><span style="color:#B392F0">New</span><span style="color:#E1E4E8">(ctx,</span></span>
+<span class="line"><span style="color:#E1E4E8">        otlptracegrpc.</span><span style="color:#B392F0">WithEndpoint</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"localhost:4317"</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        otlptracegrpc.</span><span style="color:#B392F0">WithInsecure</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8">, err</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    tp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> trace.</span><span style="color:#B392F0">NewTracerProvider</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        trace.</span><span style="color:#B392F0">WithBatcher</span><span style="color:#E1E4E8">(exporter),</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    otel.</span><span style="color:#B392F0">SetTracerProvider</span><span style="color:#E1E4E8">(tp)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> tp, </span><span style="color:#79B8FF">nil</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="complete-example">Complete Example</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">context</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">log</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">time</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekotel </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/exporters/stdout/stdouttrace</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">go.opentelemetry.io/otel/sdk/trace</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Total   </span><span style="color:#F97583">float64</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">    // Initialize tracer</span></span>
+<span class="line"><span style="color:#E1E4E8">    exporter, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> stdouttrace.</span><span style="color:#B392F0">New</span><span style="color:#E1E4E8">(stdouttrace.</span><span style="color:#B392F0">WithPrettyPrint</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    tp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> trace.</span><span style="color:#B392F0">NewTracerProvider</span><span style="color:#E1E4E8">(trace.</span><span style="color:#B392F0">WithSyncer</span><span style="color:#E1E4E8">(exporter))</span></span>
+<span class="line"><span style="color:#E1E4E8">    otel.</span><span style="color:#B392F0">SetTracerProvider</span><span style="color:#E1E4E8">(tp)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> tp.</span><span style="color:#B392F0">Shutdown</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Build state machine</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Order </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">: processing event </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, ctx.OrderID, e.Type)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"VALID"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"INVALID"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SHIP"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"shipped"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"shipped"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"DELIVER"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"delivered"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"delivered"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create interpreter with initial context</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">UpdateContext</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        ctx.OrderID </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "ORD-12345"</span></span>
+<span class="line"><span style="color:#E1E4E8">        ctx.Total </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 99.99</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Wrap with tracing</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekotel.</span><span style="color:#B392F0">NewTracingInterpreter</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"order-ORD-12345"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Start (creates root span)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ctx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> ti.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Simulate order lifecycle</span></span>
+<span class="line"><span style="color:#E1E4E8">    events </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">EventType</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#9ECBFF">        "SUBMIT"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        "VALID"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        "SHIP"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        "DELIVER"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> _, eventType </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> events {</span></span>
+<span class="line"><span style="color:#E1E4E8">        time.</span><span style="color:#B392F0">Sleep</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">100</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> time.Millisecond) </span><span style="color:#6A737D">// Simulate processing time</span></span>
+<span class="line"><span style="color:#E1E4E8">        ti.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(ctx, </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: eventType})</span></span>
+<span class="line"><span style="color:#E1E4E8">        log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"State: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">, Done: </span><span style="color:#79B8FF">%v</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, ti.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value, ti.</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Stop (ends root span)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ti.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Output traces show:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>{</span></span>
+<span class="line"><span>    "Name": "statemachine/order-ORD-12345",</span></span>
+<span class="line"><span>    "SpanContext": { ... },</span></span>
+<span class="line"><span>    "Attributes": [</span></span>
+<span class="line"><span>        { "Key": "statekit.machine.id", "Value": "order-ORD-12345" }</span></span>
+<span class="line"><span>    ],</span></span>
+<span class="line"><span>    "Events": [</span></span>
+<span class="line"><span>        { "Name": "state.entered", "Attributes": [...] }</span></span>
+<span class="line"><span>    ],</span></span>
+<span class="line"><span>    "ChildSpanCount": 4,</span></span>
+<span class="line"><span>    ...</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    "Name": "event/SUBMIT",</span></span>
+<span class="line"><span>    "ParentSpanId": "...",</span></span>
+<span class="line"><span>    "Attributes": [</span></span>
+<span class="line"><span>        { "Key": "statekit.machine.id", "Value": "order-ORD-12345" },</span></span>
+<span class="line"><span>        { "Key": "statekit.event.type", "Value": "SUBMIT" },</span></span>
+<span class="line"><span>        { "Key": "statekit.state.before", "Value": "pending" },</span></span>
+<span class="line"><span>        { "Key": "statekit.state.after", "Value": "validating" },</span></span>
+<span class="line"><span>        { "Key": "statekit.transitioned", "Value": true }</span></span>
+<span class="line"><span>    ],</span></span>
+<span class="line"><span>    ...</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<h2 id="semantic-conventions">Semantic Conventions</h2>
+<p>The package follows OpenTelemetry semantic conventions where applicable:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Attribute</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>statekit.machine.id</code></td><td>Unique machine identifier</td><td><code>"order-123"</code></td></tr><tr><td><code>statekit.event.type</code></td><td>Type of event sent</td><td><code>"SUBMIT"</code></td></tr><tr><td><code>statekit.state.id</code></td><td>Current state ID</td><td><code>"processing"</code></td></tr><tr><td><code>statekit.state.before</code></td><td>State before transition</td><td><code>"pending"</code></td></tr><tr><td><code>statekit.state.after</code></td><td>State after transition</td><td><code>"processing"</code></td></tr><tr><td><code>statekit.state.from</code></td><td>Source state (in events)</td><td><code>"pending"</code></td></tr><tr><td><code>statekit.state.to</code></td><td>Target state (in events)</td><td><code>"processing"</code></td></tr><tr><td><code>statekit.state.final</code></td><td>Final state reached</td><td><code>"completed"</code></td></tr><tr><td><code>statekit.transitioned</code></td><td>Whether state changed</td><td><code>true</code></td></tr><tr><td><code>statekit.completed</code></td><td>Machine reached final state</td><td><code>true</code></td></tr></tbody></table>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li>
+<p><strong>Use meaningful machine IDs</strong> - Include entity IDs for correlation: <code>"order-12345"</code>, <code>"user-session-abc"</code></p>
+</li>
+<li>
+<p><strong>Propagate context</strong> - Pass the context from <code>Start()</code> to <code>Send()</code> for proper parent-child relationships</p>
+</li>
+<li>
+<p><strong>Always call Stop()</strong> - Ensures the root span is properly ended and flushed</p>
+</li>
+<li>
+<p><strong>Use with distributed tracing</strong> - Extract/inject trace context in HTTP headers for end-to-end visibility</p>
+</li>
+<li>
+<p><strong>Set up sampling</strong> - In production, use appropriate sampling to control trace volume:</p>
+</li>
+</ol>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">tp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> trace.</span><span style="color:#B392F0">NewTracerProvider</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    trace.</span><span style="color:#B392F0">WithSampler</span><span style="color:#E1E4E8">(trace.</span><span style="color:#B392F0">TraceIDRatioBased</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0.1</span><span style="color:#E1E4E8">)), </span><span style="color:#6A737D">// 10% sampling</span></span>
+<span class="line"><span style="color:#E1E4E8">    trace.</span><span style="color:#B392F0">WithBatcher</span><span style="color:#E1E4E8">(exporter),</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre> </div> </article> </div> </div> </body></html>

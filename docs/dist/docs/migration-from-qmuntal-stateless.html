@@ -1,0 +1,273 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Migration From Qmuntal Stateless · Statekit</title><meta name="description" content="Migration From Qmuntal Stateless — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/migration-from-qmuntal-stateless"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/migration-from-qmuntal-stateless"><meta property="og:title" content="Migration From Qmuntal Stateless · Statekit"><meta property="og:description" content="Migration From Qmuntal Stateless — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Migration From Qmuntal Stateless · Statekit"><meta name="twitter:description" content="Migration From Qmuntal Stateless — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Migration From Qmuntal Stateless — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link is-active" aria-current="page"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Migration From Qmuntal Stateless</h1> </header> <div class="markdown-body"> <h1 id="migrating-from-qmuntalstateless-to-statekit">Migrating from qmuntal/stateless to statekit</h1>
+<p><a href="https://github.com/qmuntal/stateless">qmuntal/stateless</a> is a Go port of the .NET Stateless library. It supports hierarchy and is closer to statekit than looplab/fsm. This guide focuses on what’s different.</p>
+<h2 id="at-a-glance">At a glance</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concern</th><th>qmuntal/stateless</th><th>statekit</th></tr></thead><tbody><tr><td>Type safety</td><td>Reflection-based (<code>interface{}</code> triggers)</td><td>Generic <code>[C any]</code> context, typed events</td></tr><tr><td>Hierarchy</td><td><code>Substate(parent)</code></td><td><code>WithInitial</code> + nested <code>State()</code> blocks</td></tr><tr><td>Parallel states</td><td>None</td><td>Yes (orthogonal regions)</td></tr><tr><td>History</td><td>None</td><td>Shallow + deep history</td></tr><tr><td>Visualization</td><td>DOT export</td><td>ASCII, Mermaid, HTML, TUI</td></tr><tr><td>Static analysis</td><td>None</td><td>Built-in lint with 9 rules</td></tr><tr><td>Async work</td><td>Manual</td><td><code>Invoke</code> services with cancellation</td></tr><tr><td>Persistence</td><td>Manual via <code>OnEnter</code> callback</td><td>Snapshot + event sourcing</td></tr><tr><td>Test determinism</td><td>Wall-clock</td><td>Injectable <code>Clock</code> + <code>FakeClock</code></td></tr></tbody></table>
+<h2 id="concept-mapping">Concept mapping</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>qmuntal/stateless</th><th>statekit</th></tr></thead><tbody><tr><td><code>sm := stateless.NewStateMachine(initial)</code></td><td><code>statekit.NewMachine[C](id).WithInitial(initial)...</code></td></tr><tr><td><code>Configure(state).Permit(trigger, dst)</code></td><td><code>.State(src).On(trigger).Target(dst)</code></td></tr><tr><td><code>Configure(state).PermitIf(trigger, dst, guard)</code></td><td><code>.State(src).On(trigger).Target(dst).Guard("name")</code></td></tr><tr><td><code>Configure(state).Substate(parent)</code></td><td>Nested <code>.State()</code> inside parent’s compound</td></tr><tr><td><code>Configure(state).OnEntry(fn)</code></td><td><code>.OnEntry("name")</code> (named action)</td></tr><tr><td><code>Configure(state).OnExit(fn)</code></td><td><code>.OnExit("name")</code></td></tr><tr><td><code>sm.Fire(trigger)</code></td><td><code>interp.Send(statekit.Event{Type: "trigger"})</code></td></tr><tr><td><code>sm.State()</code></td><td><code>interp.State().Value</code></td></tr><tr><td><code>sm.IsInState(s)</code></td><td><code>interp.Matches(s)</code></td></tr><tr><td><code>sm.CanFire(trigger)</code></td><td>(manually inspect — see below)</td></tr></tbody></table>
+<h2 id="key-difference-actions-are-named">Key difference: actions are <em>named</em></h2>
+<p>qmuntal/stateless lets you pass a closure directly. statekit registers actions and guards by name and references them in the machine. Named actions enable lint analysis (<code>unused-action</code>, <code>unused-guard</code>), Native JSON export, and visualization tooling.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// qmuntal/stateless</span></span>
+<span class="line"><span style="color:#E1E4E8">sm.</span><span style="color:#B392F0">Configure</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">_</span><span style="color:#B392F0"> context</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">args</span><span style="color:#F97583"> ...interface</span><span style="color:#E1E4E8">{}) </span><span style="color:#F97583">error</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"started"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> nil</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// statekit</span></span>
+<span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"m"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logStarted"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">_</span><span style="color:#F97583"> *</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">_</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"started"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logStarted"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>If you want closure-style anonymous actions, the reflection DSL or the codegen path (XState/Native JSON → Go) avoids the registration boilerplate.</p>
+<h2 id="worked-example-phone-call">Worked example: phone call</h2>
+<h3 id="before--qmuntalstateless">Before — qmuntal/stateless</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">context</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">fmt</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/qmuntal/stateless</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#79B8FF">    StateIdle</span><span style="color:#F97583">      =</span><span style="color:#9ECBFF"> "Idle"</span></span>
+<span class="line"><span style="color:#79B8FF">    StateRinging</span><span style="color:#F97583">   =</span><span style="color:#9ECBFF"> "Ringing"</span></span>
+<span class="line"><span style="color:#79B8FF">    StateConnected</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "Connected"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    TriggerCallDialed</span><span style="color:#F97583">     =</span><span style="color:#9ECBFF"> "CallDialed"</span></span>
+<span class="line"><span style="color:#79B8FF">    TriggerCallConnected</span><span style="color:#F97583">  =</span><span style="color:#9ECBFF"> "CallConnected"</span></span>
+<span class="line"><span style="color:#79B8FF">    TriggerCallTerminated</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "CallTerminated"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    phone </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> stateless.</span><span style="color:#B392F0">NewStateMachine</span><span style="color:#E1E4E8">(StateIdle)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    phone.</span><span style="color:#B392F0">Configure</span><span style="color:#E1E4E8">(StateIdle).</span></span>
+<span class="line"><span style="color:#B392F0">        Permit</span><span style="color:#E1E4E8">(TriggerCallDialed, StateRinging)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    phone.</span><span style="color:#B392F0">Configure</span><span style="color:#E1E4E8">(StateRinging).</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">_</span><span style="color:#B392F0"> context</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">_</span><span style="color:#F97583"> ...interface</span><span style="color:#E1E4E8">{}) </span><span style="color:#F97583">error</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"ring ring"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#79B8FF"> nil</span></span>
+<span class="line"><span style="color:#E1E4E8">        }).</span></span>
+<span class="line"><span style="color:#B392F0">        Permit</span><span style="color:#E1E4E8">(TriggerCallConnected, StateConnected).</span></span>
+<span class="line"><span style="color:#B392F0">        Permit</span><span style="color:#E1E4E8">(TriggerCallTerminated, StateIdle)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    phone.</span><span style="color:#B392F0">Configure</span><span style="color:#E1E4E8">(StateConnected).</span></span>
+<span class="line"><span style="color:#B392F0">        Permit</span><span style="color:#E1E4E8">(TriggerCallTerminated, StateIdle)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    _ </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> phone.</span><span style="color:#B392F0">Fire</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">(), TriggerCallDialed)</span></span>
+<span class="line"><span style="color:#E1E4E8">    _ </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> phone.</span><span style="color:#B392F0">Fire</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">Background</span><span style="color:#E1E4E8">(), TriggerCallConnected)</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(phone.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">()) </span><span style="color:#6A737D">// "Connected"</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="after--statekit">After — statekit</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">fmt</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"phone"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logRinging"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">_</span><span style="color:#F97583"> *struct</span><span style="color:#E1E4E8">{}, </span><span style="color:#FFAB70">_</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"ring ring"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CallDialed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"ringing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"ringing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logRinging"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CallConnected"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"connected"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CallTerminated"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"connected"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CallTerminated"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">        panic</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Close</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"CallDialed"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"CallConnected"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value) </span><span style="color:#6A737D">// "connected"</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="hierarchy-substates--nested-states">Hierarchy: substates → nested States</h2>
+<p>qmuntal/stateless uses <code>Substate(parent)</code>. statekit uses nested <code>State()</code> blocks inside a compound state.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// qmuntal</span></span>
+<span class="line"><span style="color:#E1E4E8">phone.</span><span style="color:#B392F0">Configure</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"OffHook"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    Substate</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Connected"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">phone.</span><span style="color:#B392F0">Configure</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"OnHold"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    Substate</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Connected"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    Permit</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Resume"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"Conversation"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// statekit</span></span>
+<span class="line"><span style="color:#E1E4E8">.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"connected"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"conversation"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"conversation"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Hold"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"onHold"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"onHold"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Resume"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"conversation"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span></code></pre>
+<h2 id="things-qmuntalstateless-doesnt-have">Things qmuntal/stateless doesn’t have</h2>
+<ul>
+<li><strong>Parallel/orthogonal regions</strong> — model <code>Bluetooth</code> and <code>Network</code> as concurrent regions in the same machine instead of two separate FSMs.</li>
+<li><strong>History states</strong> — return to the exact sub-state you left when re-entering a compound.</li>
+<li><strong>Delayed transitions</strong> — <code>.After(30*time.Second).Target("timeout")</code> without goroutine bookkeeping.</li>
+<li><strong>Invoke</strong> — declarative async services with automatic cancellation on state exit.</li>
+<li><strong>Snapshot/Restore + event sourcing</strong> — full machine state persistence.</li>
+<li><strong>Lint</strong> — catch structural bugs at build time.</li>
+<li><strong>Visualization formats</strong> — Mermaid, HTML, TUI, ASCII (not just DOT).</li>
+<li><strong>MCP integration</strong> — drive a running machine from a Claude / agent via tools.</li>
+<li><strong>Runaway prevention out of the box</strong> — <code>aiplugin.TransitionBudget</code> halts a misbehaving machine after N transitions; addresses the pattern in <a href="https://github.com/qmuntal/stateless/issues/77">qmuntal/stateless #77</a> directly.</li>
+</ul>
+<h2 id="migration-plan">Migration plan</h2>
+<ol>
+<li>Translate each <code>Configure(state).Permit(...)</code> chain into a <code>.State(s).On(e).Target(d)</code> block.</li>
+<li>Convert anonymous closures to named actions registered with <code>.WithAction("name", fn)</code>.</li>
+<li>Convert <code>PermitIf</code> predicates to named guards via <code>.WithGuard("name", fn)</code> + <code>.Guard("name")</code>.</li>
+<li>Replace <code>Substate(parent)</code> with nested <code>.State()</code> blocks inside the parent’s compound.</li>
+<li>Replace <code>Fire(ctx, trigger)</code> with <code>Send(Event{Type: trigger})</code>.</li>
+<li>Replace <code>IsInState(s)</code> with <code>Matches(s)</code>.</li>
+<li>Add <code>defer interp.Close()</code> after <code>Start()</code>.</li>
+<li>Run <code>lint.Lint(machine)</code> to surface structural issues the original library would have missed.</li>
+</ol>
+<h2 id="gotchas">Gotchas</h2>
+<ul>
+<li><strong>Trigger payloads</strong>: qmuntal/stateless passes variadic <code>args ...interface{}</code> to callbacks. statekit packages this in <code>Event.Payload</code>. Read it via <code>e.Payload</code>.</li>
+<li><strong>Guards see context, not args</strong>: statekit guards take <code>(C, Event)</code>. Payload-based gating reads <code>e.Payload</code>; context-based gating reads <code>c</code>.</li>
+<li><strong>OnEntry called once on entry</strong>: same semantics as qmuntal. Self-transitions count as exit + re-entry.</li>
+</ul>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="./migration-from-looplab-fsm.md">Migration from looplab/fsm</a></li>
+<li><a href="./xstate-migration.md">XState Migration</a></li>
+<li><a href="./hierarchical-states.md">Hierarchical States</a></li>
+<li><a href="./lint.md">Static Analysis (Lint)</a></li>
+</ul> </div> </article> </div> </div> </body></html>

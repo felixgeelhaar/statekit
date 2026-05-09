@@ -1,0 +1,476 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Testing · Statekit</title><meta name="description" content="Testing — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/testing"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/testing"><meta property="og:title" content="Testing · Statekit"><meta property="og:description" content="Testing — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Testing · Statekit"><meta name="twitter:description" content="Testing — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Testing — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link is-active" aria-current="page"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Testing</h1> </header> <div class="markdown-body"> <h1 id="testing-state-machines">Testing State Machines</h1>
+<p>Statekit provides dedicated testing and debugging packages to help you write comprehensive tests for your state machines.</p>
+<h2 id="installation">Installation</h2>
+<p>The testing and debug packages are included with statekit:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> get</span><span style="color:#9ECBFF"> github.com/felixgeelhaar/statekit</span></span></code></pre>
+<p>Import the packages in your test files:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/statetest</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/debug</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre>
+<h2 id="testing-package">Testing Package</h2>
+<p>The <code>statetest</code> package provides utilities for testing state machines with transition recording, assertions, and test helpers.</p>
+<h3 id="transition-recorder">Transition Recorder</h3>
+<p>The <code>Recorder</code> captures all transitions for later verification:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestOrderWorkflow</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildOrderMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Wrap the interpreter with a recorder</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">NewRecorder</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Send events</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"PAY"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SHIP"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Verify recorded transitions</span></span>
+<span class="line"><span style="color:#E1E4E8">    transitions </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> rec.</span><span style="color:#B392F0">Transitions</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#B392F0"> len</span><span style="color:#E1E4E8">(transitions) </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        t.</span><span style="color:#B392F0">Errorf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"expected 3 transitions, got </span><span style="color:#79B8FF">%d</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">len</span><span style="color:#E1E4E8">(transitions))</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Each transition captures full details</span></span>
+<span class="line"><span style="color:#E1E4E8">    first </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> transitions[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(first.FromState)     </span><span style="color:#6A737D">// "pending"</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(first.ToState)       </span><span style="color:#6A737D">// "submitted"</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(first.Transitioned)  </span><span style="color:#6A737D">// true</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(first.Duration)      </span><span style="color:#6A737D">// execution time</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>The recorder captures:</p>
+<ul>
+<li><code>Event</code> - The event that triggered the transition</li>
+<li><code>FromState</code> - State before the transition</li>
+<li><code>ToState</code> - State after the transition</li>
+<li><code>Transitioned</code> - Whether a transition actually occurred</li>
+<li><code>ContextBefore</code> - Context snapshot before transition</li>
+<li><code>ContextAfter</code> - Context snapshot after transition</li>
+<li><code>Timestamp</code> - When the event was sent</li>
+<li><code>Duration</code> - How long the transition took</li>
+</ul>
+<h3 id="assertions">Assertions</h3>
+<p>Use assertion helpers for cleaner test code:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestCheckout</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildCheckoutMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Assert initial state</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertState</span><span style="color:#E1E4E8">(t, interp, </span><span style="color:#9ECBFF">"cart"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertNotDone</span><span style="color:#E1E4E8">(t, interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Send events and verify</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"CHECKOUT"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertState</span><span style="color:#E1E4E8">(t, interp, </span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"PAY"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertState</span><span style="color:#E1E4E8">(t, interp, </span><span style="color:#9ECBFF">"confirmation"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertDone</span><span style="color:#E1E4E8">(t, interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Available assertions:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Function</th><th>Description</th></tr></thead><tbody><tr><td><code>AssertState</code></td><td>Assert current state equals expected</td></tr><tr><td><code>AssertMatches</code></td><td>Assert current state matches (including ancestors)</td></tr><tr><td><code>AssertDone</code></td><td>Assert machine is in a final state</td></tr><tr><td><code>AssertNotDone</code></td><td>Assert machine is not in a final state</td></tr><tr><td><code>AssertTransitioned</code></td><td>Assert recorder captured a specific transition</td></tr><tr><td><code>AssertNoTransition</code></td><td>Assert event did not cause a transition</td></tr><tr><td><code>AssertEventSequence</code></td><td>Assert recorder captured events in order</td></tr><tr><td><code>AssertStateSequence</code></td><td>Assert recorder captured states in order</td></tr><tr><td><code>AssertContext</code></td><td>Assert context satisfies a predicate</td></tr></tbody></table>
+<h3 id="fluent-assertions">Fluent Assertions</h3>
+<p>For more expressive tests, use the fluent assertion API:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestWorkflow</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">NewRecorder</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Send events</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    rec.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Fluent state assertions</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">NewStateAssertion</span><span style="color:#E1E4E8">(t, interp).</span></span>
+<span class="line"><span style="color:#B392F0">        IsIn</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        IsDone</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Fluent recorder assertions</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">NewRecorderAssertion</span><span style="color:#E1E4E8">(t, rec).</span></span>
+<span class="line"><span style="color:#B392F0">        StateSequence</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        EventSequence</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="test-helpers">Test Helpers</h3>
+<p>Convenience functions for common testing scenarios:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Send multiple events</span></span>
+<span class="line"><span style="color:#E1E4E8">statetest.</span><span style="color:#B392F0">SendEvents</span><span style="color:#E1E4E8">(interp,</span></span>
+<span class="line"><span style="color:#B392F0">    statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#B392F0">    statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"PAUSE"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#B392F0">    statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"RESUME"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Send events by type only (no payload)</span></span>
+<span class="line"><span style="color:#E1E4E8">statetest.</span><span style="color:#B392F0">SendEventTypes</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"PAUSE"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"RESUME"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<h3 id="quick-machine-builders">Quick Machine Builders</h3>
+<p>Create simple machines for testing:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Linear machine: idle -> running -> done (NEXT transitions)</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">QuickMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Toggle machine: off &#x3C;-> on</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">ToggleMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"off"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"on"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ON"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"OFF"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Cycle machine: a -> b -> c -> a (NEXT event)</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">CycleMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"c"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Branch machine: start -> (a, b) based on event</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">BranchMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"start"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"GO_A"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"GO_B"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<h3 id="action-and-guard-test-helpers">Action and Guard Test Helpers</h3>
+<p>Control actions and guards in tests:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestWithCounter</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    counter </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">NewActionCounter</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"test"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"count"</span><span style="color:#E1E4E8">, statetest.</span><span style="color:#B392F0">ActionFor</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](counter, </span><span style="color:#9ECBFF">"count"</span><span style="color:#E1E4E8">)).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"count"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"NEXT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">            OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"count"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"NEXT"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> counter.</span><span style="color:#B392F0">Count</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"count"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        t.</span><span style="color:#B392F0">Errorf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"expected 2 action calls, got </span><span style="color:#79B8FF">%d</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, counter.</span><span style="color:#B392F0">Count</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"count"</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestWithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    guards </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">NewGuardResult</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    guards.</span><span style="color:#B392F0">Set</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"check"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">) </span><span style="color:#6A737D">// Initially passes</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"test"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"check"</span><span style="color:#E1E4E8">, statetest.</span><span style="color:#B392F0">GuardFor</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](guards, </span><span style="color:#9ECBFF">"check"</span><span style="color:#E1E4E8">)).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"check"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Guard passes</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertState</span><span style="color:#E1E4E8">(t, interp, </span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Reset and block</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp2 </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp2.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    guards.</span><span style="color:#B392F0">Set</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"check"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp2.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"GO"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertState</span><span style="color:#E1E4E8">(t, interp2, </span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">) </span><span style="color:#6A737D">// Blocked</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="debug-package">Debug Package</h2>
+<p>The <code>debug</code> package provides runtime inspection and visualization tools.</p>
+<h3 id="inspector">Inspector</h3>
+<p>The <code>Inspector</code> provides read-only access to machine state and configuration:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> DebugMachine</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">interp</span><span style="color:#F97583"> *</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">], </span><span style="color:#FFAB70">machine</span><span style="color:#F97583"> *</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">]) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    inspector </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> debug.</span><span style="color:#B392F0">NewInspector</span><span style="color:#E1E4E8">(interp, machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Current state information</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Current:"</span><span style="color:#E1E4E8">, inspector.</span><span style="color:#B392F0">CurrentState</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Done:"</span><span style="color:#E1E4E8">, inspector.</span><span style="color:#B392F0">IsDone</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Path:"</span><span style="color:#E1E4E8">, inspector.</span><span style="color:#B392F0">Path</span><span style="color:#E1E4E8">())  </span><span style="color:#6A737D">// For hierarchical states</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Available events from current state</span></span>
+<span class="line"><span style="color:#E1E4E8">    events </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> inspector.</span><span style="color:#B392F0">AvailableEvents</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> _, e </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> events {</span></span>
+<span class="line"><span style="color:#E1E4E8">        canTransition </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> inspector.</span><span style="color:#B392F0">CanTransition</span><span style="color:#E1E4E8">(e)</span></span>
+<span class="line"><span style="color:#E1E4E8">        fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">: can transition = </span><span style="color:#79B8FF">%v\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, e, canTransition)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Simulate transitions without side effects</span></span>
+<span class="line"><span style="color:#E1E4E8">    target, willTransition </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> inspector.</span><span style="color:#B392F0">SimulateTransition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#B392F0">        statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT would go to: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> (transition: </span><span style="color:#79B8FF">%v</span><span style="color:#9ECBFF">)</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, target, willTransition)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Inspector methods:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Description</th></tr></thead><tbody><tr><td><code>CurrentState()</code></td><td>Get current state ID</td></tr><tr><td><code>CurrentContext()</code></td><td>Get current context</td></tr><tr><td><code>IsDone()</code></td><td>Check if in final state</td></tr><tr><td><code>MachineID()</code></td><td>Get machine ID</td></tr><tr><td><code>InitialState()</code></td><td>Get initial state ID</td></tr><tr><td><code>AllStates()</code></td><td>List all state IDs</td></tr><tr><td><code>StateInfo(id)</code></td><td>Get detailed state information</td></tr><tr><td><code>AvailableEvents()</code></td><td>List events from current state</td></tr><tr><td><code>CanTransition(event)</code></td><td>Check if event would cause transition</td></tr><tr><td><code>SimulateTransition(event)</code></td><td>Simulate without side effects</td></tr><tr><td><code>TransitionsFrom(id)</code></td><td>List transitions from a state</td></tr><tr><td><code>Path()</code></td><td>Get path from root to current state</td></tr><tr><td><code>Dump()</code></td><td>Get human-readable state dump</td></tr><tr><td><code>DumpMachine()</code></td><td>Get complete machine dump</td></tr></tbody></table>
+<h3 id="state-graph">State Graph</h3>
+<p>The <code>StateGraph</code> represents the machine as a navigable graph:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">graph </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> debug.</span><span style="color:#B392F0">NewStateGraph</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Traverse the graph</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, node </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">RootNodes</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"State: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> (type: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">)</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, node.ID, node.Type)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Find edges</span></span>
+<span class="line"><span style="color:#E1E4E8">edges </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">GetEdgesFrom</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, edge </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> edges {</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> -> </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> on </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, edge.From, edge.To, edge.Event)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Analysis</span></span>
+<span class="line"><span style="color:#E1E4E8">analysis </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">Analyze</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(analysis.</span><span style="color:#B392F0">String</span><span style="color:#E1E4E8">())</span></span></code></pre>
+<p>Graph analysis detects:</p>
+<ul>
+<li>Unreachable states</li>
+<li>Dead-end states (non-final with no outgoing transitions)</li>
+<li>Cycles in the transition graph</li>
+<li>Maximum hierarchy depth</li>
+</ul>
+<h3 id="visualization-export">Visualization Export</h3>
+<p>Export machines for visualization:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">graph </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> debug.</span><span style="color:#B392F0">NewStateGraph</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Mermaid diagram (for documentation)</span></span>
+<span class="line"><span style="color:#E1E4E8">mermaid </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">ToMermaid</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#6A737D">// Output:</span></span>
+<span class="line"><span style="color:#6A737D">// stateDiagram-v2</span></span>
+<span class="line"><span style="color:#6A737D">//     [*] --> idle</span></span>
+<span class="line"><span style="color:#6A737D">//     idle --> running : START</span></span>
+<span class="line"><span style="color:#6A737D">//     running --> done : COMPLETE</span></span>
+<span class="line"><span style="color:#6A737D">//     done --> [*]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// GraphViz DOT (for visualization tools)</span></span>
+<span class="line"><span style="color:#E1E4E8">dot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">ToDOT</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#6A737D">// Output:</span></span>
+<span class="line"><span style="color:#6A737D">// digraph example {</span></span>
+<span class="line"><span style="color:#6A737D">//     rankdir=LR;</span></span>
+<span class="line"><span style="color:#6A737D">//     node [shape=box, style=rounded];</span></span>
+<span class="line"><span style="color:#6A737D">//     __start__ [shape=point, width=0.1];</span></span>
+<span class="line"><span style="color:#6A737D">//     __start__ -> idle;</span></span>
+<span class="line"><span style="color:#6A737D">//     done [shape=doublecircle];</span></span>
+<span class="line"><span style="color:#6A737D">//     idle -> running [label="START"];</span></span>
+<span class="line"><span style="color:#6A737D">//     running -> done [label="COMPLETE"];</span></span>
+<span class="line"><span style="color:#6A737D">// }</span></span></code></pre>
+<p>Use the exports with:</p>
+<ul>
+<li><strong>Mermaid</strong>: Embed in Markdown documentation, GitHub READMEs</li>
+<li><strong>DOT</strong>: Render with GraphViz (<code>dot -Tpng machine.dot -o machine.png</code>)</li>
+</ul>
+<h2 id="table-driven-tests">Table-Driven Tests</h2>
+<p>Combine statekit testing utilities with Go’s table-driven test pattern:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestOrderStates</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    tests </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> []</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        name     </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">        events   []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">EventType</span></span>
+<span class="line"><span style="color:#E1E4E8">        expected </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">        done     </span><span style="color:#F97583">bool</span></span>
+<span class="line"><span style="color:#E1E4E8">    }{</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            name:     </span><span style="color:#9ECBFF">"new order stays pending"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            events:   </span><span style="color:#79B8FF">nil</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            expected: </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            done:     </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            name:     </span><span style="color:#9ECBFF">"submit order"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            events:   []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">EventType</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">            expected: </span><span style="color:#9ECBFF">"submitted"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            done:     </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            name:     </span><span style="color:#9ECBFF">"full order flow"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            events:   []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">EventType</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"PAY"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"SHIP"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"DELIVER"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">            expected: </span><span style="color:#9ECBFF">"delivered"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            done:     </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> _, tt </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> tests {</span></span>
+<span class="line"><span style="color:#E1E4E8">        t.</span><span style="color:#B392F0">Run</span><span style="color:#E1E4E8">(tt.name, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildOrderMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">            interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">            interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">            statetest.</span><span style="color:#B392F0">SendEventTypes</span><span style="color:#E1E4E8">(interp, tt.events</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            statetest.</span><span style="color:#B392F0">AssertState</span><span style="color:#E1E4E8">(t, interp, tt.expected)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> tt.done {</span></span>
+<span class="line"><span style="color:#E1E4E8">                statetest.</span><span style="color:#B392F0">AssertDone</span><span style="color:#E1E4E8">(t, interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">            } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                statetest.</span><span style="color:#B392F0">AssertNotDone</span><span style="color:#E1E4E8">(t, interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="integration-with-testing-frameworks">Integration with Testing Frameworks</h2>
+<h3 id="with-testify">With testify</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/stretchr/testify/assert</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/stretchr/testify/require</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestWithTestify</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    assert.</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(t, statekit.</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">), interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    require.</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(t, statekit.</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">), interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="with-gomega">With gomega</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    . </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/onsi/gomega</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestWithGomega</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    g </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> NewGomegaWithT</span><span style="color:#E1E4E8">(t)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    g.</span><span style="color:#B392F0">Expect</span><span style="color:#E1E4E8">(interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value).</span><span style="color:#B392F0">To</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(statekit.</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">)))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    g.</span><span style="color:#B392F0">Expect</span><span style="color:#E1E4E8">(interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value).</span><span style="color:#B392F0">To</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(statekit.</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">)))</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li>
+<p><strong>Test state transitions, not implementation details</strong>: Focus on verifying that events cause expected state changes.</p>
+</li>
+<li>
+<p><strong>Use the recorder for integration tests</strong>: Capture the full transition history to verify complex workflows.</p>
+</li>
+<li>
+<p><strong>Use assertions for unit tests</strong>: Quick state checks are ideal for focused unit tests.</p>
+</li>
+<li>
+<p><strong>Simulate before asserting guards</strong>: Use <code>SimulateTransition</code> to verify guard behavior without side effects.</p>
+</li>
+<li>
+<p><strong>Test edge cases</strong>: Verify behavior when guards block transitions or unknown events are sent.</p>
+</li>
+<li>
+<p><strong>Use table-driven tests</strong>: Cover multiple scenarios efficiently with Go’s table-driven test pattern.</p>
+</li>
+<li>
+<p><strong>Export graphs for documentation</strong>: Use Mermaid export to include machine diagrams in documentation.</p>
+</li>
+<li>
+<p><strong>Analyze for issues</strong>: Run <code>graph.Analyze()</code> to detect unreachable states and dead ends during testing.</p>
+</li>
+</ol> </div> </article> </div> </div> </body></html>

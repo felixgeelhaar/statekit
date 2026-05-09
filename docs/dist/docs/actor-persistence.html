@@ -1,0 +1,197 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Actor Persistence · Statekit</title><meta name="description" content="Actor Persistence — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/actor-persistence"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/actor-persistence"><meta property="og:title" content="Actor Persistence · Statekit"><meta property="og:description" content="Actor Persistence — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Actor Persistence · Statekit"><meta name="twitter:description" content="Actor Persistence — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Actor Persistence — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link is-active" aria-current="page"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Actor Persistence</h1> </header> <div class="markdown-body"> <h1 id="actor-persistence">Actor Persistence</h1>
+<p>Snapshots capture spawned actor metadata for serialization and debugging purposes.</p>
+<h2 id="overview">Overview</h2>
+<p>When taking a snapshot of an interpreter with spawned actors, the snapshot includes metadata about each actor:</p>
+<ul>
+<li>Actor ID</li>
+<li>State where the actor was spawned</li>
+<li>Supervision strategy</li>
+<li>Auto-forward event types</li>
+</ul>
+<p>This metadata is useful for:</p>
+<ul>
+<li>Debugging actor hierarchies</li>
+<li>Logging and monitoring</li>
+<li>Understanding system state</li>
+<li>Potentially recreating actors after restore</li>
+</ul>
+<h2 id="snapshot-structure">Snapshot Structure</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Snapshot</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    CurrentState    </span><span style="color:#B392F0">StateID</span><span style="color:#9ECBFF">           `json:"current_state"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Context         </span><span style="color:#B392F0">C</span><span style="color:#9ECBFF">                 `json:"context"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    History         </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">StateID</span><span style="color:#9ECBFF"> `json:"history,omitempty"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    DeepHistory     </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">StateID</span><span style="color:#9ECBFF"> `json:"deep_history,omitempty"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    ActiveInParallel </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">StateID</span><span style="color:#9ECBFF"> `json:"active_in_parallel,omitempty"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    SpawnedActors   []</span><span style="color:#B392F0">ActorMetadata</span><span style="color:#9ECBFF">   `json:"spawned_actors,omitempty"`</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ActorMetadata</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    ID             </span><span style="color:#B392F0">ActorID</span><span style="color:#9ECBFF">             `json:"id"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    SpawnedInState </span><span style="color:#B392F0">StateID</span><span style="color:#9ECBFF">             `json:"spawned_in_state"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Supervision    </span><span style="color:#B392F0">SupervisionStrategy</span><span style="color:#9ECBFF"> `json:"supervision"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    AutoForward    []</span><span style="color:#B392F0">EventType</span><span style="color:#9ECBFF">         `json:"auto_forward,omitempty"`</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="basic-usage">Basic Usage</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Create parent interpreter</span></span>
+<span class="line"><span style="color:#E1E4E8">parent </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(parentMachine)</span></span>
+<span class="line"><span style="color:#E1E4E8">parent.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Spawn actors</span></span>
+<span class="line"><span style="color:#E1E4E8">statekit.</span><span style="color:#B392F0">Spawn</span><span style="color:#E1E4E8">(parent, </span><span style="color:#9ECBFF">"worker-1"</span><span style="color:#E1E4E8">, workerMachine,</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekit.</span><span style="color:#B392F0">WithSupervision</span><span style="color:#E1E4E8">(statekit.SupervisionRecover),</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekit.</span><span style="color:#B392F0">WithAutoForward</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TASK"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"DATA"</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">statekit.</span><span style="color:#B392F0">Spawn</span><span style="color:#E1E4E8">(parent, </span><span style="color:#9ECBFF">"worker-2"</span><span style="color:#E1E4E8">, workerMachine,</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekit.</span><span style="color:#B392F0">WithSupervision</span><span style="color:#E1E4E8">(statekit.SupervisionRestart),</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Take snapshot - includes actor metadata</span></span>
+<span class="line"><span style="color:#E1E4E8">snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> parent.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// SpawnedActors contains metadata for both workers</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, actor </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> snapshot.SpawnedActors {</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Actor: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">, State: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">, Supervision: </span><span style="color:#79B8FF">%v\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        actor.ID, actor.SpawnedInState, actor.Supervision)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="json-serialization">JSON Serialization</h2>
+<p>Actor metadata is fully JSON-serializable:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> parent.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Serialize</span></span>
+<span class="line"><span style="color:#E1E4E8">data, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> json.</span><span style="color:#B392F0">Marshal</span><span style="color:#E1E4E8">(snapshot)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Fatal</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Store or transmit...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Deserialize</span></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> restored </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">err </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> json.</span><span style="color:#B392F0">Unmarshal</span><span style="color:#E1E4E8">(data, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">restored)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Fatal</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Access actor metadata</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, actor </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> restored.SpawnedActors {</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Actor </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> was in state </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, actor.ID, actor.SpawnedInState)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="example-output">Example Output</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "current_state"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "context"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "order_id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"12345"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "total"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">99.99</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#79B8FF">  "spawned_actors"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"worker-1"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "spawned_in_state"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "supervision"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"recover"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "auto_forward"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"TASK"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"DATA"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"worker-2"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "spawned_in_state"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "supervision"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"restart"</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  ]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="restoring-actors">Restoring Actors</h2>
+<p>Actor metadata is captured for informational purposes. When restoring from a snapshot, actors are <strong>not</strong> automatically recreated.</p>
+<p>To restore actors manually:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Restore interpreter state</span></span>
+<span class="line"><span style="color:#E1E4E8">newInterp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> newInterp.</span><span style="color:#B392F0">Restore</span><span style="color:#E1E4E8">(snapshot)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Fatal</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Manually recreate actors based on metadata</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, actorMeta </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> snapshot.SpawnedActors {</span></span>
+<span class="line"><span style="color:#6A737D">    // Determine which machine to use based on actor ID or other criteria</span></span>
+<span class="line"><span style="color:#E1E4E8">    childMachine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> getChildMachine</span><span style="color:#E1E4E8">(actorMeta.ID)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Build spawn options from metadata</span></span>
+<span class="line"><span style="color:#E1E4E8">    opts </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SpawnOption</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">        statekit.</span><span style="color:#B392F0">WithSupervision</span><span style="color:#E1E4E8">(actorMeta.Supervision),</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#B392F0"> len</span><span style="color:#E1E4E8">(actorMeta.AutoForward) </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        opts </span><span style="color:#F97583">=</span><span style="color:#B392F0"> append</span><span style="color:#E1E4E8">(opts, statekit.</span><span style="color:#B392F0">WithAutoForward</span><span style="color:#E1E4E8">(actorMeta.AutoForward</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Respawn the actor</span></span>
+<span class="line"><span style="color:#E1E4E8">    _, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">Spawn</span><span style="color:#E1E4E8">(newInterp, actorMeta.ID, childMachine, opts</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Failed to respawn actor </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">: </span><span style="color:#79B8FF">%v</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, actorMeta.ID, err)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="use-cases">Use Cases</h2>
+<h3 id="debugging">Debugging</h3>
+<p>Inspect actor hierarchy at any point:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Current state: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, snapshot.CurrentState)</span></span>
+<span class="line"><span style="color:#E1E4E8">log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Active actors: </span><span style="color:#79B8FF">%d</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">len</span><span style="color:#E1E4E8">(snapshot.SpawnedActors))</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, actor </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> snapshot.SpawnedActors {</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  - </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> (supervision: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">)"</span><span style="color:#E1E4E8">, actor.ID, actor.Supervision)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="monitoring">Monitoring</h3>
+<p>Track actor lifecycle for observability:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ActorMonitor</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    previousActors </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ActorID</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">bool</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">m </span><span style="color:#F97583">*</span><span style="color:#B392F0">ActorMonitor</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">Check</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">interp</span><span style="color:#F97583"> *</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">]) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    currentActors </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> make</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ActorID</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">bool</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> _, actor </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> snapshot.SpawnedActors {</span></span>
+<span class="line"><span style="color:#E1E4E8">        currentActors[actor.ID] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">m.previousActors[actor.ID] {</span></span>
+<span class="line"><span style="color:#E1E4E8">            metrics.ActorSpawned.</span><span style="color:#B392F0">Inc</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> id </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> m.previousActors {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">currentActors[id] {</span></span>
+<span class="line"><span style="color:#E1E4E8">            metrics.ActorStopped.</span><span style="color:#B392F0">Inc</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    m.previousActors </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> currentActors</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="audit-trail">Audit Trail</h3>
+<p>Record actor state for compliance:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> recordAuditSnapshot</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">interp</span><span style="color:#F97583"> *</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">]) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    auditRecord </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> AuditRecord</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">        Timestamp:    time.</span><span style="color:#B392F0">Now</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        State:        snapshot.CurrentState,</span></span>
+<span class="line"><span style="color:#E1E4E8">        ActorCount:   </span><span style="color:#B392F0">len</span><span style="color:#E1E4E8">(snapshot.SpawnedActors),</span></span>
+<span class="line"><span style="color:#E1E4E8">        ActorDetails: snapshot.SpawnedActors,</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    auditStore.</span><span style="color:#B392F0">Save</span><span style="color:#E1E4E8">(auditRecord)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="limitations">Limitations</h2>
+<ol>
+<li><strong>Metadata only</strong>: Actor snapshots contain metadata, not the full child machine state</li>
+<li><strong>Manual restore</strong>: Actors must be manually recreated after restore</li>
+<li><strong>No child state</strong>: The internal state of child machines is not captured</li>
+<li><strong>Runtime only</strong>: Actor metadata reflects the current runtime state</li>
+</ol>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><strong>Regular snapshots</strong>: Take periodic snapshots for debugging complex systems</li>
+<li><strong>Log actor changes</strong>: Monitor spawned actors for unexpected behavior</li>
+<li><strong>Plan restoration</strong>: Design your system to handle actor respawning on restore</li>
+<li><strong>Use event sourcing</strong>: For full durability, combine with event sourcing patterns</li>
+</ol> </div> </article> </div> </div> </body></html>

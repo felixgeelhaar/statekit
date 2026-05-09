@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Generation · Statekit</title><meta name="description" content="Code Generation — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/code-generation"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/code-generation"><meta property="og:title" content="Code Generation · Statekit"><meta property="og:description" content="Code Generation — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Code Generation · Statekit"><meta name="twitter:description" content="Code Generation — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Code Generation — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link is-active" aria-current="page"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Code Generation</h1> </header> <div class="markdown-body"> <h1 id="code-generation">Code Generation</h1>
+<p>Generate Go code from XState JSON definitions using the <code>statekit generate</code> command or the <code>generate</code> package.</p>
+<h2 id="cli-usage">CLI Usage</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Generate from XState JSON file</span></span>
+<span class="line"><span style="color:#B392F0">statekit</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> machine.json</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> machine.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># With custom package and type name</span></span>
+<span class="line"><span style="color:#B392F0">statekit</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> machine.json</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> mypackage</span><span style="color:#79B8FF"> -t</span><span style="color:#9ECBFF"> OrderWorkflow</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> order.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Specify context type</span></span>
+<span class="line"><span style="color:#B392F0">statekit</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> machine.json</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> "OrderContext"</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> order.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Read from stdin</span></span>
+<span class="line"><span style="color:#B392F0">cat</span><span style="color:#9ECBFF"> machine.json</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> statekit</span><span style="color:#9ECBFF"> generate</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> machine.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Output to stdout</span></span>
+<span class="line"><span style="color:#B392F0">statekit</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> machine.json</span></span></code></pre>
+<h3 id="options">Options</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Flag</th><th>Short</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td><code>--output</code></td><td><code>-o</code></td><td>Output file path</td><td>stdout</td></tr><tr><td><code>--package</code></td><td><code>-p</code></td><td>Go package name</td><td><code>main</code></td></tr><tr><td><code>--type</code></td><td><code>-t</code></td><td>Type name for the machine</td><td>Inferred from filename</td></tr><tr><td><code>--context</code></td><td><code>-c</code></td><td>Context type name</td><td><code>struct{}</code></td></tr></tbody></table>
+<h3 id="json-types">JSON Types</h3>
+<p>The generator accepts Statekit Native JSON format:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "initial"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "states"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "pending"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "entry"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"logPending"</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">        { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"guard"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"hasItems"</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">      ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "validating"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">        { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"VALID"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#E1E4E8">        { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"INVALID"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">      ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "processing"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">        { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"actions"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"notifyCustomer"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"updateInventory"</span><span style="color:#E1E4E8">] }</span></span>
+<span class="line"><span style="color:#E1E4E8">      ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "completed"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"final"</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="generated-output">Generated Output</h2>
+<p>Running <code>statekit generate order.json -p orders -t OrderMachine</code> produces:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Code generated by statekit generate. DO NOT EDIT.</span></span>
+<span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> orders</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// OrderMachineContext is the context type for the state machine.</span></span>
+<span class="line"><span style="color:#6A737D">// TODO: Replace with your actual context type.</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderMachineContext</span><span style="color:#F97583"> =</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8">{}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Action stubs - implement these functions.</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> actionLogPending</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderMachineContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // TODO: Implement logPending action</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> actionNotifyCustomer</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderMachineContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // TODO: Implement notifyCustomer action</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> actionUpdateInventory</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderMachineContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // TODO: Implement updateInventory action</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Guard stubs - implement these functions.</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> guardHasItems</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderMachineContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">    // TODO: Implement hasItems guard</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> true</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// BuildOrderMachine creates the order state machine.</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> BuildOrderMachine</span><span style="color:#E1E4E8">() (</span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderMachineContext</span><span style="color:#E1E4E8">], </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderMachineContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logPending"</span><span style="color:#E1E4E8">, actionLogPending).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"notifyCustomer"</span><span style="color:#E1E4E8">, actionNotifyCustomer).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"updateInventory"</span><span style="color:#E1E4E8">, actionUpdateInventory).</span></span>
+<span class="line"><span style="color:#B392F0">        WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasItems"</span><span style="color:#E1E4E8">, guardHasItems).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logPending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasItems"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"INVALID"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"VALID"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"notifyCustomer"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"updateInventory"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="workflow">Workflow</h2>
+<ol>
+<li><strong>Design</strong> your state machine or write JSON manually</li>
+<li><strong>Export</strong> the machine definition as JSON</li>
+<li><strong>Generate</strong> Go code with <code>statekit generate</code></li>
+<li><strong>Implement</strong> the action and guard stubs</li>
+<li><strong>Use</strong> the generated <code>Build&#x3C;Type>()</code> function in your application</li>
+</ol>
+<h3 id="example-workflow">Example Workflow</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. Generate the code</span></span>
+<span class="line"><span style="color:#B392F0">statekit</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> order.json</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> orders</span><span style="color:#79B8FF"> -t</span><span style="color:#9ECBFF"> OrderMachine</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> "OrderContext"</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> order_machine.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. Create your context type and implement stubs</span></span>
+<span class="line"><span style="color:#B392F0">cat</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> order_context.go</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#9ECBFF"> 'EOF'</span></span>
+<span class="line"><span style="color:#9ECBFF">package orders</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">import "github.com/felixgeelhaar/statekit"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">type OrderContext struct {</span></span>
+<span class="line"><span style="color:#9ECBFF">    OrderID    string</span></span>
+<span class="line"><span style="color:#9ECBFF">    Items      []string</span></span>
+<span class="line"><span style="color:#9ECBFF">    CustomerID string</span></span>
+<span class="line"><span style="color:#9ECBFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">func actionLogPending(ctx *OrderContext, e statekit.Event) {</span></span>
+<span class="line"><span style="color:#9ECBFF">    log.Printf("Order %s is pending", ctx.OrderID)</span></span>
+<span class="line"><span style="color:#9ECBFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">func guardHasItems(ctx OrderContext, e statekit.Event) bool {</span></span>
+<span class="line"><span style="color:#9ECBFF">    return len(ctx.Items) > 0</span></span>
+<span class="line"><span style="color:#9ECBFF">}</span></span>
+<span class="line"><span style="color:#9ECBFF">// ... implement other stubs</span></span>
+<span class="line"><span style="color:#9ECBFF">EOF</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. Use in your application</span></span>
+<span class="line"><span style="color:#B392F0">cat</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> main.go</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#9ECBFF"> 'EOF'</span></span>
+<span class="line"><span style="color:#9ECBFF">package main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">import "myapp/orders"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">func main() {</span></span>
+<span class="line"><span style="color:#9ECBFF">    machine, _ := orders.BuildOrderMachine()</span></span>
+<span class="line"><span style="color:#9ECBFF">    interp := statekit.NewInterpreter(machine)</span></span>
+<span class="line"><span style="color:#9ECBFF">    interp.Start()</span></span>
+<span class="line"><span style="color:#9ECBFF">    // ...</span></span>
+<span class="line"><span style="color:#9ECBFF">}</span></span>
+<span class="line"><span style="color:#9ECBFF">EOF</span></span></code></pre>
+<h2 id="supported-features">Supported Features</h2>
+<p>The generator supports:</p>
+<ul>
+<li>✅ Basic states and transitions</li>
+<li>✅ Entry and exit actions</li>
+<li>✅ Transition actions</li>
+<li>✅ Guards (conditions)</li>
+<li>✅ Final states</li>
+<li>✅ Hierarchical (nested) states</li>
+<li>✅ Multiple transitions per event</li>
+</ul>
+<h3 id="hierarchical-states">Hierarchical States</h3>
+<p>Nested states in JSON are converted to the statekit builder API:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"editor"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "initial"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "states"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "idle"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [ { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"EDIT"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8"> } ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "editing"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"compound"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "initial"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "children"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"saving"</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [ { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"CANCEL"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8"> } ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "typing"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "parent"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [ { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"SAVE"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"saving"</span><span style="color:#E1E4E8"> } ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "saving"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"saving"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "parent"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "transitions"</span><span style="color:#E1E4E8">: [ { </span><span style="color:#79B8FF">"event"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"DONE"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8"> } ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Generates:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> BuildEditorMachine</span><span style="color:#E1E4E8">() (</span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">EditorMachineContext</span><span style="color:#E1E4E8">], </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">EditorMachineContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"editor"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"EDIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CANCEL"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">                On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SAVE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"saving"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">            State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"saving"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">                On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"DONE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"typing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="programmatic-usage">Programmatic Usage</h2>
+<p>Use the <code>generate</code> package directly in Go:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/generate</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Create generator with options</span></span>
+<span class="line"><span style="color:#E1E4E8">gen </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> generate.</span><span style="color:#B392F0">NewGenerator</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"mypackage"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"MyMachine"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"MyContext"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Generate from io.Reader</span></span>
+<span class="line"><span style="color:#E1E4E8">file, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> os.</span><span style="color:#B392F0">Open</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine.json"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">code, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> gen.</span><span style="color:#B392F0">Generate</span><span style="color:#E1E4E8">(file)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Fatal</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Write to file</span></span>
+<span class="line"><span style="color:#E1E4E8">os.</span><span style="color:#B392F0">WriteFile</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine.go"</span><span style="color:#E1E4E8">, code, </span><span style="color:#79B8FF">0644</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li>
+<p><strong>Keep JSON as source of truth</strong> - Store your JSON in version control and regenerate Go code when it changes</p>
+</li>
+<li>
+<p><strong>Don’t edit generated code</strong> - Implement actions and guards in separate files; regenerating will overwrite changes</p>
+</li>
+<li>
+<p><strong>Use meaningful names</strong> - Action and guard names become Go function names (converted to PascalCase)</p>
+</li>
+<li>
+<p><strong>Organize by domain</strong> - Use <code>-p</code> flag to generate into domain-specific packages</p>
+</li>
+<li>
+<p><strong>Add to build pipeline</strong> - Consider adding <code>go generate</code> directives:</p>
+</li>
+</ol>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">//go:generate statekit generate order.json -p orders -t OrderMachine -o order_machine_gen.go</span></span></code></pre> </div> </article> </div> </div> </body></html>

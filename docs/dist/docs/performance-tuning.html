@@ -1,0 +1,493 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Performance Tuning · Statekit</title><meta name="description" content="Performance Tuning — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/performance-tuning"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/performance-tuning"><meta property="og:title" content="Performance Tuning · Statekit"><meta property="og:description" content="Performance Tuning — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Performance Tuning · Statekit"><meta name="twitter:description" content="Performance Tuning — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Performance Tuning — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link is-active" aria-current="page"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Performance Tuning</h1> </header> <div class="markdown-body"> <h1 id="performance-tuning-guide">Performance Tuning Guide</h1>
+<p>This guide covers performance characteristics, optimization techniques, and best practices for building high-performance state machines with Statekit.</p>
+<h2 id="performance-baseline">Performance Baseline</h2>
+<p>Benchmarks run on Apple M1 (arm64):</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Operation</th><th>Time</th><th>Allocations</th><th>Notes</th></tr></thead><tbody><tr><td>Simple transition</td><td>~364ns</td><td>7 allocs</td><td>Basic event → state change</td></tr><tr><td>Hierarchical bubble</td><td>~669ns</td><td>10 allocs</td><td>Event bubbles to parent</td></tr><tr><td>No matching transition</td><td>~36ns</td><td>0 allocs</td><td>Fast rejection path</td></tr><tr><td>State query (<code>State()</code>)</td><td>~14ns</td><td>0 allocs</td><td>Zero-cost access</td></tr><tr><td><code>Matches()</code> direct</td><td>~14ns</td><td>0 allocs</td><td>Current state check</td></tr><tr><td><code>Matches()</code> ancestor</td><td>~21ns</td><td>0 allocs</td><td>Parent state check</td></tr><tr><td><code>UpdateContext()</code></td><td>~15ns</td><td>0 allocs</td><td>Context mutation</td></tr><tr><td><code>Snapshot()</code></td><td>~196ns</td><td>3 allocs</td><td>State serialization</td></tr><tr><td>Parallel state entry</td><td>~1μs</td><td>16 allocs</td><td>Multiple regions</td></tr><tr><td>Plugin overhead</td><td>~16ns</td><td>0 allocs</td><td>Per-plugin per-hook</td></tr></tbody></table>
+<h3 id="machine-construction">Machine Construction</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Time</th><th>Allocations</th></tr></thead><tbody><tr><td>Builder (3 states)</td><td>~1.3μs</td><td>40 allocs</td></tr><tr><td>Builder (5 states, nested)</td><td>~1.5μs</td><td>46 allocs</td></tr><tr><td>Reflection DSL (2 states)</td><td>~2.4μs</td><td>42 allocs</td></tr><tr><td>Reflection DSL (nested)</td><td>~2.8μs</td><td>49 allocs</td></tr></tbody></table>
+<p><strong>Key insight</strong>: Machine construction is a one-time cost. Build once, reuse the <code>MachineConfig</code> across all interpreters.</p>
+<hr>
+<h2 id="optimization-strategies">Optimization Strategies</h2>
+<h3 id="1-reuse-machine-configurations">1. Reuse Machine Configurations</h3>
+<p><strong>Don’t</strong> create a new machine for each request:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Bad: Rebuilds machine every time</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> HandleRequest</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">req</span><span style="color:#B392F0"> Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">        // ... build machine ...</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Do</strong> build once and reuse:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Good: Build once at startup</span></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> orderMachine </span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> init</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">error</span></span>
+<span class="line"><span style="color:#E1E4E8">    orderMachine, err </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">        // ... build machine ...</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">        panic</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> HandleRequest</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">req</span><span style="color:#B392F0"> Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(orderMachine)</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Impact</strong>: Saves ~1-3μs per request plus allocations.</p>
+<h3 id="2-minimize-context-size">2. Minimize Context Size</h3>
+<p>Smaller contexts are faster to copy (for guards) and snapshot:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Expensive: Large embedded structs</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> HeavyContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Order       </span><span style="color:#B392F0">Order</span><span style="color:#6A737D">       // Large struct copied to guards</span></span>
+<span class="line"><span style="color:#E1E4E8">    Customer    </span><span style="color:#B392F0">Customer</span></span>
+<span class="line"><span style="color:#E1E4E8">    Items       []</span><span style="color:#B392F0">Item</span></span>
+<span class="line"><span style="color:#E1E4E8">    AuditLog    []</span><span style="color:#B392F0">LogEntry</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Better: Use pointers for large data</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> LightContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID    </span><span style="color:#F97583">string</span><span style="color:#6A737D">      // Small value types</span></span>
+<span class="line"><span style="color:#E1E4E8">    Status     </span><span style="color:#B392F0">OrderStatus</span></span>
+<span class="line"><span style="color:#E1E4E8">    Order      </span><span style="color:#F97583">*</span><span style="color:#B392F0">Order</span><span style="color:#6A737D">      // Pointer, not copied</span></span>
+<span class="line"><span style="color:#E1E4E8">    Customer   </span><span style="color:#F97583">*</span><span style="color:#B392F0">Customer</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Best: Separate concerns</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> MinimalContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID    </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Status     </span><span style="color:#B392F0">OrderStatus</span></span>
+<span class="line"><span style="color:#6A737D">    // Store large data elsewhere, fetch when needed</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Impact</strong>: Guards receive context by value. Large contexts = slower guard evaluation.</p>
+<h3 id="3-optimize-guard-functions">3. Optimize Guard Functions</h3>
+<p>Guards run on every matching event. Keep them fast:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Slow: Database lookup in guard</span></span>
+<span class="line"><span style="color:#B392F0">WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"canApprove"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    user, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> db.</span><span style="color:#B392F0">GetUser</span><span style="color:#E1E4E8">(ctx.ApproverID)  </span><span style="color:#6A737D">// Network call!</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> user.</span><span style="color:#B392F0">HasPermission</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"approve"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Fast: Pre-computed in context</span></span>
+<span class="line"><span style="color:#B392F0">WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"canApprove"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> ctx.ApproverHasPermission  </span><span style="color:#6A737D">// Boolean already computed</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Alternative: Move expensive checks to actions</span></span>
+<span class="line"><span style="color:#B392F0">WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasApprover"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> ctx.ApproverID </span><span style="color:#F97583">!=</span><span style="color:#9ECBFF"> ""</span><span style="color:#6A737D">  // Fast check</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#B392F0">WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validateApprover"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // Do expensive validation here, set ctx.Approved = true/false</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<h3 id="4-use-appropriate-state-depth">4. Use Appropriate State Depth</h3>
+<p>Deeper hierarchies = more ancestor traversal:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Deep nesting (slower event bubbling)</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l1"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l2"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l3"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l4"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">                State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l5"</span><span style="color:#E1E4E8">).  </span><span style="color:#6A737D">// 5 levels deep</span></span>
+<span class="line"><span style="color:#B392F0">                    On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"EVENT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"target"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">                End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Flatter structure (faster)</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"workflow"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"step1"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"step1"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"NEXT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"step2"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"step2"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"NEXT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"step3"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#6A737D">    // 2 levels only</span></span>
+<span class="line"><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p><strong>Guideline</strong>: Each hierarchy level adds ~100-200ns to event processing when bubbling.</p>
+<h3 id="5-prefer-builder-over-reflection-dsl-for-hot-paths">5. Prefer Builder over Reflection DSL for Hot Paths</h3>
+<p>The builder API is slightly faster for machine construction:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Approach</th><th>Build Time</th></tr></thead><tbody><tr><td>Builder API</td><td>~1.7μs</td></tr><tr><td>Reflection DSL</td><td>~2.4μs</td></tr></tbody></table>
+<p>For applications creating machines dynamically, prefer the builder. For most applications where machines are built once at startup, either approach is fine.</p>
+<h3 id="6-batch-state-checks">6. Batch State Checks</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Inefficient: Multiple Matches() calls</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"reviewing"</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Better: Check state value directly</span></span>
+<span class="line"><span style="color:#E1E4E8">state </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value</span></span>
+<span class="line"><span style="color:#F97583">switch</span><span style="color:#E1E4E8"> state {</span></span>
+<span class="line"><span style="color:#F97583">case</span><span style="color:#9ECBFF"> "pending"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"reviewing"</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Or use a parent state for grouping</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"in_progress"</span><span style="color:#E1E4E8">) {  </span><span style="color:#6A737D">// Parent of pending/processing/reviewing</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="7-avoid-unnecessary-snapshots">7. Avoid Unnecessary Snapshots</h3>
+<p><code>Snapshot()</code> allocates memory. Don’t call it in tight loops:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Bad: Snapshot on every event</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, event </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> events {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#E1E4E8">    snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()  </span><span style="color:#6A737D">// Unnecessary allocation</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"State: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, snapshot.CurrentState)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Good: Use State() for reads</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, event </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> events {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#E1E4E8">    state </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">()  </span><span style="color:#6A737D">// Zero allocation</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"State: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, state.Value)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Snapshot only when persisting</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#B392F0"> shouldPersist</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    snapshot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#B392F0">    saveToDatabase</span><span style="color:#E1E4E8">(snapshot)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="memory-optimization">Memory Optimization</h2>
+<h3 id="allocation-sources">Allocation Sources</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Source</th><th>Allocations</th><th>Mitigation</th></tr></thead><tbody><tr><td>Event creation</td><td>1-2 per event</td><td>Pool events if needed</td></tr><tr><td>Transition resolution</td><td>5-7 per transition</td><td>Normal, unavoidable</td></tr><tr><td>History tracking</td><td>1-2 per compound exit</td><td>Use shallow history when possible</td></tr><tr><td>Parallel regions</td><td>2-4 per region</td><td>Minimize region count</td></tr><tr><td>Snapshots</td><td>3-4 per snapshot</td><td>Snapshot infrequently</td></tr></tbody></table>
+<h3 id="reducing-allocations">Reducing Allocations</h3>
+<p><strong>1. Pre-allocate event payloads:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Allocates new map each time</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    Type: </span><span style="color:#9ECBFF">"UPDATE"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    Payload: </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">any</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"value"</span><span style="color:#E1E4E8">},  </span><span style="color:#6A737D">// New allocation</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Pre-allocate and reuse</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> UpdatePayload</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Key   </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Value </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">payload </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> UpdatePayload</span><span style="color:#E1E4E8">{Key: </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, Value: </span><span style="color:#9ECBFF">"value"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"UPDATE"</span><span style="color:#E1E4E8">, Payload: payload})</span></span></code></pre>
+<p><strong>2. Use sync.Pool for interpreters in high-throughput scenarios:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> interpPool </span><span style="color:#F97583">=</span><span style="color:#B392F0"> sync</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Pool</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    New: </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">() </span><span style="color:#B392F0">any</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(sharedMachine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> ProcessRequest</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">req</span><span style="color:#B392F0"> Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interpPool.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">().(</span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">])</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> interpPool.</span><span style="color:#B392F0">Put</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Reset</span><span style="color:#E1E4E8">()  </span><span style="color:#6A737D">// Reset to initial state</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#6A737D">    // Process...</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="concurrency-considerations">Concurrency Considerations</h2>
+<h3 id="interpreter-thread-safety">Interpreter Thread Safety</h3>
+<p><strong>Interpreters are NOT thread-safe.</strong> Each goroutine needs its own interpreter:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Wrong: Shared interpreter</span></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> sharedInterp </span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> HandleConcurrently</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">event</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    sharedInterp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)  </span><span style="color:#6A737D">// Race condition!</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Correct: Interpreter per goroutine</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> HandleConcurrently</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">event</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(sharedMachine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Correct: Mutex protection (if sharing is required)</span></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    sharedInterp </span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    mu           </span><span style="color:#B392F0">sync</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Mutex</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> HandleConcurrently</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">event</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    mu.</span><span style="color:#B392F0">Lock</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> mu.</span><span style="color:#B392F0">Unlock</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    sharedInterp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="machine-config-thread-safety">Machine Config Thread Safety</h3>
+<p><code>MachineConfig</code> is immutable and safe to share across goroutines:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Safe: Shared machine config</span></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> machine </span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> Worker</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">id</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)  </span><span style="color:#6A737D">// Safe</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="profiling-your-state-machines">Profiling Your State Machines</h2>
+<h3 id="using-gos-built-in-profiler">Using Go’s Built-in Profiler</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">os</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">runtime/pprof</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">    // CPU profiling</span></span>
+<span class="line"><span style="color:#E1E4E8">    f, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> os.</span><span style="color:#B392F0">Create</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cpu.prof"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    pprof.</span><span style="color:#B392F0">StartCPUProfile</span><span style="color:#E1E4E8">(f)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> pprof.</span><span style="color:#B392F0">StopCPUProfile</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Run your state machine workload</span></span>
+<span class="line"><span style="color:#B392F0">    runWorkload</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Memory profiling</span></span>
+<span class="line"><span style="color:#E1E4E8">    mf, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> os.</span><span style="color:#B392F0">Create</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"mem.prof"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> mf.</span><span style="color:#B392F0">Close</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    pprof.</span><span style="color:#B392F0">WriteHeapProfile</span><span style="color:#E1E4E8">(mf)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Analyze profiles</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> tool</span><span style="color:#9ECBFF"> pprof</span><span style="color:#9ECBFF"> cpu.prof</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> tool</span><span style="color:#9ECBFF"> pprof</span><span style="color:#9ECBFF"> mem.prof</span></span></code></pre>
+<h3 id="running-benchmarks">Running Benchmarks</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Run all benchmarks</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Run specific benchmark</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=BenchmarkInterpreterSend</span><span style="color:#79B8FF"> -benchmem</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Compare before/after optimization</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> before.txt</span></span>
+<span class="line"><span style="color:#6A737D"># Make changes</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> after.txt</span></span>
+<span class="line"><span style="color:#B392F0">benchcmp</span><span style="color:#9ECBFF"> before.txt</span><span style="color:#9ECBFF"> after.txt</span></span></code></pre>
+<h3 id="adding-custom-benchmarks">Adding Custom Benchmarks</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> BenchmarkMyWorkflow</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">b</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">B</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildMyMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    events </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">        {Type: </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">        {Type: </span><span style="color:#9ECBFF">"PROCESS"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">        {Type: </span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    b.</span><span style="color:#B392F0">ResetTimer</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">:=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> b.N; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> _, e </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> events {</span></span>
+<span class="line"><span style="color:#E1E4E8">            interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(e)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="performance-checklist">Performance Checklist</h2>
+<p>Before deploying to production:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> Machine configs are built once and reused</li>
+<li class="task-list-item"><input type="checkbox" disabled> Context contains only necessary data (pointers for large objects)</li>
+<li class="task-list-item"><input type="checkbox" disabled> Guards are fast (no I/O, minimal computation)</li>
+<li class="task-list-item"><input type="checkbox" disabled> State hierarchy depth is reasonable (&#x3C; 5 levels typical)</li>
+<li class="task-list-item"><input type="checkbox" disabled> Snapshots are taken only when persisting</li>
+<li class="task-list-item"><input type="checkbox" disabled> Each goroutine has its own interpreter (or mutex protection)</li>
+<li class="task-list-item"><input type="checkbox" disabled> Benchmark results are acceptable for your use case</li>
+<li class="task-list-item"><input type="checkbox" disabled> Memory profile shows no unexpected allocations</li>
+</ul>
+<hr>
+<h2 id="common-performance-anti-patterns">Common Performance Anti-Patterns</h2>
+<h3 id="1-building-machines-per-request">1. Building Machines per Request</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Anti-pattern</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> HandleOrder</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">order</span><span style="color:#B392F0"> Order</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildOrderMachine</span><span style="color:#E1E4E8">()  </span><span style="color:#6A737D">// Don't do this</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="2-heavy-context-objects">2. Heavy Context Objects</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Anti-pattern: Entire domain model in context</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Context</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Order     </span><span style="color:#B392F0">Order</span></span>
+<span class="line"><span style="color:#E1E4E8">    Customer  </span><span style="color:#B392F0">Customer</span></span>
+<span class="line"><span style="color:#E1E4E8">    Products  []</span><span style="color:#B392F0">Product</span></span>
+<span class="line"><span style="color:#E1E4E8">    Inventory []</span><span style="color:#B392F0">InventoryItem</span></span>
+<span class="line"><span style="color:#6A737D">    // ... everything</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="3-io-in-guards">3. I/O in Guards</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Anti-pattern: Network call in guard</span></span>
+<span class="line"><span style="color:#B392F0">WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"canProcess"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> Ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    resp, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> http.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"http://api/check"</span><span style="color:#E1E4E8">)  </span><span style="color:#6A737D">// Never do this</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> resp.StatusCode </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> 200</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<h3 id="4-excessive-hierarchy-depth">4. Excessive Hierarchy Depth</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Anti-pattern: 10+ levels of nesting</span></span>
+<span class="line"><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l1"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l2"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l3"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l4"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l5"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l6"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l7"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l8"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l9"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"l10"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#6A737D">    // Event bubbles through ALL 10 levels</span></span></code></pre>
+<h3 id="5-snapshot-spam">5. Snapshot Spam</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Anti-pattern: Snapshot after every operation</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, item </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> items {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"PROCESS"</span><span style="color:#E1E4E8">, Payload: item})</span></span>
+<span class="line"><span style="color:#E1E4E8">    db.</span><span style="color:#B392F0">Save</span><span style="color:#E1E4E8">(interp.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">())  </span><span style="color:#6A737D">// Unnecessary I/O + allocations</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="getting-started.md">Getting Started</a></li>
+<li><a href="patterns-recipes.md">Patterns &#x26; Recipes</a></li>
+<li><a href="api-reference.md">API Reference</a></li>
+</ul> </div> </article> </div> </div> </body></html>

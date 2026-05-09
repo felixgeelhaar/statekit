@@ -25,7 +25,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <nav class="header-nav" aria-label="Primary">
     <a href={`${base}/`} class={`header-nav-link${active === 'home' ? ' is-active' : ''}`} aria-current={active === 'home' ? 'page' : undefined}>Home</a>
     <a href={`${base}/play`} class={`header-nav-link${active === 'play' ? ' is-active' : ''}`} aria-current={active === 'play' ? 'page' : undefined}>Play</a>
-    <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">Docs</a>
+    <a href={`${base}/docs/`} class={`header-nav-link${active === 'docs' ? ' is-active' : ''}`} aria-current={active === 'docs' ? 'page' : undefined}>Docs</a>
+    <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a>
   </nav>
 
   <div class="header-actions">

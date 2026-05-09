@@ -1,0 +1,282 @@
+---
+import Layout from '../../components/Layout.astro';
+import Header from '../../components/Header.astro';
+
+interface MarkdownModule {
+  Content: any;
+  rawContent?: () => string;
+  frontmatter: Record<string, unknown>;
+  url?: string;
+  file: string;
+}
+
+const docFiles = import.meta.glob<MarkdownModule>('../../../*.md', {
+  eager: true,
+});
+
+// Hide repo-internal files. backlog is plan tracking, not user docs.
+const HIDDEN = new Set(['README', 'backlog']);
+
+const slugs = Object.keys(docFiles).map((path) =>
+  path.split('/').pop()!.replace(/\.md$/, ''),
+);
+
+const visibleSlugs = slugs.filter((s) => !HIDDEN.has(s)).sort();
+
+export async function getStaticPaths() {
+  const files = import.meta.glob<MarkdownModule>('../../../*.md', { eager: true });
+  const hidden = new Set(['README', 'backlog']);
+  return Object.keys(files)
+    .map((path) => path.split('/').pop()!.replace(/\.md$/, ''))
+    .filter((s) => !hidden.has(s))
+    .map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = Object.entries(docFiles).find(([path]) =>
+  path.endsWith(`/${slug}.md`),
+);
+
+if (!entry) {
+  throw new Error(`doc not found: ${slug}`);
+}
+
+const [, mod] = entry;
+const Content = mod.Content;
+const title = (mod.frontmatter?.title as string | undefined) ??
+  formatTitle(slug as string);
+
+function formatTitle(s: string): string {
+  return s
+    .split('-')
+    .map((w) => (w.length > 0 ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(' ');
+}
+
+const description = (mod.frontmatter?.description as string | undefined) ??
+  `${title} — Statekit documentation`;
+---
+
+<Layout
+  title={`${title} · Statekit`}
+  description={description}
+  canonical={`/docs/${slug}`}
+>
+  <div class="docs-shell">
+    <Header active="docs" />
+    <div class="docs-layout">
+      <aside class="docs-sidebar" aria-label="Documentation navigation">
+        <h2 class="docs-sidebar-title">Documentation</h2>
+        <ul class="docs-nav">
+          {visibleSlugs.map((s) => (
+            <li>
+              <a
+                href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/docs/${s}`}
+                class={`docs-nav-link${s === slug ? ' is-active' : ''}`}
+                aria-current={s === slug ? 'page' : undefined}
+              >
+                {formatTitle(s)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <article class="docs-article">
+        <header class="docs-article-header">
+          <h1>{title}</h1>
+        </header>
+        <div class="markdown-body">
+          <Content />
+        </div>
+      </article>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  .docs-shell {
+    min-height: 100vh;
+    background: var(--bg);
+  }
+
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+
+  .docs-sidebar {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .docs-sidebar-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem;
+  }
+
+  .docs-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .docs-nav-link {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .docs-nav-link:hover {
+    background: var(--bg-tertiary);
+    color: var(--text);
+  }
+
+  .docs-nav-link.is-active {
+    color: var(--accent-cyan);
+    background: rgba(0, 212, 255, 0.08);
+  }
+
+  .docs-article {
+    min-width: 0;
+  }
+
+  .docs-article-header h1 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    margin: 0 0 1.5rem;
+  }
+
+  .markdown-body {
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 1rem;
+  }
+
+  .markdown-body h2 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.4rem;
+  }
+
+  .markdown-body h3 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    margin: 1.75rem 0 0.75rem;
+    font-size: 1.15rem;
+  }
+
+  .markdown-body p,
+  .markdown-body ul,
+  .markdown-body ol,
+  .markdown-body table {
+    margin: 0.75rem 0;
+  }
+
+  .markdown-body ul,
+  .markdown-body ol {
+    padding-left: 1.4rem;
+  }
+
+  .markdown-body li {
+    margin: 0.3rem 0;
+  }
+
+  .markdown-body a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .markdown-body a:hover {
+    border-bottom-color: var(--accent-cyan);
+  }
+
+  .markdown-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+    background: var(--bg-secondary);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    color: var(--text);
+  }
+
+  .markdown-body pre {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  .markdown-body pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+  }
+
+  .markdown-body table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.92rem;
+  }
+
+  .markdown-body th,
+  .markdown-body td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  .markdown-body th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+  }
+
+  .markdown-body blockquote {
+    border-left: 3px solid var(--accent-cyan);
+    margin: 1rem 0;
+    padding: 0.4rem 1rem;
+    color: var(--text-secondary);
+    background: rgba(0, 212, 255, 0.04);
+  }
+
+  .markdown-body hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .docs-layout {
+      grid-template-columns: 1fr;
+      padding: 1.5rem 1rem 3rem;
+    }
+    .docs-sidebar {
+      position: static;
+      max-height: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+</style>

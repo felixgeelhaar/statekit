@@ -1,0 +1,418 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Http Integration · Statekit</title><meta name="description" content="Http Integration — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/http-integration"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/http-integration"><meta property="og:title" content="Http Integration · Statekit"><meta property="og:description" content="Http Integration — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Http Integration · Statekit"><meta name="twitter:description" content="Http Integration — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Http Integration — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link is-active" aria-current="page"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Http Integration</h1> </header> <div class="markdown-body"> <h1 id="http-integration">HTTP Integration</h1>
+<p>The <code>http</code> package provides framework-agnostic HTTP handlers and middleware for exposing state machines via REST APIs.</p>
+<h2 id="installation">Installation</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> statekithttp </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/http</span><span style="color:#9ECBFF">"</span></span></code></pre>
+<h2 id="quick-start">Quick Start</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">net/http</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekithttp </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/http</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">    // Create your state machine</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">struct</span><span style="color:#E1E4E8">{}](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create and start interpreter</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create HTTP handler</span></span>
+<span class="line"><span style="color:#E1E4E8">    handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Mount on your server</span></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">Handle</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/api/order/"</span><span style="color:#E1E4E8">, http.</span><span style="color:#B392F0">StripPrefix</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/api/order"</span><span style="color:#E1E4E8">, handler))</span></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">ListenAndServe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">":8080"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">nil</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="endpoints">Endpoints</h2>
+<p><code>MachineHandler</code> provides three endpoints:</p>
+<h3 id="get-state">GET /state</h3>
+<p>Returns the current state of the machine.</p>
+<p><strong>Response:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "currentState"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "done"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "machineId"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"order"</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="post-event">POST /event</h3>
+<p>Sends an event to the state machine.</p>
+<p><strong>Request:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "payload"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "orderId"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"12345"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "items"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"item1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"item2"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Response:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "previousState"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "currentState"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "transitioned"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "done"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">false</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="get-context">GET /context</h3>
+<p>Returns the current machine context.</p>
+<p><strong>Response:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "orderId"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"12345"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "items"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"item1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"item2"</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#79B8FF">  "total"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">99.99</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="machine-registry">Machine Registry</h2>
+<p>Manage multiple state machine instances with <code>MachineRegistry</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Factory function creates new interpreters on demand</span></span>
+<span class="line"><span style="color:#E1E4E8">factory </span><span style="color:#F97583">:=</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">id</span><span style="color:#F97583"> string</span><span style="color:#E1E4E8">) (</span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">], </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, err </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> BuildOrderMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8">, err</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> interp, </span><span style="color:#79B8FF">nil</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Create registry</span></span>
+<span class="line"><span style="color:#E1E4E8">registry </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineRegistry</span><span style="color:#E1E4E8">(factory)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get or create interpreter by ID</span></span>
+<span class="line"><span style="color:#E1E4E8">interp, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> registry.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"order-123"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Fatal</span><span style="color:#E1E4E8">(err)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// List all active machine IDs</span></span>
+<span class="line"><span style="color:#E1E4E8">ids </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> registry.</span><span style="color:#B392F0">List</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(ids) </span><span style="color:#6A737D">// ["order-123", "order-456", ...]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Remove and stop a machine</span></span>
+<span class="line"><span style="color:#E1E4E8">registry.</span><span style="color:#B392F0">Remove</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"order-123"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<h3 id="registry-with-http">Registry with HTTP</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    registry </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineRegistry</span><span style="color:#E1E4E8">(orderFactory)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">HandleFunc</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/orders/"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">        // Extract order ID from path</span></span>
+<span class="line"><span style="color:#E1E4E8">        orderID </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">TrimPrefix</span><span style="color:#E1E4E8">(r.URL.Path, </span><span style="color:#9ECBFF">"/orders/"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        orderID </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">Split</span><span style="color:#E1E4E8">(orderID, </span><span style="color:#9ECBFF">"/"</span><span style="color:#E1E4E8">)[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Get or create interpreter</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> registry.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(orderID)</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            http.</span><span style="color:#B392F0">Error</span><span style="color:#E1E4E8">(w, err.</span><span style="color:#B392F0">Error</span><span style="color:#E1E4E8">(), </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">            return</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Create handler and serve</span></span>
+<span class="line"><span style="color:#E1E4E8">        handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Strip /orders/{id} prefix</span></span>
+<span class="line"><span style="color:#E1E4E8">        r.URL.Path </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">TrimPrefix</span><span style="color:#E1E4E8">(r.URL.Path, </span><span style="color:#9ECBFF">"/orders/"</span><span style="color:#F97583">+</span><span style="color:#E1E4E8">orderID)</span></span>
+<span class="line"><span style="color:#E1E4E8">        handler.</span><span style="color:#B392F0">ServeHTTP</span><span style="color:#E1E4E8">(w, r)</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">ListenAndServe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">":8080"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">nil</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="middleware">Middleware</h2>
+<h3 id="machinemiddleware">MachineMiddleware</h3>
+<p>Inject a single interpreter into request context:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">middleware </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">MachineMiddleware</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Wrap your handler</span></span>
+<span class="line"><span style="color:#E1E4E8">http.</span><span style="color:#B392F0">Handle</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">middleware</span><span style="color:#E1E4E8">(myHandler))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Access in handler</span></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> myHandler</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp, ok </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">MachineFromContext</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">](r.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">ok {</span></span>
+<span class="line"><span style="color:#E1E4E8">        http.</span><span style="color:#B392F0">Error</span><span style="color:#E1E4E8">(w, </span><span style="color:#9ECBFF">"no machine in context"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">        return</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Use interpreter</span></span>
+<span class="line"><span style="color:#E1E4E8">    state </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Fprintf</span><span style="color:#E1E4E8">(w, </span><span style="color:#9ECBFF">"Current state: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, state.Value)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="registrymiddleware">RegistryMiddleware</h3>
+<p>Look up machines by ID from requests:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">registry </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineRegistry</span><span style="color:#E1E4E8">(factory)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Define how to extract machine ID from request</span></span>
+<span class="line"><span style="color:#E1E4E8">idExtractor </span><span style="color:#F97583">:=</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">    // From query parameter</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> r.URL.</span><span style="color:#B392F0">Query</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"machine_id"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Or from header</span></span>
+<span class="line"><span style="color:#6A737D">    // return r.Header.Get("X-Machine-ID")</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Or from path</span></span>
+<span class="line"><span style="color:#6A737D">    // return mux.Vars(r)["id"]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">middleware </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">RegistryMiddleware</span><span style="color:#E1E4E8">(registry, idExtractor)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">http.</span><span style="color:#B392F0">Handle</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">middleware</span><span style="color:#E1E4E8">(myHandler))</span></span></code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Returns 400 Bad Request if ID extractor returns empty string</li>
+<li>Returns 500 Internal Server Error if factory fails</li>
+<li>Otherwise, injects interpreter into context</li>
+</ul>
+<h2 id="helper-functions">Helper Functions</h2>
+<h3 id="newservemux">NewServeMux</h3>
+<p>Create a pre-configured mux with all endpoints:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Creates mux with:</span></span>
+<span class="line"><span style="color:#6A737D">// - GET  /api/machine/state</span></span>
+<span class="line"><span style="color:#6A737D">// - POST /api/machine/event</span></span>
+<span class="line"><span style="color:#6A737D">// - GET  /api/machine/context</span></span>
+<span class="line"><span style="color:#E1E4E8">mux </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewServeMux</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"/api/machine"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">http.</span><span style="color:#B392F0">ListenAndServe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">":8080"</span><span style="color:#E1E4E8">, mux)</span></span></code></pre>
+<h3 id="context-helpers">Context Helpers</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Add interpreter to context</span></span>
+<span class="line"><span style="color:#E1E4E8">ctx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">WithMachine</span><span style="color:#E1E4E8">(r.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">(), interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Retrieve from context</span></span>
+<span class="line"><span style="color:#E1E4E8">interp, ok </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">MachineFromContext</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">](ctx)</span></span></code></pre>
+<h2 id="framework-integration">Framework Integration</h2>
+<h3 id="standard-library">Standard Library</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">mux </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> http.</span><span style="color:#B392F0">NewServeMux</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">mux.</span><span style="color:#B392F0">Handle</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/"</span><span style="color:#E1E4E8">, http.</span><span style="color:#B392F0">StripPrefix</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine"</span><span style="color:#E1E4E8">, handler))</span></span></code></pre>
+<h3 id="chi">Chi</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "</span><span style="color:#B392F0">github.com/go-chi/chi/v5</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">r </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> chi.</span><span style="color:#B392F0">NewRouter</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">r.</span><span style="color:#B392F0">Route</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/orders/{orderID}"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">r</span><span style="color:#B392F0"> chi</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Router</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">next</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Handler</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Handler</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> http.</span><span style="color:#B392F0">HandlerFunc</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            orderID </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> chi.</span><span style="color:#B392F0">URLParam</span><span style="color:#E1E4E8">(r, </span><span style="color:#9ECBFF">"orderID"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            interp, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> registry.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(orderID)</span></span>
+<span class="line"><span style="color:#E1E4E8">            ctx </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">WithMachine</span><span style="color:#E1E4E8">(r.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">(), interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">            next.</span><span style="color:#B392F0">ServeHTTP</span><span style="color:#E1E4E8">(w, r.</span><span style="color:#B392F0">WithContext</span><span style="color:#E1E4E8">(ctx))</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/state"</span><span style="color:#E1E4E8">, handler.HandleGetState)</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Post</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/event"</span><span style="color:#E1E4E8">, handler.HandleSendEvent)</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/context"</span><span style="color:#E1E4E8">, handler.HandleGetContext)</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<h3 id="gin">Gin</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "</span><span style="color:#B392F0">github.com/gin-gonic/gin</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">r </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> gin.</span><span style="color:#B392F0">Default</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">r.</span><span style="color:#B392F0">GET</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/state"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">c</span><span style="color:#F97583"> *</span><span style="color:#B392F0">gin</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">    handler.</span><span style="color:#B392F0">HandleGetState</span><span style="color:#E1E4E8">(c.Writer, c.Request)</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">r.</span><span style="color:#B392F0">POST</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/event"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">c</span><span style="color:#F97583"> *</span><span style="color:#B392F0">gin</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"><span style="color:#E1E4E8">    handler.</span><span style="color:#B392F0">HandleSendEvent</span><span style="color:#E1E4E8">(c.Writer, c.Request)</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<h3 id="echo">Echo</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "</span><span style="color:#B392F0">github.com/labstack/echo/v4</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">e </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> echo.</span><span style="color:#B392F0">New</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">e.</span><span style="color:#B392F0">GET</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/state"</span><span style="color:#E1E4E8">, echo.</span><span style="color:#B392F0">WrapHandler</span><span style="color:#E1E4E8">(http.</span><span style="color:#B392F0">HandlerFunc</span><span style="color:#E1E4E8">(handler.HandleGetState)))</span></span>
+<span class="line"><span style="color:#E1E4E8">e.</span><span style="color:#B392F0">POST</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/event"</span><span style="color:#E1E4E8">, echo.</span><span style="color:#B392F0">WrapHandler</span><span style="color:#E1E4E8">(http.</span><span style="color:#B392F0">HandlerFunc</span><span style="color:#E1E4E8">(handler.HandleSendEvent)))</span></span></code></pre>
+<h3 id="fiber">Fiber</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/gofiber/fiber/v2</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/gofiber/fiber/v2/middleware/adaptor</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">app </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> fiber.</span><span style="color:#B392F0">New</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">app.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/state"</span><span style="color:#E1E4E8">, adaptor.</span><span style="color:#B392F0">HTTPHandlerFunc</span><span style="color:#E1E4E8">(handler.HandleGetState))</span></span>
+<span class="line"><span style="color:#E1E4E8">app.</span><span style="color:#B392F0">Post</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/machine/event"</span><span style="color:#E1E4E8">, adaptor.</span><span style="color:#B392F0">HTTPHandlerFunc</span><span style="color:#E1E4E8">(handler.HandleSendEvent))</span></span></code></pre>
+<h2 id="complete-example">Complete Example</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">encoding/json</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">log</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">net/http</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">strings</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekithttp </span><span style="color:#9ECBFF">"</span><span style="color:#B392F0">github.com/felixgeelhaar/statekit/http</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID </span><span style="color:#F97583">string</span><span style="color:#9ECBFF">   `json:"orderId"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Items   []</span><span style="color:#F97583">string</span><span style="color:#9ECBFF"> `json:"items"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Status  </span><span style="color:#F97583">string</span><span style="color:#9ECBFF">   `json:"status"`</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">    // Build machine</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"setProcessing"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            ctx.Status </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "processing"</span></span>
+<span class="line"><span style="color:#E1E4E8">        }).</span></span>
+<span class="line"><span style="color:#B392F0">        WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"setCompleted"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            ctx.Status </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "completed"</span></span>
+<span class="line"><span style="color:#E1E4E8">        }).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"setProcessing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COMPLETE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Do</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"setCompleted"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create registry</span></span>
+<span class="line"><span style="color:#E1E4E8">    factory </span><span style="color:#F97583">:=</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">id</span><span style="color:#F97583"> string</span><span style="color:#E1E4E8">) (</span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">], </span><span style="color:#F97583">error</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp.</span><span style="color:#B392F0">UpdateContext</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            ctx.OrderID </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> id</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> interp, </span><span style="color:#79B8FF">nil</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    registry </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineRegistry</span><span style="color:#E1E4E8">(factory)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // ID extractor from path: /orders/{id}/...</span></span>
+<span class="line"><span style="color:#E1E4E8">    idExtractor </span><span style="color:#F97583">:=</span><span style="color:#F97583"> func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        path </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">TrimPrefix</span><span style="color:#E1E4E8">(r.URL.Path, </span><span style="color:#9ECBFF">"/orders/"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        parts </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">Split</span><span style="color:#E1E4E8">(path, </span><span style="color:#9ECBFF">"/"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#B392F0"> len</span><span style="color:#E1E4E8">(parts) </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> parts[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#9ECBFF"> ""</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Create middleware and handler</span></span>
+<span class="line"><span style="color:#E1E4E8">    middleware </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">RegistryMiddleware</span><span style="color:#E1E4E8">(registry, idExtractor)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    handler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> http.</span><span style="color:#B392F0">HandlerFunc</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp, ok </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">MachineFromContext</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](r.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">ok {</span></span>
+<span class="line"><span style="color:#E1E4E8">            http.</span><span style="color:#B392F0">Error</span><span style="color:#E1E4E8">(w, </span><span style="color:#9ECBFF">"no machine"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">            return</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        machineHandler </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekithttp.</span><span style="color:#B392F0">NewMachineHandler</span><span style="color:#E1E4E8">(interp)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Route to appropriate handler</span></span>
+<span class="line"><span style="color:#E1E4E8">        path </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> r.URL.Path</span></span>
+<span class="line"><span style="color:#F97583">        switch</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">HasSuffix</span><span style="color:#E1E4E8">(path, </span><span style="color:#9ECBFF">"/state"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> r.Method </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> "GET"</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            machineHandler.</span><span style="color:#B392F0">HandleGetState</span><span style="color:#E1E4E8">(w, r)</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">HasSuffix</span><span style="color:#E1E4E8">(path, </span><span style="color:#9ECBFF">"/event"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> r.Method </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> "POST"</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            machineHandler.</span><span style="color:#B392F0">HandleSendEvent</span><span style="color:#E1E4E8">(w, r)</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#E1E4E8"> strings.</span><span style="color:#B392F0">HasSuffix</span><span style="color:#E1E4E8">(path, </span><span style="color:#9ECBFF">"/context"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> r.Method </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> "GET"</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            machineHandler.</span><span style="color:#B392F0">HandleGetContext</span><span style="color:#E1E4E8">(w, r)</span></span>
+<span class="line"><span style="color:#F97583">        default</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            http.</span><span style="color:#B392F0">NotFound</span><span style="color:#E1E4E8">(w, r)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // List endpoint</span></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">HandleFunc</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/orders"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        ids </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> registry.</span><span style="color:#B392F0">List</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">        json.</span><span style="color:#B392F0">NewEncoder</span><span style="color:#E1E4E8">(w).</span><span style="color:#B392F0">Encode</span><span style="color:#E1E4E8">(ids)</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Machine endpoints</span></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">Handle</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/orders/"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">middleware</span><span style="color:#E1E4E8">(handler))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Server starting on :8080"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Fatal</span><span style="color:#E1E4E8">(http.</span><span style="color:#B392F0">ListenAndServe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">":8080"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">nil</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>Usage:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Create an order (first request creates the machine)</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -X</span><span style="color:#9ECBFF"> POST</span><span style="color:#9ECBFF"> http://localhost:8080/orders/order-123/event</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -H</span><span style="color:#9ECBFF"> "Content-Type: application/json"</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -d</span><span style="color:#9ECBFF"> '{"type": "SUBMIT"}'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Check state</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#9ECBFF"> http://localhost:8080/orders/order-123/state</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Get context</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#9ECBFF"> http://localhost:8080/orders/order-123/context</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Complete the order</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -X</span><span style="color:#9ECBFF"> POST</span><span style="color:#9ECBFF"> http://localhost:8080/orders/order-123/event</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -H</span><span style="color:#9ECBFF"> "Content-Type: application/json"</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -d</span><span style="color:#9ECBFF"> '{"type": "COMPLETE"}'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># List all orders</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#9ECBFF"> http://localhost:8080/orders</span></span></code></pre>
+<h2 id="error-handling">Error Handling</h2>
+<p>The handler returns appropriate HTTP status codes:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Scenario</th><th>Status Code</th></tr></thead><tbody><tr><td>Success</td><td>200 OK</td></tr><tr><td>Invalid JSON body</td><td>400 Bad Request</td></tr><tr><td>Missing event type</td><td>400 Bad Request</td></tr><tr><td>Machine ID not found (registry)</td><td>400 Bad Request</td></tr><tr><td>Factory error (registry)</td><td>500 Internal Server Error</td></tr><tr><td>Unknown endpoint</td><td>404 Not Found</td></tr></tbody></table>
+<p>Error responses are JSON:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "error"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"event type is required"</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="thread-safety">Thread Safety</h2>
+<p>All handlers use <code>sync.RWMutex</code> for thread-safe access:</p>
+<ul>
+<li><code>HandleGetState</code> and <code>HandleGetContext</code> use read locks</li>
+<li><code>HandleSendEvent</code> uses a write lock</li>
+<li><code>MachineRegistry</code> is fully thread-safe</li>
+</ul>
+<p>This allows concurrent reads while ensuring exclusive access during state transitions.</p> </div> </article> </div> </div> </body></html>

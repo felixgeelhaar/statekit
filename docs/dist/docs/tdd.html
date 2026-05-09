@@ -1,0 +1,846 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tdd · Statekit</title><meta name="description" content="Tdd — Statekit documentation"><link rel="canonical" href="https://felixgeelhaar.github.io/statekit/docs/tdd"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://felixgeelhaar.github.io/statekit/docs/tdd"><meta property="og:title" content="Tdd · Statekit"><meta property="og:description" content="Tdd — Statekit documentation"><meta property="og:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Tdd · Statekit"><meta name="twitter:description" content="Tdd — Statekit documentation"><meta name="twitter:image" content="https://felixgeelhaar.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Tdd — Statekit documentation","codeRepository":"https://github.com/felixgeelhaar/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://felixgeelhaar.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
+<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
+</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/felixgeelhaar/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
+MCP
+</a> <a href="https://github.com/felixgeelhaar/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
+GitHub
+</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link is-active" aria-current="page"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Tdd</h1> </header> <div class="markdown-body"> <h1 id="technical-design-document-tdd">Technical Design Document (TDD)</h1>
+<h2 id="project-statekit---go-statecharts-with-xstate-compatibility">Project: Statekit - Go Statecharts with XState Compatibility</h2>
+<p><strong>Version:</strong> 1.0
+<strong>Status:</strong> Draft
+<strong>Author:</strong> Statekit Team
+<strong>Last Updated:</strong> 2024-12-25</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-overview">Overview</a></li>
+<li><a href="#2-goals-and-non-goals">Goals and Non-Goals</a></li>
+<li><a href="#3-system-architecture">System Architecture</a></li>
+<li><a href="#4-data-structures">Data Structures</a></li>
+<li><a href="#5-api-design">API Design</a></li>
+<li><a href="#6-execution-semantics">Execution Semantics</a></li>
+<li><a href="#7-xstate-json-export">XState JSON Export</a></li>
+<li><a href="#8-error-handling">Error Handling</a></li>
+<li><a href="#9-testing-strategy">Testing Strategy</a></li>
+<li><a href="#10-package-structure">Package Structure</a></li>
+<li><a href="#11-implementation-phases">Implementation Phases</a></li>
+<li><a href="#12-open-design-decisions">Open Design Decisions</a></li>
+</ol>
+<hr>
+<h2 id="1-overview">1. Overview</h2>
+<h3 id="11-purpose">1.1 Purpose</h3>
+<p>This document describes the technical design for Statekit, a Go library that enables developers to define, execute, and visualize statecharts. The library exports machine definitions to XState-compatible JSON for visualization in tools like Stately Visualizer.</p>
+<h3 id="12-background">1.2 Background</h3>
+<p>Statecharts extend finite state machines with:</p>
+<ul>
+<li><strong>Hierarchical states</strong> (nested states with parent-child relationships)</li>
+<li><strong>Entry/exit actions</strong> (side effects on state transitions)</li>
+<li><strong>Guards</strong> (conditional transitions based on context)</li>
+<li><strong>Final states</strong> (terminal states that signal completion)</li>
+</ul>
+<p>XState is the de-facto standard for statecharts in JavaScript/TypeScript. This library brings equivalent capabilities to Go while maintaining interoperability through JSON export.</p>
+<h3 id="13-terminology">1.3 Terminology</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Term</th><th>Definition</th></tr></thead><tbody><tr><td><strong>Machine</strong></td><td>A complete statechart definition with states, transitions, and configuration</td></tr><tr><td><strong>State</strong></td><td>A node in the statechart (can be atomic, compound, or final)</td></tr><tr><td><strong>Transition</strong></td><td>A directed edge from one state to another, triggered by an event</td></tr><tr><td><strong>Event</strong></td><td>A named trigger that may cause a state transition</td></tr><tr><td><strong>Guard</strong></td><td>A predicate function that must return true for a transition to occur</td></tr><tr><td><strong>Action</strong></td><td>A side-effect function executed during transitions or state entry/exit</td></tr><tr><td><strong>Context</strong></td><td>User-defined data that accompanies the machine state</td></tr><tr><td><strong>Interpreter</strong></td><td>The runtime that executes the statechart</td></tr></tbody></table>
+<hr>
+<h2 id="2-goals-and-non-goals">2. Goals and Non-Goals</h2>
+<h3 id="21-goals">2.1 Goals</h3>
+<ol>
+<li><strong>Type-safe machine definition</strong> via fluent builder API</li>
+<li><strong>Deterministic execution</strong> with explicit transition resolution</li>
+<li><strong>Hierarchical state support</strong> with proper entry/exit semantics</li>
+<li><strong>XState JSON export</strong> compatible with Stately Visualizer</li>
+<li><strong>Minimal dependencies</strong> (stdlib only for core)</li>
+<li><strong>Testable by design</strong> with mockable actions and guards</li>
+</ol>
+<h3 id="22-non-goals">2.2 Non-Goals</h3>
+<ol>
+<li>Full XState spec compliance (parallel states, history, delays, actors)</li>
+<li>JSON import / round-trip editing</li>
+<li>Persistence or durability primitives</li>
+<li>Distributed execution or coordination</li>
+<li>Runtime visualization (export only)</li>
+</ol>
+<hr>
+<h2 id="3-system-architecture">3. System Architecture</h2>
+<h3 id="31-high-level-architecture">3.1 High-Level Architecture</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>┌─────────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│                        User Code                                 │</span></span>
+<span class="line"><span>└─────────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>                              │</span></span>
+<span class="line"><span>                              ▼</span></span>
+<span class="line"><span>┌─────────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│                      Builder API                                 │</span></span>
+<span class="line"><span>│   NewMachine() → State() → On() → Target() → Build()            │</span></span>
+<span class="line"><span>└─────────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>                              │</span></span>
+<span class="line"><span>                              ▼</span></span>
+<span class="line"><span>┌─────────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│              Internal Representation (IR)                        │</span></span>
+<span class="line"><span>│   MachineConfig, StateConfig, TransitionConfig                  │</span></span>
+<span class="line"><span>└─────────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>                    │                   │</span></span>
+<span class="line"><span>                    ▼                   ▼</span></span>
+<span class="line"><span>┌──────────────────────────┐  ┌────────────────────────────────────┐</span></span>
+<span class="line"><span>│    Execution Engine      │  │       XState Exporter              │</span></span>
+<span class="line"><span>│  Interpreter + State     │  │   IR → XState JSON Schema          │</span></span>
+<span class="line"><span>└──────────────────────────┘  └────────────────────────────────────┘</span></span>
+<span class="line"><span>          │                              │</span></span>
+<span class="line"><span>          ▼                              ▼</span></span>
+<span class="line"><span>┌──────────────────────────┐  ┌────────────────────────────────────┐</span></span>
+<span class="line"><span>│   Runtime State Query    │  │   JSON for Stately Visualizer      │</span></span>
+<span class="line"><span>│   Send(event) API        │  │                                    │</span></span>
+<span class="line"><span>└──────────────────────────┘  └────────────────────────────────────┘</span></span></code></pre>
+<h3 id="32-component-responsibilities">3.2 Component Responsibilities</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Component</th><th>Responsibility</th></tr></thead><tbody><tr><td><strong>Builder API</strong></td><td>Fluent, type-safe construction of machine definitions</td></tr><tr><td><strong>IR (Internal Representation)</strong></td><td>Immutable, validated machine configuration</td></tr><tr><td><strong>Interpreter</strong></td><td>Stateful runtime that processes events and executes transitions</td></tr><tr><td><strong>Exporter</strong></td><td>Transforms IR to XState-compatible JSON</td></tr></tbody></table>
+<h3 id="33-data-flow">3.3 Data Flow</h3>
+<ol>
+<li>User constructs machine using Builder API</li>
+<li><code>Build()</code> validates and produces immutable IR</li>
+<li>IR is passed to <code>NewInterpreter()</code> to create runtime</li>
+<li>User calls <code>Send(event)</code> to trigger transitions</li>
+<li>Interpreter resolves transitions, executes actions, updates state</li>
+<li>IR can be exported to JSON at any time via Exporter</li>
+</ol>
+<hr>
+<h2 id="4-data-structures">4. Data Structures</h2>
+<h3 id="41-core-types">4.1 Core Types</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// StateType represents the kind of state node</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> StateType</span><span style="color:#F97583"> int</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#79B8FF">    StateTypeAtomic</span><span style="color:#B392F0">   StateType</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> iota</span><span style="color:#6A737D"> // Leaf state, no children</span></span>
+<span class="line"><span style="color:#79B8FF">    StateTypeCompound</span><span style="color:#6A737D">                   // Has child states</span></span>
+<span class="line"><span style="color:#79B8FF">    StateTypeFinal</span><span style="color:#6A737D">                      // Terminal state</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// EventType is a named event identifier</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> EventType</span><span style="color:#F97583"> string</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// StateID uniquely identifies a state within a machine</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> StateID</span><span style="color:#F97583"> string</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ActionType identifies a named action</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ActionType</span><span style="color:#F97583"> string</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// GuardType identifies a named guard</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> GuardType</span><span style="color:#F97583"> string</span></span></code></pre>
+<h3 id="42-machine-configuration-ir">4.2 Machine Configuration (IR)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// MachineConfig is the immutable internal representation of a statechart</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    ID          </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Initial     </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    Context     </span><span style="color:#B392F0">C</span></span>
+<span class="line"><span style="color:#E1E4E8">    States      </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">*</span><span style="color:#B392F0">StateConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    Actions     </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">ActionType</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">Action</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    Guards      </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">GuardType</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// StateConfig represents a single state node</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> StateConfig</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    ID          </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    Type        </span><span style="color:#B392F0">StateType</span></span>
+<span class="line"><span style="color:#E1E4E8">    Parent      </span><span style="color:#B392F0">StateID</span><span style="color:#6A737D">              // Empty for root-level states</span></span>
+<span class="line"><span style="color:#E1E4E8">    Initial     </span><span style="color:#B392F0">StateID</span><span style="color:#6A737D">              // For compound states only</span></span>
+<span class="line"><span style="color:#E1E4E8">    Children    []</span><span style="color:#B392F0">StateID</span><span style="color:#6A737D">            // For compound states only</span></span>
+<span class="line"><span style="color:#E1E4E8">    Entry       []</span><span style="color:#B392F0">ActionType</span></span>
+<span class="line"><span style="color:#E1E4E8">    Exit        []</span><span style="color:#B392F0">ActionType</span></span>
+<span class="line"><span style="color:#E1E4E8">    Transitions []</span><span style="color:#F97583">*</span><span style="color:#B392F0">TransitionConfig</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// TransitionConfig represents a single transition</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> TransitionConfig</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Event   </span><span style="color:#B392F0">EventType</span></span>
+<span class="line"><span style="color:#E1E4E8">    Target  </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    Guard   </span><span style="color:#B392F0">GuardType</span><span style="color:#6A737D">   // Optional</span></span>
+<span class="line"><span style="color:#E1E4E8">    Actions []</span><span style="color:#B392F0">ActionType</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="43-runtime-types">4.3 Runtime Types</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Action is a side-effect function executed during transitions</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Action</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#B392F0"> Event</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Guard is a predicate that determines if a transition should occur</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Guard</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> C</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#B392F0"> Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Event represents a runtime event with optional payload</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Event</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Type    </span><span style="color:#B392F0">EventType</span></span>
+<span class="line"><span style="color:#E1E4E8">    Payload </span><span style="color:#B392F0">any</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// State represents the current runtime state</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> State</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Value   </span><span style="color:#B392F0">StateID</span><span style="color:#6A737D">      // Current state ID (leaf state)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Path    []</span><span style="color:#B392F0">StateID</span><span style="color:#6A737D">    // Full path from root to current state</span></span>
+<span class="line"><span style="color:#E1E4E8">    Context </span><span style="color:#B392F0">C</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Interpreter is the statechart runtime</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> Interpreter</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">*</span><span style="color:#B392F0">MachineConfig</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    state   </span><span style="color:#F97583">*</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    started </span><span style="color:#F97583">bool</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="44-builder-types">4.4 Builder Types</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// MachineBuilder provides fluent API for machine construction</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> MachineBuilder</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    id       </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    initial  </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    context  </span><span style="color:#B392F0">C</span></span>
+<span class="line"><span style="color:#E1E4E8">    states   []</span><span style="color:#F97583">*</span><span style="color:#B392F0">StateBuilder</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    actions  </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">ActionType</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">Action</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    guards   </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">GuardType</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    errors   []</span><span style="color:#F97583">error</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// StateBuilder provides fluent API for state construction</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> StateBuilder</span><span style="color:#E1E4E8">[</span><span style="color:#FFAB70">C</span><span style="color:#B392F0"> any</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    id          </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    stateType   </span><span style="color:#B392F0">StateType</span></span>
+<span class="line"><span style="color:#E1E4E8">    initial     </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    entry       []</span><span style="color:#B392F0">ActionType</span></span>
+<span class="line"><span style="color:#E1E4E8">    exit        []</span><span style="color:#B392F0">ActionType</span></span>
+<span class="line"><span style="color:#E1E4E8">    transitions []</span><span style="color:#F97583">*</span><span style="color:#B392F0">TransitionBuilder</span></span>
+<span class="line"><span style="color:#E1E4E8">    children    []</span><span style="color:#F97583">*</span><span style="color:#B392F0">StateBuilder</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    parent      </span><span style="color:#F97583">*</span><span style="color:#B392F0">StateBuilder</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">C</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// TransitionBuilder provides fluent API for transition construction</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> TransitionBuilder</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    event   </span><span style="color:#B392F0">EventType</span></span>
+<span class="line"><span style="color:#E1E4E8">    target  </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    guard   </span><span style="color:#B392F0">GuardType</span></span>
+<span class="line"><span style="color:#E1E4E8">    actions []</span><span style="color:#B392F0">ActionType</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="5-api-design">5. API Design</h2>
+<h3 id="51-builder-api">5.1 Builder API</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Machine creation</span></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"trafficLight"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitialContext</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">{Count: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">}).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"green"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Define actions</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Transition: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, e.Type)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Define guards</span></span>
+<span class="line"><span style="color:#B392F0">    WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"canProceed"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> ctx.Count </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 0</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Define states</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"green"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logTransition"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TIMER"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"yellow"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"yellow"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TIMER"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"red"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"red"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TIMER"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"green"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"canProceed"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h3 id="52-hierarchical-states">5.2 Hierarchical States</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"pedestrianLight"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"active"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Compound state with children</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"active"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"walk"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"walk"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COUNTDOWN"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"wait"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"wait"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"COUNTDOWN"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"stop"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"stop"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // Transition from compound state (exits all children)</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"RESET"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"active"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h3 id="53-interpreter-api">5.3 Interpreter API</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Create interpreter from machine config</span></span>
+<span class="line"><span style="color:#E1E4E8">interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Start the interpreter (enters initial state)</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Query current state</span></span>
+<span class="line"><span style="color:#E1E4E8">state </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(state.Value)    </span><span style="color:#6A737D">// "green"</span></span>
+<span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(state.Path)     </span><span style="color:#6A737D">// ["green"]</span></span>
+<span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(state.Context)  </span><span style="color:#6A737D">// Context{Count: 0}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if in a specific state (handles hierarchy)</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"green"</span><span style="color:#E1E4E8">)           </span><span style="color:#6A737D">// true</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Matches</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"active.walk"</span><span style="color:#E1E4E8">)     </span><span style="color:#6A737D">// true (hierarchical)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Send events</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"TIMER"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Send with payload</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    Type:    </span><span style="color:#9ECBFF">"UPDATE"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    Payload: </span><span style="color:#F97583">map</span><span style="color:#E1E4E8">[</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">]</span><span style="color:#B392F0">any</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"value"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">42</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if machine is in final state</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">() </span><span style="color:#6A737D">// bool</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Stop interpreter (runs exit actions)</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h3 id="54-export-api">5.4 Export API</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Export to XState-compatible JSON</span></span>
+<span class="line"><span style="color:#E1E4E8">jsonBytes, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">ExportJSON</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Export with options</span></span>
+<span class="line"><span style="color:#E1E4E8">jsonBytes, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">ExportJSON</span><span style="color:#E1E4E8">(machine,</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekit.</span><span style="color:#B392F0">WithPrettyPrint</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    statekit.</span><span style="color:#B392F0">WithVersion</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"5"</span><span style="color:#E1E4E8">),  </span><span style="color:#6A737D">// XState version</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Export to io.Writer</span></span>
+<span class="line"><span style="color:#E1E4E8">err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">ExportTo</span><span style="color:#E1E4E8">(machine, os.Stdout)</span></span></code></pre>
+<hr>
+<h2 id="6-execution-semantics">6. Execution Semantics</h2>
+<h3 id="61-transition-resolution">6.1 Transition Resolution</h3>
+<p>When <code>Send(event)</code> is called:</p>
+<ol>
+<li><strong>Find matching transitions</strong> from current state (and ancestors for hierarchy)</li>
+<li><strong>Evaluate guards</strong> in document order; first passing guard wins</li>
+<li><strong>Compute exit set</strong> (states to exit, from leaf to root)</li>
+<li><strong>Execute exit actions</strong> in exit order</li>
+<li><strong>Execute transition actions</strong></li>
+<li><strong>Compute entry set</strong> (states to enter, from root to leaf)</li>
+<li><strong>Execute entry actions</strong> in entry order</li>
+<li><strong>Update current state</strong> to new leaf state</li>
+</ol>
+<h3 id="62-hierarchical-state-transitions">6.2 Hierarchical State Transitions</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Given machine:</span></span>
+<span class="line"><span>  └─ active (compound)</span></span>
+<span class="line"><span>       ├─ idle (initial)</span></span>
+<span class="line"><span>       └─ working</span></span>
+<span class="line"><span>            ├─ loading (initial)</span></span>
+<span class="line"><span>            └─ processing</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Transition from "active.working.loading" to "active.idle":</span></span>
+<span class="line"><span>  1. Exit: loading → working</span></span>
+<span class="line"><span>  2. Enter: idle</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Transition from "active.working.loading" to "active.working.processing":</span></span>
+<span class="line"><span>  1. Exit: loading</span></span>
+<span class="line"><span>  2. Enter: processing</span></span></code></pre>
+<h3 id="63-event-queue">6.3 Event Queue</h3>
+<p>Events are processed synchronously and sequentially. The interpreter does not queue events - each <code>Send()</code> completes before returning.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event1) </span><span style="color:#6A737D">// Fully processed</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event2) </span><span style="color:#6A737D">// Fully processed after event1</span></span></code></pre>
+<h3 id="64-context-updates">6.4 Context Updates</h3>
+<p>Context is passed by pointer to actions, allowing mutations:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"increment"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    ctx.Count</span><span style="color:#F97583">++</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<p>Guards receive context by value (read-only):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasItems"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> Context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#B392F0"> len</span><span style="color:#E1E4E8">(ctx.Items) </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 0</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<hr>
+<h2 id="7-xstate-json-export">7. XState JSON Export</h2>
+<h3 id="71-target-schema">7.1 Target Schema</h3>
+<p>The exporter produces XState v5 compatible JSON:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"trafficLight"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "initial"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"green"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "context"</span><span style="color:#E1E4E8">: {},</span></span>
+<span class="line"><span style="color:#79B8FF">  "states"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "green"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "on"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">        "TIMER"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">          "target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"yellow"</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "yellow"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "on"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">        "TIMER"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">          "target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"red"</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "red"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"final"</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="72-mapping-rules">7.2 Mapping Rules</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Go Concept</th><th>XState JSON</th></tr></thead><tbody><tr><td><code>StateTypeAtomic</code></td><td><code>{}</code> (default)</td></tr><tr><td><code>StateTypeCompound</code></td><td><code>{ "initial": "...", "states": {...} }</code></td></tr><tr><td><code>StateTypeFinal</code></td><td><code>{ "type": "final" }</code></td></tr><tr><td>Entry actions</td><td><code>"entry": ["actionName"]</code></td></tr><tr><td>Exit actions</td><td><code>"exit": ["actionName"]</code></td></tr><tr><td>Transition actions</td><td><code>"actions": ["actionName"]</code></td></tr><tr><td>Guards</td><td><code>"cond": "guardName"</code></td></tr></tbody></table>
+<h3 id="73-limitations">7.3 Limitations</h3>
+<ul>
+<li>Action/guard implementations are not exported (names only)</li>
+<li>Context is exported as initial value snapshot</li>
+<li>Go-specific types in context may not serialize cleanly</li>
+</ul>
+<hr>
+<h2 id="8-error-handling">8. Error Handling</h2>
+<h3 id="81-build-time-validation">8.1 Build-Time Validation</h3>
+<p>The <code>Build()</code> method validates the machine configuration:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> builder.</span><span style="color:#B392F0">Build</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">    // ValidationError contains all issues</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#E1E4E8"> valErr </span><span style="color:#F97583">*</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ValidationError</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> errors.</span><span style="color:#B392F0">As</span><span style="color:#E1E4E8">(err, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">valErr) {</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> _, issue </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> valErr.Issues {</span></span>
+<span class="line"><span style="color:#E1E4E8">            log.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Validation: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, issue)</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Validation checks:</p>
+<ul>
+<li>Initial state exists</li>
+<li>All transition targets exist</li>
+<li>Referenced actions/guards are defined</li>
+<li>Compound states have initial child</li>
+<li>No orphaned states</li>
+<li>No circular initial state references</li>
+</ul>
+<h3 id="82-runtime-errors">8.2 Runtime Errors</h3>
+<p>Runtime errors are exceptional and indicate bugs:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Panics if interpreter not started</span></span>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Safe version that returns error</span></span>
+<span class="line"><span style="color:#E1E4E8">err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">TrySend</span><span style="color:#E1E4E8">(event)</span></span></code></pre>
+<h3 id="83-error-types">8.3 Error Types</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// ValidationError contains build-time validation issues</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ValidationError</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Issues []</span><span style="color:#B392F0">ValidationIssue</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> ValidationIssue</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Code    </span><span style="color:#F97583">string</span><span style="color:#6A737D">   // e.g., "MISSING_TARGET"</span></span>
+<span class="line"><span style="color:#E1E4E8">    Message </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Path    []</span><span style="color:#F97583">string</span><span style="color:#6A737D"> // e.g., ["states", "green", "transitions", "0"]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// RuntimeError indicates an execution problem</span></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> RuntimeError</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Code    </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Message </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    State   </span><span style="color:#B392F0">StateID</span></span>
+<span class="line"><span style="color:#E1E4E8">    Event   </span><span style="color:#B392F0">EventType</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="9-testing-strategy">9. Testing Strategy</h2>
+<h3 id="91-unit-tests">9.1 Unit Tests</h3>
+<p>Each component has isolated unit tests:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>internal/ir/          → IR construction and validation</span></span>
+<span class="line"><span>internal/interpreter/ → Transition resolution, action execution</span></span>
+<span class="line"><span>internal/export/      → JSON serialization</span></span>
+<span class="line"><span>builder/              → Fluent API correctness</span></span></code></pre>
+<h3 id="92-integration-tests">9.2 Integration Tests</h3>
+<p>End-to-end tests with real statecharts:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestTrafficLightCycle</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildTrafficLight</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    assert.</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(t, </span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"green"</span><span style="color:#E1E4E8">), interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"TIMER"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    assert.</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(t, </span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"yellow"</span><span style="color:#E1E4E8">), interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"TIMER"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">    assert.</span><span style="color:#B392F0">Equal</span><span style="color:#E1E4E8">(t, </span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"red"</span><span style="color:#E1E4E8">), interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="93-property-based-tests">9.3 Property-Based Tests</h3>
+<p>Use <code>testing/quick</code> for invariant verification:</p>
+<ul>
+<li>Transitions always result in valid states</li>
+<li>Entry/exit actions fire in correct order</li>
+<li>Guards are evaluated before transitions</li>
+</ul>
+<h3 id="94-xstate-compatibility-tests">9.4 XState Compatibility Tests</h3>
+<p>Validate exported JSON against XState:</p>
+<ol>
+<li>Export machine to JSON</li>
+<li>Load JSON into XState (via test harness)</li>
+<li>Compare state transitions between Go and XState</li>
+<li>Verify visualization renders correctly</li>
+</ol>
+<h3 id="95-benchmark-tests">9.5 Benchmark Tests</h3>
+<p>Performance benchmarks for critical paths:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> BenchmarkSend</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">b</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">B</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> buildLargeMachine</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    event </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"NEXT"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">    b.</span><span style="color:#B392F0">ResetTimer</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">:=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> b.N; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(event)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="10-package-structure">10. Package Structure</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>statekit/</span></span>
+<span class="line"><span>├── statekit.go           # Public API re-exports</span></span>
+<span class="line"><span>├── builder.go            # MachineBuilder, StateBuilder</span></span>
+<span class="line"><span>├── interpreter.go        # Interpreter runtime</span></span>
+<span class="line"><span>├── export.go             # JSON export functions</span></span>
+<span class="line"><span>├── types.go              # Public types (Event, State, etc.)</span></span>
+<span class="line"><span>├── errors.go             # Error types</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── internal/</span></span>
+<span class="line"><span>│   ├── ir/</span></span>
+<span class="line"><span>│   │   ├── machine.go    # MachineConfig</span></span>
+<span class="line"><span>│   │   ├── state.go      # StateConfig</span></span>
+<span class="line"><span>│   │   ├── transition.go # TransitionConfig</span></span>
+<span class="line"><span>│   │   └── validate.go   # Validation logic</span></span>
+<span class="line"><span>│   │</span></span>
+<span class="line"><span>│   ├── interpreter/</span></span>
+<span class="line"><span>│   │   ├── engine.go     # Core execution logic</span></span>
+<span class="line"><span>│   │   ├── resolve.go    # Transition resolution</span></span>
+<span class="line"><span>│   │   └── hierarchy.go  # Hierarchical state handling</span></span>
+<span class="line"><span>│   │</span></span>
+<span class="line"><span>│   └── export/</span></span>
+<span class="line"><span>│       ├── xstate.go     # XState JSON schema</span></span>
+<span class="line"><span>│       └── marshal.go    # Serialization</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── examples/</span></span>
+<span class="line"><span>│   ├── traffic_light/</span></span>
+<span class="line"><span>│   ├── order_workflow/</span></span>
+<span class="line"><span>│   └── incident_lifecycle/</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── cmd/</span></span>
+<span class="line"><span>    └── statekit/</span></span>
+<span class="line"><span>        └── main.go       # CLI tool (v0.3)</span></span></code></pre>
+<hr>
+<h2 id="11-implementation-phases">11. Implementation Phases</h2>
+<h3 id="phase-1-core-foundation-v01">Phase 1: Core Foundation (v0.1)</h3>
+<p><strong>Goal:</strong> Basic flat state machine with builder API</p>
+<p>Deliverables:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> Core types (<code>Event</code>, <code>State</code>, <code>StateID</code>, etc.)</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>MachineConfig</code> IR with flat states only</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>MachineBuilder</code> fluent API</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>Interpreter</code> with <code>Start()</code>, <code>Send()</code>, <code>State()</code></li>
+<li class="task-list-item"><input type="checkbox" disabled> Build-time validation</li>
+<li class="task-list-item"><input type="checkbox" disabled> Unit test suite</li>
+</ul>
+<p>Exit Criteria:</p>
+<ul>
+<li>Can define and execute a simple traffic light state machine</li>
+<li>All transitions are deterministic and tested</li>
+</ul>
+<h3 id="phase-2-hierarchical-states--export-v02">Phase 2: Hierarchical States + Export (v0.2)</h3>
+<p><strong>Goal:</strong> Full statechart support with XState visualization</p>
+<p>Deliverables:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> Compound state support in IR</li>
+<li class="task-list-item"><input type="checkbox" disabled> Hierarchical transition resolution</li>
+<li class="task-list-item"><input type="checkbox" disabled> Entry/exit action ordering for hierarchy</li>
+<li class="task-list-item"><input type="checkbox" disabled> <code>StateTypeFinal</code> support</li>
+<li class="task-list-item"><input type="checkbox" disabled> Guards and transition actions</li>
+<li class="task-list-item"><input type="checkbox" disabled> XState JSON exporter</li>
+<li class="task-list-item"><input type="checkbox" disabled> Integration test suite</li>
+</ul>
+<p>Exit Criteria:</p>
+<ul>
+<li>Hierarchical state machine exports to valid XState JSON</li>
+<li>Exported JSON renders in Stately Visualizer</li>
+<li>Entry/exit semantics match XState behavior</li>
+</ul>
+<h3 id="phase-3-developer-experience-v03">Phase 3: Developer Experience (v0.3)</h3>
+<p><strong>Goal:</strong> Polish and alternative authoring</p>
+<p>Deliverables:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> Reflection-based DSL (struct tags)</li>
+<li class="task-list-item"><input type="checkbox" disabled> CLI tool for JSON export</li>
+<li class="task-list-item"><input type="checkbox" disabled> Comprehensive documentation</li>
+<li class="task-list-item"><input type="checkbox" disabled> Example repository</li>
+<li class="task-list-item"><input type="checkbox" disabled> Performance benchmarks</li>
+</ul>
+<p>Exit Criteria:</p>
+<ul>
+<li>Two authoring styles (builder + struct tags)</li>
+<li><code>statekit export</code> CLI produces valid JSON</li>
+<li>README with getting started guide</li>
+</ul>
+<hr>
+<h2 id="12-open-design-decisions">12. Open Design Decisions</h2>
+<h3 id="121-generic-context-vs-interface">12.1 Generic Context vs Interface</h3>
+<p><strong>Option A:</strong> Generic type parameter <code>[C any]</code></p>
+<ul>
+<li>Pro: Type-safe, no casting</li>
+<li>Con: Viral generics throughout codebase</li>
+</ul>
+<p><strong>Option B:</strong> <code>context any</code> with type assertions</p>
+<ul>
+<li>Pro: Simpler API surface</li>
+<li>Con: Runtime type errors</li>
+</ul>
+<p><strong>Decision:</strong> Option A (generics) - type safety is a core principle.</p>
+<h3 id="122-action-error-handling">12.2 Action Error Handling</h3>
+<p><strong>Option A:</strong> Actions return <code>error</code></p>
+<ul>
+<li>Pro: Explicit error handling</li>
+<li>Con: Complicates builder API, unclear semantics for failed actions</li>
+</ul>
+<p><strong>Option B:</strong> Actions panic on error, recover in interpreter</p>
+<ul>
+<li>Pro: Simple action signatures</li>
+<li>Con: Panic-based control flow is controversial</li>
+</ul>
+<p><strong>Option C:</strong> Actions are void, use context for error state</p>
+<ul>
+<li>Pro: Statecharts model errors as states, not exceptions</li>
+<li>Con: Requires careful machine design</li>
+</ul>
+<p><strong>Decision:</strong> TBD - leaning toward Option C (statechart-native error modeling).</p>
+<h3 id="123-event-payload-typing">12.3 Event Payload Typing</h3>
+<p><strong>Option A:</strong> <code>Payload any</code> with type assertions</p>
+<ul>
+<li>Pro: Flexible, matches XState</li>
+<li>Con: No compile-time safety</li>
+</ul>
+<p><strong>Option B:</strong> Generic events <code>Event[P any]</code></p>
+<ul>
+<li>Pro: Type-safe payloads</li>
+<li>Con: Complex, different event types per transition</li>
+</ul>
+<p><strong>Option C:</strong> Typed event constructors</p>
+<ul>
+<li>Pro: Balance of safety and ergonomics</li>
+<li>Con: More boilerplate</li>
+</ul>
+<p><strong>Decision:</strong> Option A for v1 - simplicity first, can add typed wrappers later.</p>
+<h3 id="124-thread-safety">12.4 Thread Safety</h3>
+<p><strong>Option A:</strong> Interpreter is not thread-safe (document clearly)</p>
+<ul>
+<li>Pro: No synchronization overhead</li>
+<li>Con: User must synchronize</li>
+</ul>
+<p><strong>Option B:</strong> Interpreter uses mutex internally</p>
+<ul>
+<li>Pro: Safe by default</li>
+<li>Con: Performance overhead, potential deadlocks with actions</li>
+</ul>
+<p><strong>Decision:</strong> Option A - single-threaded by default, users can wrap with mutex if needed.</p>
+<hr>
+<h2 id="appendix-a-xstate-json-schema-reference">Appendix A: XState JSON Schema Reference</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "$schema"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"https://json-schema.org/draft/2020-12/schema"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"object"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "properties"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "id"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">    "initial"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">    "context"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"object"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">    "states"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"object"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "additionalProperties"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">        "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"object"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">        "properties"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">          "type"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"enum"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"atomic"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"compound"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"final"</span><span style="color:#E1E4E8">] },</span></span>
+<span class="line"><span style="color:#79B8FF">          "initial"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">          "entry"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"array"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"items"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> } },</span></span>
+<span class="line"><span style="color:#79B8FF">          "exit"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"array"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"items"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> } },</span></span>
+<span class="line"><span style="color:#79B8FF">          "on"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">            "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"object"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "additionalProperties"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">              "oneOf"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">                { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#E1E4E8">                {</span></span>
+<span class="line"><span style="color:#79B8FF">                  "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"object"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">                  "properties"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">                    "target"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">                    "cond"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">                    "actions"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"array"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"items"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"string"</span><span style="color:#E1E4E8"> } }</span></span>
+<span class="line"><span style="color:#E1E4E8">                  }</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#E1E4E8">              ]</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">          },</span></span>
+<span class="line"><span style="color:#79B8FF">          "states"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"$ref"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"#/properties/states"</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  },</span></span>
+<span class="line"><span style="color:#79B8FF">  "required"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"id"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"initial"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"states"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="appendix-b-example-machine---order-workflow">Appendix B: Example Machine - Order Workflow</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderContext</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    OrderID   </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    Items     []</span><span style="color:#B392F0">Item</span></span>
+<span class="line"><span style="color:#E1E4E8">    Total     </span><span style="color:#F97583">float64</span></span>
+<span class="line"><span style="color:#E1E4E8">    Error     </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"orderWorkflow"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validateOrder"</span><span style="color:#E1E4E8">, validateOrder).</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processPayment"</span><span style="color:#E1E4E8">, processPayment).</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"notifyShipping"</span><span style="color:#E1E4E8">, notifyShipping).</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"sendConfirmation"</span><span style="color:#E1E4E8">, sendConfirmation).</span></span>
+<span class="line"><span style="color:#B392F0">    WithAction</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logError"</span><span style="color:#E1E4E8">, logError).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasItems"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#B392F0"> len</span><span style="color:#E1E4E8">(ctx.Items) </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 0</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"><span style="color:#B392F0">    WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"paymentValid"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> OrderContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> ctx.Total </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 0</span></span>
+<span class="line"><span style="color:#E1E4E8">    }).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasItems"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CANCEL"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cancelled"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validating"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"validateOrder"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"VALID"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"INVALID"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"failed"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processing"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"processPayment"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"PAYMENT_SUCCESS"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"shipping"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"PAYMENT_FAILED"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"failed"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"shipping"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"notifyShipping"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SHIPPED"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">            Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"completed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"sendConfirmation"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"failed"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        OnEntry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"logError"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cancelled"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        Done</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre> </div> </article> </div> </div> </body></html>
