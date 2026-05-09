@@ -100,3 +100,33 @@ Misc DX/quality cleanups: (1) Make interpreter implement io.Closer; document def
 Critical assumption to validate before further feature work: Go teams currently feel acute pain from ad-hoc FSM code (vs treating it as solved-enough). Conduct 10 user interviews with Go backend leads — ask "show me your messiest stateful service." Outcome decides whether wedge exists or this stays craft project. Source: GTM review — top "validate before committing" callout.
 
 ---
+
+## Synthetic clock injection for delayed transitions + supervision timers
+
+Followup to goleak task. Add Clock interface (jonboulle/clockwork or own) injectable via NewInterpreter option, default to wall clock for backward compat. Replace time.AfterFunc in interpreter.go:759 + actor supervision timers. Update delayed_test.go (5 wall-clock sleeps 30-100ms) to use synthetic clock. Eliminates CI flake risk on delayed transitions, parallel state, supervision strategies. Source: Quality review.
+
+---
+
+## Lint rules followup — auto-forward-loop, actor-id-collision, unreachable-via-guard
+
+Followup batch from lint extension. (1) auto-forward-loop — parent auto-forwards event X to child; child sends event X to parent (SendParent); detect ping-pong. (2) actor-id-collision — multiple Spawn calls reuse same ActorID across states. (3) unreachable-via-guard — guard combos that are always-false (requires expression analysis or explicit annotation). (4) delayed-transition-shorter-than-action-duration — declarative annotation needed. Source: Quality review.
+
+---
+
+## t.Parallel sweep across full test suite
+
+Followup to ir coverage task. Add t.Parallel() to all leaf unit tests across actor_test, builder_test, interpreter_test, history_test, parallel_test, persist_test, distributed_test, plugin_test, etc. Touches ~50 test files. Surfaces parallel-safety bugs in package-level state. Do not parallelize benchmark or property tests. Source: Quality review.
+
+---
+
+## Breaking renames followup — Done()→EndMachine, InvokeBuilder→InvokeService
+
+Followup to DX polish. Two name footguns require breaking changes: (1) Done() returning *MachineBuilder from nested state silently teleports caller out of context (builder.go:329-333) — rename to EndMachine(). (2) InvokeBuilder vs MachineInvokeBuilder name collision risk — rename to InvokeServiceBuilder/InvokeMachineBuilder for self-documenting. Also update README hierarchical example showing .End().End().End().Done(). Block on v1.0 API stability decision: do via deprecation alias for one minor, then remove in v2.0; or batch with terminator-unify for one v2.0 release. Source: UX review.
+
+---
+
+## Refactor delayed_test.go to use FakeClock
+
+Followup to synthetic clock injection. Now that Clock interface + FakeClock + WithClock option exist, convert delayed_test.go (5 wall-clock sleeps 30-100ms) and supervision tests in actor_test.go to use FakeClock.Advance(). Eliminates flake risk on shared CI runners. Mechanical change per file. Source: Quality review followup to commit 66ac9cf.
+
+---
