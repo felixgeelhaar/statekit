@@ -121,6 +121,17 @@
         </template>
       </svg>
       <span class="toast-message">{{ toast.message }}</span>
+      <button
+        v-if="toast.type === 'error'"
+        class="toast-dismiss"
+        aria-label="Dismiss error"
+        @click="dismissToast(toast.id)"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
   </div>
 </template>
@@ -174,9 +185,18 @@ function showToast(message: string, type: 'success' | 'error' = 'success') {
   const id = ++toastId;
   toasts.value.push({ id, message, type });
 
-  setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id);
-  }, 3000);
+  // Errors stay until the user dismisses or another action displaces
+  // them (UX review: 3s auto-dismiss is too short to read a stack
+  // trace). Successes auto-dismiss as before.
+  if (type === 'success') {
+    setTimeout(() => {
+      toasts.value = toasts.value.filter(t => t.id !== id);
+    }, 3000);
+  }
+}
+
+function dismissToast(id: number) {
+  toasts.value = toasts.value.filter(t => t.id !== id);
 }
 
 // Machine loading

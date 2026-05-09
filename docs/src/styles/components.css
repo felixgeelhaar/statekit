@@ -869,6 +869,32 @@
 .toast-message {
   font-size: 0.875rem;
   color: var(--text-primary);
+  flex: 1;
+  word-break: break-word;
+}
+
+.toast-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toast-dismiss:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toast-dismiss svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* State info tooltip */
