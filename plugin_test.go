@@ -83,6 +83,7 @@ func (p *testPlugin[C]) OnError(ctx plugin.Context[C], err error) {
 }
 
 func TestPlugin_OnStartStop(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -121,6 +122,7 @@ func TestPlugin_OnStartStop(t *testing.T) {
 }
 
 func TestPlugin_OnEnterExit(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -160,6 +162,7 @@ func TestPlugin_OnEnterExit(t *testing.T) {
 }
 
 func TestPlugin_OnEvent(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -194,6 +197,7 @@ func TestPlugin_OnEvent(t *testing.T) {
 }
 
 func TestPlugin_BeforeAfterTransition(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -236,6 +240,7 @@ func TestPlugin_BeforeAfterTransition(t *testing.T) {
 }
 
 func TestPlugin_BeforeAfterAction(t *testing.T) {
+	t.Parallel()
 	type ctx struct{ count int }
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -281,6 +286,7 @@ func TestPlugin_BeforeAfterAction(t *testing.T) {
 }
 
 func TestPlugin_OnError_ActionPanic(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -326,6 +332,7 @@ func (p *eventModifyingPlugin[C]) OnEvent(ctx plugin.Context[C], event plugin.Ev
 }
 
 func TestPlugin_EventModification(t *testing.T) {
+	t.Parallel()
 	type ctx struct{ payload any }
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -354,6 +361,7 @@ func TestPlugin_EventModification(t *testing.T) {
 }
 
 func TestPlugin_Composite(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -383,6 +391,7 @@ func TestPlugin_Composite(t *testing.T) {
 }
 
 func TestPlugin_MultiplePlugins(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -417,6 +426,7 @@ func TestPlugin_MultiplePlugins(t *testing.T) {
 }
 
 func TestPlugin_HierarchicalStates(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").

@@ -13,6 +13,7 @@ import (
 
 // TestInvoke_ServiceStartsOnEntry verifies that a service is started when entering a state
 func TestInvoke_ServiceStartsOnEntry(t *testing.T) {
+	t.Parallel()
 	serviceStarted := false
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -63,6 +64,7 @@ func TestInvoke_ServiceStartsOnEntry(t *testing.T) {
 
 // TestInvoke_ServiceCancelledOnExit verifies that a service is cancelled when exiting a state
 func TestInvoke_ServiceCancelledOnExit(t *testing.T) {
+	t.Parallel()
 	serviceCancelled := false
 	serviceStarted := make(chan struct{})
 	serviceDone := make(chan struct{})
@@ -115,6 +117,7 @@ func TestInvoke_ServiceCancelledOnExit(t *testing.T) {
 
 // TestInvoke_OnDoneTransition verifies that OnDone triggers a transition when service completes
 func TestInvoke_OnDoneTransition(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("loading").
 		WithService("fetchData", func(ctx ir.ServiceContext[struct{}]) error {
@@ -150,6 +153,7 @@ func TestInvoke_OnDoneTransition(t *testing.T) {
 
 // TestInvoke_OnErrorTransition verifies that OnError triggers a transition when service fails
 func TestInvoke_OnErrorTransition(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("loading").
 		WithService("fetchData", func(ctx ir.ServiceContext[struct{}]) error {
@@ -182,6 +186,7 @@ func TestInvoke_OnErrorTransition(t *testing.T) {
 
 // TestInvoke_OnDoneAction verifies that OnDoneAction executes when service completes
 func TestInvoke_OnDoneAction(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		ActionExecuted bool
 	}
@@ -219,6 +224,7 @@ func TestInvoke_OnDoneAction(t *testing.T) {
 
 // TestInvoke_ServiceSendsEvents verifies that services can send events back to the machine
 func TestInvoke_ServiceSendsEvents(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		ReceivedEvent bool
 	}
@@ -266,6 +272,7 @@ func TestInvoke_ServiceSendsEvents(t *testing.T) {
 
 // TestInvoke_MultipleServices verifies that multiple services can be invoked on a single state
 func TestInvoke_MultipleServices(t *testing.T) {
+	t.Parallel()
 	service1Started := make(chan struct{})
 	service2Started := make(chan struct{})
 
@@ -312,6 +319,7 @@ func TestInvoke_MultipleServices(t *testing.T) {
 
 // TestInvoke_StopCancelsAllServices verifies that Stop() cancels all active services
 func TestInvoke_StopCancelsAllServices(t *testing.T) {
+	t.Parallel()
 	var cancelled sync.WaitGroup
 	cancelled.Add(2)
 
@@ -363,6 +371,7 @@ func TestInvoke_StopCancelsAllServices(t *testing.T) {
 
 // TestInvoke_ServiceContextHasMachineContext verifies service receives current machine context
 func TestInvoke_ServiceContextHasMachineContext(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		Value string
 	}
@@ -403,6 +412,7 @@ func TestInvoke_ServiceContextHasMachineContext(t *testing.T) {
 
 // TestInvoke_DoesNotTransitionIfStateChanged verifies completed service doesn't transition if state changed
 func TestInvoke_DoesNotTransitionIfStateChanged(t *testing.T) {
+	t.Parallel()
 	serviceStarted := make(chan struct{})
 	serviceCanComplete := make(chan struct{})
 

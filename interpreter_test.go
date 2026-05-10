@@ -10,6 +10,7 @@ type counterContext struct {
 }
 
 func TestInterpreter_Start(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -37,6 +38,7 @@ func TestInterpreter_Start(t *testing.T) {
 }
 
 func TestInterpreter_Send_BasicTransition(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("trafficLight").
 		WithInitial("green").
 		State("green").
@@ -81,6 +83,7 @@ func TestInterpreter_Send_BasicTransition(t *testing.T) {
 }
 
 func TestInterpreter_Send_UnknownEvent(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").
@@ -103,6 +106,7 @@ func TestInterpreter_Send_UnknownEvent(t *testing.T) {
 }
 
 func TestInterpreter_Send_WithGuard(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		WithGuard("hasCount", func(ctx counterContext, e Event) bool {
@@ -137,6 +141,7 @@ func TestInterpreter_Send_WithGuard(t *testing.T) {
 }
 
 func TestInterpreter_Send_WithActions(t *testing.T) {
+	t.Parallel()
 	var entryLog, exitLog, transitionLog []string
 
 	machine, err := NewMachine[counterContext]("test").
@@ -199,6 +204,7 @@ func TestInterpreter_Send_WithActions(t *testing.T) {
 }
 
 func TestInterpreter_Matches(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").
@@ -231,6 +237,7 @@ func TestInterpreter_Matches(t *testing.T) {
 }
 
 func TestInterpreter_Done(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("workflow").
 		WithInitial("active").
 		State("active").
@@ -257,6 +264,7 @@ func TestInterpreter_Done(t *testing.T) {
 }
 
 func TestInterpreter_Context(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		WithContext(counterContext{Count: 5}).
@@ -276,6 +284,7 @@ func TestInterpreter_Context(t *testing.T) {
 }
 
 func TestInterpreter_MultipleTransitionsOnState(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[counterContext]("test").
 		WithInitial("idle").
 		State("idle").

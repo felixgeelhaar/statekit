@@ -9,6 +9,7 @@ import (
 )
 
 func TestDistributedInterpreter_Basic(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -51,6 +52,7 @@ func TestDistributedInterpreter_Basic(t *testing.T) {
 }
 
 func TestDistributedInterpreter_LockContention(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -83,6 +85,7 @@ func TestDistributedInterpreter_LockContention(t *testing.T) {
 }
 
 func TestDistributedInterpreter_LockRelease(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -112,6 +115,7 @@ func TestDistributedInterpreter_LockRelease(t *testing.T) {
 }
 
 func TestDistributedInterpreter_Hydration(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	type Context struct {
@@ -159,6 +163,7 @@ func TestDistributedInterpreter_Hydration(t *testing.T) {
 }
 
 func TestDistributedInterpreter_LockExpiry(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -198,6 +203,7 @@ func TestDistributedInterpreter_LockExpiry(t *testing.T) {
 }
 
 func TestDistributedInterpreter_ConcurrentNodes(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	type Context struct {
@@ -282,6 +288,7 @@ func TestDistributedInterpreter_ConcurrentNodes(t *testing.T) {
 }
 
 func TestMemoryStreamLock_TryAcquire(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	lock := NewMemoryStreamLock()
 
@@ -308,6 +315,7 @@ func TestMemoryStreamLock_TryAcquire(t *testing.T) {
 }
 
 func TestMemoryStreamLock_Renew(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	lock := NewMemoryStreamLock()
 
@@ -335,6 +343,7 @@ func TestMemoryStreamLock_Renew(t *testing.T) {
 }
 
 func TestMemoryStreamLock_Done(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	lock := NewMemoryStreamLock()
 
@@ -360,6 +369,7 @@ func TestMemoryStreamLock_Done(t *testing.T) {
 }
 
 func TestConsistentHashRouter_RouteStream(t *testing.T) {
+	t.Parallel()
 	router := NewConsistentHashRouter(100)
 
 	members := []ClusterNode{
@@ -392,6 +402,7 @@ func TestConsistentHashRouter_RouteStream(t *testing.T) {
 }
 
 func TestConsistentHashRouter_IsLocal(t *testing.T) {
+	t.Parallel()
 	router := NewConsistentHashRouter(100)
 
 	members := []ClusterNode{
@@ -422,6 +433,7 @@ func TestConsistentHashRouter_IsLocal(t *testing.T) {
 }
 
 func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	type Context struct {
@@ -485,6 +497,7 @@ func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
 }
 
 func TestDistributedInterpreter_LockHeld(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -509,6 +522,7 @@ func TestDistributedInterpreter_LockHeld(t *testing.T) {
 }
 
 func TestDistributedInterpreter_SendAll(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	type Context struct {
@@ -546,6 +560,7 @@ func TestDistributedInterpreter_SendAll(t *testing.T) {
 }
 
 func TestDistributedInterpreter_ForceSnapshot(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").

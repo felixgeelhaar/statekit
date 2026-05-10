@@ -48,6 +48,7 @@ func buildParentMachine() *MachineConfig[parentContext] {
 }
 
 func TestSpawn_Basic(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -79,6 +80,7 @@ func TestSpawn_Basic(t *testing.T) {
 }
 
 func TestSpawn_DuplicateID(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -101,6 +103,7 @@ func TestSpawn_DuplicateID(t *testing.T) {
 }
 
 func TestActorRef_Send(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -122,6 +125,7 @@ func TestActorRef_Send(t *testing.T) {
 }
 
 func TestActorRef_Stop(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -151,6 +155,7 @@ func TestActorRef_Stop(t *testing.T) {
 }
 
 func TestActorRef_StopIdempotent(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -168,6 +173,7 @@ func TestActorRef_StopIdempotent(t *testing.T) {
 }
 
 func TestSendTo(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -192,6 +198,7 @@ func TestSendTo(t *testing.T) {
 }
 
 func TestSendParent_NoParent(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[struct{}]("root").
 		WithInitial("idle").
 		State("idle").Done().
@@ -210,6 +217,7 @@ func TestSendParent_NoParent(t *testing.T) {
 }
 
 func TestStateScopedLifecycle(t *testing.T) {
+	t.Parallel()
 	// Create a machine that spawns actors in a specific state
 	var spawnedActorID ActorID
 	var parentInterp *Interpreter[struct{}]
@@ -259,6 +267,7 @@ func TestStateScopedLifecycle(t *testing.T) {
 }
 
 func TestAutoForward(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 
 	// Child that tracks received events
@@ -320,6 +329,7 @@ func TestAutoForward(t *testing.T) {
 }
 
 func TestSpawn_NotStarted(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -333,6 +343,7 @@ func TestSpawn_NotStarted(t *testing.T) {
 }
 
 func TestParentStop_StopsAllActors(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -360,6 +371,7 @@ func TestParentStop_StopsAllActors(t *testing.T) {
 }
 
 func TestSpawnWithContext(t *testing.T) {
+	t.Parallel()
 	type parentCtx struct {
 		BaseValue int
 	}
@@ -399,6 +411,7 @@ func TestSpawnWithContext(t *testing.T) {
 }
 
 func TestActorDone_NotifiesParent(t *testing.T) {
+	t.Parallel()
 	parentMachine, _ := NewMachine[struct{}]("parent").
 		WithInitial("active").
 		State("active").
@@ -439,6 +452,7 @@ func TestActorDone_NotifiesParent(t *testing.T) {
 }
 
 func TestConcurrentSpawning(t *testing.T) {
+	t.Parallel()
 	parentMachine := buildParentMachine()
 	childMachine := buildSimpleChildMachine()
 
@@ -472,6 +486,7 @@ func TestConcurrentSpawning(t *testing.T) {
 }
 
 func TestSpawn_WithOnError(t *testing.T) {
+	t.Parallel()
 	// Test that WithOnError option can be set (error path reserved for future use)
 	parentMachine, _ := NewMachine[parentContext]("parent").
 		WithInitial("active").
@@ -516,6 +531,7 @@ func TestSpawn_WithOnError(t *testing.T) {
 }
 
 func TestSpawn_AllOptions(t *testing.T) {
+	t.Parallel()
 	// Test spawning with all options combined
 	parentMachine, _ := NewMachine[parentContext]("parent").
 		WithInitial("active").

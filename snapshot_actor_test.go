@@ -10,6 +10,7 @@ import (
 )
 
 func TestSnapshot_CapturesActorMetadata(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	childMachine, err := statekit.NewMachine[ctx]("child").
@@ -78,6 +79,7 @@ func TestSnapshot_CapturesActorMetadata(t *testing.T) {
 }
 
 func TestSnapshot_MultipleActors(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	childMachine, err := statekit.NewMachine[ctx]("child").
@@ -131,6 +133,7 @@ func TestSnapshot_MultipleActors(t *testing.T) {
 }
 
 func TestSnapshot_NoActors(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	machine, err := statekit.NewMachine[ctx]("test").
@@ -154,6 +157,7 @@ func TestSnapshot_NoActors(t *testing.T) {
 }
 
 func TestSnapshot_ActorMetadataSerializable(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	childMachine, err := statekit.NewMachine[ctx]("child").
@@ -220,6 +224,7 @@ func TestSnapshot_ActorMetadataSerializable(t *testing.T) {
 }
 
 func TestSnapshot_InvokedMachineMetadata(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	// Create child machine

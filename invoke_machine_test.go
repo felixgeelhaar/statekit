@@ -25,6 +25,7 @@ func createWorkerChildMachine() *ir.MachineConfig[struct{}] {
 }
 
 func TestInvokeMachine_Basic(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	// Create child machine
@@ -79,6 +80,7 @@ func TestInvokeMachine_Basic(t *testing.T) {
 }
 
 func TestInvokeMachine_OnDone(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	// Create a child machine that starts in "working" and can transition to "done" (final)
@@ -144,6 +146,7 @@ func TestInvokeMachine_OnDone(t *testing.T) {
 }
 
 func TestInvokeMachine_StopOnParentExit(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	childMachine, err := statekit.NewMachine[ctx]("child").
@@ -196,6 +199,7 @@ func TestInvokeMachine_StopOnParentExit(t *testing.T) {
 }
 
 func TestInvokeMachine_WithID(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	childMachine, err := statekit.NewMachine[ctx]("child").
@@ -240,6 +244,7 @@ func TestInvokeMachine_WithID(t *testing.T) {
 }
 
 func TestInvokeMachine_MultipleInvocations(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	childMachine, err := statekit.NewMachine[ctx]("child").
@@ -296,6 +301,7 @@ func TestInvokeMachine_MultipleInvocations(t *testing.T) {
 }
 
 func TestInvokeMachine_BuilderValidation(t *testing.T) {
+	t.Parallel()
 	type ctx struct{}
 
 	// Build should succeed even if child machine ref doesn't exist

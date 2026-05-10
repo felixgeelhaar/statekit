@@ -9,6 +9,7 @@ import (
 
 // TestParallelState_Basic tests basic parallel state entry
 func TestParallelState_Basic(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("parallel_basic").
 		WithInitial("active").
 		State("active").Parallel().
@@ -54,6 +55,7 @@ func TestParallelState_Basic(t *testing.T) {
 
 // TestParallelState_Matches tests the Matches function with parallel states
 func TestParallelState_Matches(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("parallel_matches").
 		WithInitial("active").
 		State("active").Parallel().
@@ -98,6 +100,7 @@ func TestParallelState_Matches(t *testing.T) {
 
 // TestParallelState_EventBroadcast tests event broadcasting to regions
 func TestParallelState_EventBroadcast(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		Region1Events int
 		Region2Events int
@@ -167,6 +170,7 @@ func TestParallelState_EventBroadcast(t *testing.T) {
 
 // TestParallelState_IndependentTransitions tests regions transitioning independently
 func TestParallelState_IndependentTransitions(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("parallel_independent").
 		WithInitial("active").
 		State("active").Parallel().
@@ -220,6 +224,7 @@ func TestParallelState_IndependentTransitions(t *testing.T) {
 
 // TestParallelState_ExitOnParentTransition tests exiting parallel via parent transition
 func TestParallelState_ExitOnParentTransition(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		EntryCount int
 		ExitCount  int
@@ -293,6 +298,7 @@ func TestParallelState_ExitOnParentTransition(t *testing.T) {
 
 // TestParallelState_EntryOrder tests entry action ordering
 func TestParallelState_EntryOrder(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		Order []string
 	}
@@ -343,6 +349,7 @@ func TestParallelState_EntryOrder(t *testing.T) {
 
 // TestParallelState_NativeExport tests Native JSON export of parallel states
 func TestParallelState_NativeExport(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("parallel").
 		WithInitial("active").
 		State("active").Parallel().
@@ -371,6 +378,7 @@ func TestParallelState_NativeExport(t *testing.T) {
 
 // TestParallelState_Validation tests validation rules for parallel states
 func TestParallelState_Validation(t *testing.T) {
+	t.Parallel()
 	t.Run("parallel with no regions fails", func(t *testing.T) {
 		_, err := NewMachine[struct{}]("no_regions").
 			WithInitial("active").
@@ -401,6 +409,7 @@ func TestParallelState_Validation(t *testing.T) {
 
 // TestParallelState_TransitionToParallel tests transitioning into a parallel state
 func TestParallelState_TransitionToParallel(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("transition_to_parallel").
 		WithInitial("idle").
 		State("idle").
@@ -450,6 +459,7 @@ func TestParallelState_TransitionToParallel(t *testing.T) {
 
 // TestParallelState_SimpleWithTransitions tests parallel state with basic transitions
 func TestParallelState_SimpleWithTransitions(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("parallel_simple").
 		WithInitial("active").
 		State("active").Parallel().

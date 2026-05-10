@@ -10,6 +10,7 @@ import (
 
 // TestHistoryState_ShallowWithTransition tests shallow history with proper exit/enter
 func TestHistoryState_ShallowWithTransition(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("shallow_history").
 		WithInitial("active").
 		State("active").
@@ -64,6 +65,7 @@ func TestHistoryState_ShallowWithTransition(t *testing.T) {
 
 // TestHistoryState_ShallowDefault tests that default is used when no history exists
 func TestHistoryState_ShallowDefault(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("shallow_default").
 		WithInitial("paused").
 		State("active").
@@ -102,6 +104,7 @@ func TestHistoryState_ShallowDefault(t *testing.T) {
 
 // TestHistoryState_DeepBasic tests deep history that remembers the full leaf path
 func TestHistoryState_DeepBasic(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("deep_history").
 		WithInitial("active").
 		State("active").
@@ -165,6 +168,7 @@ func TestHistoryState_DeepBasic(t *testing.T) {
 
 // TestHistoryState_Validation tests validation rules for history states
 func TestHistoryState_Validation(t *testing.T) {
+	t.Parallel()
 	t.Run("history state without parent fails", func(t *testing.T) {
 		// Create a machine with a history state at root level (invalid)
 		machine := ir.NewMachineConfig[struct{}]("test", "hist", struct{}{})
@@ -241,6 +245,7 @@ func TestHistoryState_Validation(t *testing.T) {
 
 // TestHistoryState_NativeExport tests that history states export correctly to Native JSON
 func TestHistoryState_NativeExport(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("history_test").
 		WithInitial("active").
 		State("active").
@@ -269,6 +274,7 @@ func TestHistoryState_NativeExport(t *testing.T) {
 
 // TestHistoryState_MultipleExitsAndReturns tests history across multiple exit/return cycles
 func TestHistoryState_MultipleExitsAndReturns(t *testing.T) {
+	t.Parallel()
 	machine, err := NewMachine[struct{}]("multiple_cycles").
 		WithInitial("active").
 		State("active").
@@ -336,6 +342,7 @@ func TestHistoryState_MultipleExitsAndReturns(t *testing.T) {
 
 // TestHistoryState_ShallowVsDeep tests the difference between shallow and deep history
 func TestHistoryState_ShallowVsDeep(t *testing.T) {
+	t.Parallel()
 	// Create a machine with nested states to test shallow vs deep
 	machine, err := NewMachine[struct{}]("shallow_vs_deep").
 		WithInitial("main").

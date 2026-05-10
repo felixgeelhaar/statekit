@@ -7,6 +7,7 @@ import (
 )
 
 func TestPersistentInterpreter_Basic(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, err := NewMachine[struct{}]("test").
@@ -64,6 +65,7 @@ func TestPersistentInterpreter_Basic(t *testing.T) {
 }
 
 func TestPersistentInterpreter_Hydration(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -100,6 +102,7 @@ func TestPersistentInterpreter_Hydration(t *testing.T) {
 }
 
 func TestPersistentInterpreter_WithSnapshot(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	type Context struct {
@@ -151,6 +154,7 @@ func TestPersistentInterpreter_WithSnapshot(t *testing.T) {
 }
 
 func TestPersistentInterpreter_ConcurrencyConflict(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -189,6 +193,7 @@ func TestPersistentInterpreter_ConcurrencyConflict(t *testing.T) {
 }
 
 func TestPersistentInterpreter_NoTransitionNoEvent(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -213,6 +218,7 @@ func TestPersistentInterpreter_NoTransitionNoEvent(t *testing.T) {
 }
 
 func TestPersistentInterpreter_MultipleEvents(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -258,6 +264,7 @@ func TestPersistentInterpreter_MultipleEvents(t *testing.T) {
 }
 
 func TestPersistentInterpreter_SnapshotOnFinal(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -293,6 +300,7 @@ func TestPersistentInterpreter_SnapshotOnFinal(t *testing.T) {
 }
 
 func TestReplayEvents(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -324,6 +332,7 @@ func TestReplayEvents(t *testing.T) {
 }
 
 func TestReplayToVersion(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -355,6 +364,7 @@ func TestReplayToVersion(t *testing.T) {
 }
 
 func TestMemoryEventStore_LoadFromVersion(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	store := NewMemoryEventStore()
 
@@ -377,6 +387,7 @@ func TestMemoryEventStore_LoadFromVersion(t *testing.T) {
 }
 
 func TestMemorySnapshotStore_LoadLatest(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	store := NewMemorySnapshotStore[struct{}]()
 
@@ -402,6 +413,7 @@ func TestMemorySnapshotStore_LoadLatest(t *testing.T) {
 }
 
 func TestPersistentInterpreter_ForceSnapshot(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -432,6 +444,7 @@ func TestPersistentInterpreter_ForceSnapshot(t *testing.T) {
 }
 
 func TestPersistentInterpreter_WithContext(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	type OrderContext struct {
@@ -490,6 +503,7 @@ func TestPersistentInterpreter_WithContext(t *testing.T) {
 }
 
 func TestPersistentInterpreter_HierarchicalHydration(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("nested").
@@ -524,6 +538,7 @@ func TestPersistentInterpreter_HierarchicalHydration(t *testing.T) {
 }
 
 func TestPersistentInterpreter_EmptyStream(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -553,6 +568,7 @@ func TestPersistentInterpreter_EmptyStream(t *testing.T) {
 }
 
 func TestPersistentInterpreter_Done(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	machine, _ := NewMachine[struct{}]("test").
@@ -579,6 +595,7 @@ func TestPersistentInterpreter_Done(t *testing.T) {
 }
 
 func TestSnapshotByTime(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	// Use alternating states so events are actually recorded

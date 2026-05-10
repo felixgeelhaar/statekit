@@ -17,6 +17,7 @@ type PropertyContext struct {
 // TestProperty_StateAlwaysValid verifies that after any sequence of events,
 // the interpreter is always in a valid, declared state.
 func TestProperty_StateAlwaysValid(t *testing.T) {
+	t.Parallel()
 	machine := buildPropertyMachine(t)
 	validStates := map[StateID]bool{
 		"idle":       true,
@@ -60,6 +61,7 @@ func TestProperty_StateAlwaysValid(t *testing.T) {
 
 // TestProperty_ContextNeverNil verifies that context is never nil after any operation.
 func TestProperty_ContextNeverNil(t *testing.T) {
+	t.Parallel()
 	machine, _ := NewMachine[*PropertyContext]("context_test").
 		WithInitial("idle").
 		WithContext(&PropertyContext{}).
@@ -104,6 +106,7 @@ func TestProperty_ContextNeverNil(t *testing.T) {
 // TestProperty_FinalStateIsTerminal verifies that once in a final state,
 // no transitions occur.
 func TestProperty_FinalStateIsTerminal(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		TransitionCount int
 	}
@@ -165,6 +168,7 @@ func TestProperty_FinalStateIsTerminal(t *testing.T) {
 
 // TestProperty_GuardsPreventTransitions verifies that guards properly block transitions.
 func TestProperty_GuardsPreventTransitions(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		Threshold int
 		Value     int
@@ -215,6 +219,7 @@ func TestProperty_GuardsPreventTransitions(t *testing.T) {
 
 // TestProperty_MatchesReflectsCurrentState verifies Matches() consistency.
 func TestProperty_MatchesReflectsCurrentState(t *testing.T) {
+	t.Parallel()
 	machine := buildPropertyMachine(t)
 	states := []StateID{"idle", "loading", "processing", "success", "error"}
 
@@ -263,6 +268,7 @@ func TestProperty_MatchesReflectsCurrentState(t *testing.T) {
 
 // TestProperty_HierarchyMatchesAncestors verifies ancestor matching in nested states.
 func TestProperty_HierarchyMatchesAncestors(t *testing.T) {
+	t.Parallel()
 	type Ctx struct{}
 
 	// Build a simple nested machine using the exact same pattern as pedestrian_light example
@@ -332,6 +338,7 @@ func TestProperty_HierarchyMatchesAncestors(t *testing.T) {
 
 // TestProperty_SnapshotRestorePreservesState verifies snapshot/restore consistency.
 func TestProperty_SnapshotRestorePreservesState(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		Counter int
 	}
@@ -380,6 +387,7 @@ func TestProperty_SnapshotRestorePreservesState(t *testing.T) {
 
 // TestProperty_UpdateContextAppliesChanges verifies context updates are consistent.
 func TestProperty_UpdateContextAppliesChanges(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		Values []int
 	}
@@ -425,6 +433,7 @@ func TestProperty_UpdateContextAppliesChanges(t *testing.T) {
 
 // TestProperty_EventOrderMatters verifies that event order produces deterministic results.
 func TestProperty_EventOrderMatters(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		Path []string
 	}
