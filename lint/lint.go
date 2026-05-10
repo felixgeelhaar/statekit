@@ -170,6 +170,8 @@ func CheckTyped[C any](l *Linter, machine *ir.MachineConfig[C]) *Result {
 	checkUnusedGuards(l, machine, result)
 	checkInvokeMissingOnError(l, machine, result)
 	checkInvokeIDCollision(l, machine, result)
+	checkAutoForwardRedundancy(l, machine, result)
+	checkDeepNesting(l, machine, result)
 
 	// Sort diagnostics by severity, then state
 	sort.Slice(result.Diagnostics, func(i, j int) bool {
@@ -506,17 +508,80 @@ func checkInvokeIDCollision[C any](l *Linter, machine *ir.MachineConfig[C], resu
 	}
 }
 
+// checkAutoForwardRedundancy warns when a state's invoked-machine
+// AutoForward list includes an event the same state declares a
+// transition for. The parent's transition fires first and consumes
+// the event, so the AutoForward entry never reaches the child —
+// almost certainly a footgun.
+func checkAutoForwardRedundancy[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules["auto-forward-redundancy"] {
+		return
+	}
+
+	for id, state := range machine.States {
+		if len(state.MachineInvocations) == 0 {
+			continue
+		}
+		// Collect events handled by the state itself.
+		handled := make(map[ir.EventType]struct{}, len(state.Transitions))
+		for _, t := range state.Transitions {
+			handled[t.Event] = struct{}{}
+		}
+		for _, inv := range state.MachineInvocations {
+			for _, evt := range inv.AutoForward {
+				if _, ok := handled[evt]; ok {
+					name := inv.ID
+					if name == "" {
+						name = inv.MachineRef
+					}
+					result.Diagnostics = append(result.Diagnostics, Diagnostic{
+						Severity: SeverityWarning,
+						Rule:     "auto-forward-redundancy",
+						State:    id,
+						Event:    evt,
+						Message:  fmt.Sprintf("event %q is forwarded to child %q but the parent already handles it — the parent transition fires first", evt, name),
+					})
+				}
+			}
+		}
+	}
+}
+
+// checkDeepNesting warns when state hierarchy depth exceeds the
+// cognitive-load threshold. Five-deep is a soft signal that the
+// machine has grown into separate concerns that may be better split
+// into invoked child machines.
+func checkDeepNesting[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules["deep-nesting"] {
+		return
+	}
+	const threshold = 5
+	for id := range machine.States {
+		depth := len(machine.GetAncestors(id))
+		if depth >= threshold {
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{
+				Severity: SeverityInfo,
+				Rule:     "deep-nesting",
+				State:    id,
+				Message:  fmt.Sprintf("state nests %d levels deep — consider splitting into a child machine via InvokeMachine", depth),
+			})
+		}
+	}
+}
+
 // Rule names for reference
 const (
-	RuleUnreachable          = "unreachable"
-	RuleDeadEnd              = "dead-end"
-	RuleNonDeterminism       = "non-determinism"
-	RuleCompoundInitial      = "compound-initial"
-	RuleSelfTransition       = "self-transition"
-	RuleUnusedAction         = "unused-action"
-	RuleUnusedGuard          = "unused-guard"
-	RuleInvokeMissingOnError = "invoke-missing-onerror"
-	RuleInvokeIDCollision    = "invoke-id-collision"
+	RuleUnreachable           = "unreachable"
+	RuleDeadEnd               = "dead-end"
+	RuleNonDeterminism        = "non-determinism"
+	RuleCompoundInitial       = "compound-initial"
+	RuleSelfTransition        = "self-transition"
+	RuleUnusedAction          = "unused-action"
+	RuleUnusedGuard           = "unused-guard"
+	RuleInvokeMissingOnError  = "invoke-missing-onerror"
+	RuleInvokeIDCollision     = "invoke-id-collision"
+	RuleAutoForwardRedundancy = "auto-forward-redundancy"
+	RuleDeepNesting           = "deep-nesting"
 )
 
 // AllRules returns all available rule names.
@@ -531,5 +596,7 @@ func AllRules() []string {
 		RuleUnusedGuard,
 		RuleInvokeMissingOnError,
 		RuleInvokeIDCollision,
+		RuleAutoForwardRedundancy,
+		RuleDeepNesting,
 	}
 }

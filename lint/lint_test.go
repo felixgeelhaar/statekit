@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/felixgeelhaar/statekit"
+	"github.com/felixgeelhaar/statekit/internal/ir"
 	"github.com/felixgeelhaar/statekit/lint"
 )
 
@@ -594,4 +595,110 @@ func TestLint_AllRulesIncludesNew(t *testing.T) {
 		}
 	}
 	_ = strings.Join // keep import alive
+}
+
+func TestLint_AutoForwardRedundancy(t *testing.T) {
+	t.Parallel()
+	// Parent state declares a transition on TICK *and* asks
+	// InvokeMachine to AutoForward TICK to the child. The parent
+	// transition fires first, so the AutoForward never reaches the
+	// child — that's the footgun the rule catches.
+	childMachine, err := statekit.NewMachine[struct{}]("child").
+		WithInitial("a").
+		State("a").Done().
+		Build()
+	if err != nil {
+		t.Fatalf("child build: %v", err)
+	}
+
+	machine, err := statekit.NewMachine[struct{}]("parent").
+		WithInitial("active").
+		WithChildMachine("worker", func(_ struct{}, _ func(statekit.Event) error) ir.ChildInterpreter {
+			return statekit.NewInterpreter(childMachine)
+		}).
+		State("active").
+		On("TICK").Target("active").End().
+		InvokeMachine("worker").ID("w").AutoForward("TICK").OnDone("active").OnError("active").End().
+		Done().
+		Build()
+	if err != nil {
+		t.Fatalf("parent build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleAutoForwardRedundancy && d.State == "active" && d.Event == "TICK" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected auto-forward-redundancy diagnostic, got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_AutoForwardOK(t *testing.T) {
+	t.Parallel()
+	childMachine, err := statekit.NewMachine[struct{}]("c").
+		WithInitial("a").
+		State("a").Done().
+		Build()
+	if err != nil {
+		t.Fatalf("child build: %v", err)
+	}
+
+	machine, err := statekit.NewMachine[struct{}]("p").
+		WithInitial("active").
+		WithChildMachine("worker", func(_ struct{}, _ func(statekit.Event) error) ir.ChildInterpreter {
+			return statekit.NewInterpreter(childMachine)
+		}).
+		State("active").
+		InvokeMachine("worker").ID("w").AutoForward("TICK").OnDone("active").OnError("active").End().
+		Done().
+		Build()
+	if err != nil {
+		t.Fatalf("parent build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleAutoForwardRedundancy {
+			t.Errorf("did not expect redundancy diagnostic, got: %v", d)
+		}
+	}
+}
+
+func TestLint_DeepNesting(t *testing.T) {
+	t.Parallel()
+	machine, err := statekit.NewMachine[struct{}]("deep").
+		WithInitial("l1").
+		State("l1").
+		WithInitial("l2").
+		State("l2").
+		WithInitial("l3").
+		State("l3").
+		WithInitial("l4").
+		State("l4").
+		WithInitial("l5").
+		State("l5").
+		WithInitial("leaf").
+		State("leaf").End().End().End().End().End().
+		Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleDeepNesting {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected deep-nesting diagnostic for leaf, got: %v", result.Diagnostics)
+	}
 }
