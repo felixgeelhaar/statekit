@@ -544,6 +544,134 @@
       "severity": "high",
       "reason": "False positive: Go function name in interpreter.go, not an API key",
       "created_at": "2026-05-10T07:07:52.364383Z"
+    },
+    {
+      "fingerprint": "77c01119a5aea9cea8391f244ba1cfe3eeba2d3241c9c6d99b3e28b3137d8ab6",
+      "rule_id": "SEC-384",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "018633364b3bc45ef2ddf4a5aa27add5084a619d8ce22d693d40799504dcefb5",
+      "rule_id": "SEC-384",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "ca36f09481b134ae20837f084cb7ed37156861f226d272fe875614be2249ae82",
+      "rule_id": "SEC-505",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "e69c52b213c9670e1c52c6b8339a34af58cfb706923860d2808b082fba598e99",
+      "rule_id": "SEC-505",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "4c8baaff89ae00b86df2d644d5b159d04a8941a6c7706aba9599d1fb7bba450c",
+      "rule_id": "SEC-506",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "5e6a61f1aadefe93cdffa7b8a511c5e4bd5c43f1da4f95dae902dabced68ac66",
+      "rule_id": "SEC-506",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "00c1fcbf2591102aa594f0b97bb55edcb2340551b4c48ccd22dd8b790c4dc2e3",
+      "rule_id": "SEC-525",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "21a6ebde33b941f34e06da0ea9dd7ad8bcfeb63ea2e3b93d59eb0b2a74c5f6d5",
+      "rule_id": "SEC-525",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "882ec550e40a361609ae71255cdb2bec6af2c6c4456e069a631c5a19e67e5f8b",
+      "rule_id": "SEC-543",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "1392092d0636e4f8466b158d220b64eac363dd0548c6648da606560267041944",
+      "rule_id": "SEC-543",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "7dc7b974c28424a7962a9874bcab1ba7e939018ad38472087076260fb857f7e2",
+      "rule_id": "SEC-621",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "5d055486c6c243c8c23e510195e43c155b8baeeea30b80be1c450ee2e27b20a9",
+      "rule_id": "SEC-621",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "fa4025f31391e64f0dd315c8b540580bf92f85d3cbc8acadb669d9d7d9e29e75",
+      "rule_id": "SEC-678",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "25f5526254227a33beafbb5e85559ac9c731a50754ed0d164739339346a24aec",
+      "rule_id": "SEC-678",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "8b2f3d1550146a4ed65fc08b590de2197612bb2c2360d5bef6cae2456edba5a8",
+      "rule_id": "SEC-679",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "28d23dff5b896c6414d39be8047d408a21a2053b5a830858881ffa7a0b03e5b8",
+      "rule_id": "SEC-679",
+      "file_path": "README.md",
+      "severity": "high",
+      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
+      "created_at": "2026-05-10T09:30:00Z"
     }
   ]
 }
