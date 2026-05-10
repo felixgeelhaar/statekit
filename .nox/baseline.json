@@ -263,7 +263,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Braintree API key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "c3d7b9b8dc3a0bc4eb39fb4bf16ca6dc322d60364953037c5010baeba6d0b709",
@@ -271,7 +271,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Braintree API key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "948fe75536707f1ace05d7c3384fe2d9841d370c667bfe7c66256dae0dadf6eb",
@@ -279,7 +279,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Maven Repository Token - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "bce1473b326122e83122d0330e7856c0aac111ef7a09cd563656d9d8d6b751f7",
@@ -287,7 +287,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Maven Repository Token - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "e0825094082a7155918ad19bbb24aca685d6c55fa5587180398f0de4834228b3",
@@ -295,7 +295,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected NuGet API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "3bd277ce6ca443c45873e6c0ccdb5cd3f981085198b1a09bec778cb57cf5fb82",
@@ -303,7 +303,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected NuGet API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "b17b4b1fb7af0096f54276652348d8dee5857d26ece6b6c9d4628ebb61453fa1",
@@ -311,7 +311,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected DigitalOcean API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "d3834eea16439c92d9aee0ffbd107e97f52318d75e71fecc74a41b8f093268bb",
@@ -319,7 +319,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected DigitalOcean API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "c5f91b36f1789d2833471736e6ea0e7f3e96b624042bfab4f6cb003523c24540",
@@ -327,7 +327,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Datadog API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "fc005400cd891de323c978d38257c5032ca6651d472bdb14124c8b6f5ee14b74",
@@ -335,7 +335,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Datadog API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "cbaa3bf96328fb78680bcf26807d2ebbca82253914de49a2a2c7caa82891089f",
@@ -343,7 +343,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "68dc02f272a1ba2e4c269927c76cf7072cb3c60f6fb45cabbb22d2be09a7ff97",
@@ -351,7 +351,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "d20747b21528f1b434b440bec3fe9fb0e115709bf142ad199b214563f3d713c2",
@@ -359,7 +359,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "000530dfc799318c6af6214bf5126d4121451c024c7c0f4b067f1f56acb73973",
@@ -367,7 +367,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "6ae1c57dc169276fb595513565d6882af59c93a6f5dc20e39925c328ecce602b",
@@ -375,7 +375,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected SendGrid API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "d261970621795da102d2e924ac11884c1cb597768b4cc3e4369c3ff275fa9347",
@@ -383,7 +383,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected SendGrid API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "de038222685b1d2dbb47654d3150d1ca0f5665360aa0c1b1fbbea1967c24eb7a",
@@ -391,7 +391,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected LOB API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "8a33f9b3000f23300c3c0d6cd5d47403d23c248d57804bf4907a4c3ec49bc12a",
@@ -399,7 +399,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected LOB API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "51a930745a04c6b742811d86326e33f56aaa08542bdce70680cfbf828542f587",
@@ -407,7 +407,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Datadog API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "c9b1393763efc33895571e79ce24ff487dc4d6eca1fd564fd084b0c11f75aa51",
@@ -415,7 +415,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Datadog API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "b71c1c0978c7d21d63f69e11770928d6cf18285171f686889e7652e9f277f708",
@@ -423,7 +423,7 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Grafana API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
     },
     {
       "fingerprint": "77843c19bd6352147e272122d02cff74c8283bec79533187a6ba9d11ba90efe3",
@@ -431,7 +431,119 @@
       "file_path": "README.md",
       "severity": "high",
       "reason": "False positive: Detected Grafana API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00.000000Z"
+      "created_at": "2026-03-25T08:30:00Z"
+    },
+    {
+      "fingerprint": "abff5c8c644e13b684d5bc96c53f7d5c98b5633f728f58269215884d09a64c0b",
+      "rule_id": "AI-006",
+      "file_path": "examples/llm_agent/main.go",
+      "severity": "medium",
+      "reason": "False positive: example/llm_agent prints prompt for demo output, not production logging",
+      "created_at": "2026-05-10T07:06:09.999084Z"
+    },
+    {
+      "fingerprint": "298e486e28eb85310c171d94ecd195f1e4ee3602037b7c64f94313765195dd7b",
+      "rule_id": "AI-028",
+      "file_path": "viz/fuzz_test.go",
+      "severity": "medium",
+      "reason": "False positive: viz/fuzz_test.go is a JSON parser fuzz, no LLM seed needed",
+      "created_at": "2026-05-10T07:06:20.506997Z"
+    },
+    {
+      "fingerprint": "6d283573ea0dfa4b2f403b131da6f8d52cb46dc492be716df3e9d043aae39675",
+      "rule_id": "AI-028",
+      "file_path": "viz/fuzz_test.go",
+      "severity": "medium",
+      "reason": "False positive: viz/fuzz_test.go fuzz seed line, not LLM",
+      "created_at": "2026-05-10T07:06:28.505991Z"
+    },
+    {
+      "fingerprint": "146262a4300305254cddebfce1d2f8e08473c74452aa673119550bbf436d8d39",
+      "rule_id": "AI-028",
+      "file_path": "viz/fuzz_test.go",
+      "severity": "medium",
+      "reason": "False positive: viz/fuzz_test.go fuzz seed line, not LLM",
+      "created_at": "2026-05-10T07:06:36.781078Z"
+    },
+    {
+      "fingerprint": "13fcced20490c6f44108511cd6b8c8ec24fdc845045864ccdd4ce55214cde374",
+      "rule_id": "AI-028",
+      "file_path": "viz/fuzz_test.go",
+      "severity": "medium",
+      "reason": "False positive: viz/fuzz_test.go fuzz seed line, not LLM",
+      "created_at": "2026-05-10T07:06:43.182859Z"
+    },
+    {
+      "fingerprint": "37b10e9357cb0aa52b442a2da32eb7f0e45553e2b7c3a747750a4d79f296b8bb",
+      "rule_id": "DATA-001",
+      "file_path": "ai/ai_test.go",
+      "severity": "medium",
+      "reason": "False positive: example.com email in ai/ai_test.go test fixture",
+      "created_at": "2026-05-10T07:06:50.375845Z"
+    },
+    {
+      "fingerprint": "db2c0ab8be7fd3900b2e2381f725f5558b7f1743e01de20665da35d57e3f5f57",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/deploy.yml",
+      "severity": "high",
+      "reason": "First-party actions/setup-node: trusted GitHub-published action, dependabot-managed",
+      "created_at": "2026-05-10T07:06:57.956878Z"
+    },
+    {
+      "fingerprint": "58fc8537d4f7e93d97a662f846e774c7a761b26001946694e93d3baaa9451480",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/deploy.yml",
+      "severity": "high",
+      "reason": "First-party actions/upload-pages-artifact: trusted, dependabot-managed",
+      "created_at": "2026-05-10T07:07:05.190358Z"
+    },
+    {
+      "fingerprint": "fc3d5d3deb17459a6080c7d77ac99fbe3c7dc147f37afcd8764ef72e6bf45883",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/deploy.yml",
+      "severity": "high",
+      "reason": "First-party actions/deploy-pages: trusted, dependabot-managed",
+      "created_at": "2026-05-10T07:07:12.301121Z"
+    },
+    {
+      "fingerprint": "03abb243a80fbe96c0f007aa57e08372c169a47d9c1ba7271828ca8600191180",
+      "rule_id": "SEC-085",
+      "file_path": "docs/src/components/Layout.astro",
+      "severity": "high",
+      "reason": "False positive: JSON-LD license URL in Layout.astro, not embedded credential",
+      "created_at": "2026-05-10T07:07:22.787149Z"
+    },
+    {
+      "fingerprint": "028b196967f26443ea9a919e5da370ff6303c6a61eb954861f7297c172be0b88",
+      "rule_id": "SEC-163",
+      "file_path": "aiplugin/aiplugin_test.go",
+      "severity": "medium",
+      "reason": "False positive: TestTokenCounter_Concurrent loop counters in aiplugin test, not a secret",
+      "created_at": "2026-05-10T07:07:30.354836Z"
+    },
+    {
+      "fingerprint": "723239771a6e085cd1f8120c0331bf0fefbc9b7861f5d2d697dfbc3059804508",
+      "rule_id": "SEC-574",
+      "file_path": "interpreter.go",
+      "severity": "high",
+      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go, not an API key",
+      "created_at": "2026-05-10T07:07:38.304833Z"
+    },
+    {
+      "fingerprint": "cf23c57cd0c97a2fe36fcbb36e60bb2cf708b5774817ec8b3c5a3e4d1dfa1bb4",
+      "rule_id": "SEC-574",
+      "file_path": "interpreter.go",
+      "severity": "high",
+      "reason": "False positive: Go function name in interpreter.go, not an API key",
+      "created_at": "2026-05-10T07:07:45.375217Z"
+    },
+    {
+      "fingerprint": "7a3d3ba1db2930d95717e5ce5376b7543c6f7f7d0f2b224034f636bfe2196fc4",
+      "rule_id": "SEC-574",
+      "file_path": "interpreter.go",
+      "severity": "high",
+      "reason": "False positive: Go function name in interpreter.go, not an API key",
+      "created_at": "2026-05-10T07:07:52.364383Z"
     }
   ]
 }

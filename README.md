@@ -3,6 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/felixgeelhaar/statekit.svg)](https://pkg.go.dev/github.com/felixgeelhaar/statekit)
 [![Go Report Card](https://goreportcard.com/badge/github.com/felixgeelhaar/statekit)](https://goreportcard.com/report/github.com/felixgeelhaar/statekit)
 [![CI](https://github.com/felixgeelhaar/statekit/actions/workflows/ci.yml/badge.svg)](https://github.com/felixgeelhaar/statekit/actions/workflows/ci.yml)
+[![Security: A](https://raw.githubusercontent.com/felixgeelhaar/statekit/main/.nox/security-badge.svg)](https://github.com/felixgeelhaar/statekit/security)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Stop modeling order, payment, and incident lifecycles with switch statements and ad-hoc FSMs.** Statekit is a typed statechart library for Go: hierarchical states, guards, actions, delayed and parallel transitions, with built-in visualization and lint.

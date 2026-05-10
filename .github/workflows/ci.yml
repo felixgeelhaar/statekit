@@ -103,6 +103,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate remediation plan
+        if: always() && hashFiles('nox-results/findings.json') != ''
+        run: |
+          nox fix --plan --input nox-results/findings.json --output nox-results/fix-plan.json || true
+          if [ -s nox-results/fix-plan.json ]; then
+            echo "## Remediation plan" >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat nox-results/fix-plan.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+        continue-on-error: true
+
+      - name: Refresh security badge
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: nox badge --label security --output .nox/security-badge.svg || true
+        continue-on-error: true
+
       - name: Upload Nox results
         uses: actions/upload-artifact@v7
         with:
