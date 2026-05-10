@@ -4,6 +4,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    # Weekly nox sweep — catches new CVEs in deps even when no commits land.
+    - cron: '17 6 * * 1'
 
 permissions:
   contents: read
@@ -83,9 +86,12 @@ jobs:
           cache: true
 
       - name: Install Nox
+        env:
+          NOX_VERSION: 0.8.1
         run: |
-          curl -sL https://github.com/nox-hq/nox/releases/download/v0.7.0/nox_0.7.0_linux_amd64.tar.gz | tar xz
+          curl -sL "https://github.com/nox-hq/nox/releases/download/v${NOX_VERSION}/nox_${NOX_VERSION}_linux_amd64.tar.gz" | tar xz
           sudo mv nox /usr/local/bin/
+          nox version
 
       - name: Run Nox Security Scan
         run: nox scan . -format json,sarif -output nox-results
@@ -116,9 +122,40 @@ jobs:
         continue-on-error: true
 
       - name: Refresh security badge
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule')
         run: nox badge --label security --output .nox/security-badge.svg || true
         continue-on-error: true
+
+      - name: Check baseline status
+        if: always()
+        run: |
+          nox baseline status > nox-results/baseline-status.txt 2>&1 || true
+          if [ -s nox-results/baseline-status.txt ]; then
+            echo "## Baseline status" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat nox-results/baseline-status.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+        continue-on-error: true
+
+      - name: Gate on unbaselined critical/high findings
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        run: |
+          if [ ! -f nox-results/findings.json ]; then
+            echo "no findings.json — skipping gate"
+            exit 0
+          fi
+          # Count findings whose severity is critical or high AND that are
+          # NOT already in the baseline. nox emits suppressed=true on
+          # baselined entries; the gate only fails on net-new issues so
+          # day-to-day commits aren't blocked by historic noise.
+          new=$(jq '[.findings[]? | select((.severity == "critical" or .severity == "high") and (.suppressed != true))] | length' nox-results/findings.json 2>/dev/null || echo 0)
+          echo "unbaselined critical/high findings: $new"
+          if [ "$new" -gt 0 ]; then
+            echo "::error::Net-new critical or high findings detected. Run 'nox baseline add' or remediate before merging."
+            jq '.findings[] | select((.severity == "critical" or .severity == "high") and (.suppressed != true)) | {severity, rule_id, file: .location.file_path, line: .location.start_line, message}' nox-results/findings.json
+            exit 1
+          fi
 
       - name: Upload Nox results
         uses: actions/upload-artifact@v7
