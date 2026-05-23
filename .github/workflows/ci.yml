@@ -2,11 +2,23 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
   schedule:
     # Weekly nox sweep — catches new CVEs in deps even when no commits land.
     - cron: '17 6 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
