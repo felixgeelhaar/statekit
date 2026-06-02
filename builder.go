@@ -117,6 +117,9 @@ type TransitionBuilder[C any] struct {
 
 	// Raised internal events (v1.x)
 	raise []EventType
+
+	// Internal transition flag — run actions without exit/entry (v1.x)
+	internal bool
 }
 
 // NewMachine creates a new MachineBuilder with the given ID
@@ -251,6 +254,7 @@ func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machin
 		trans.Actions = append(trans.Actions, tb.actions...)
 		trans.Delay = tb.delay // Delayed transitions (v2.0)
 		trans.Raise = append(trans.Raise, tb.raise...)
+		trans.Internal = tb.internal // Internal transitions (v1.x)
 		state.Transitions = append(state.Transitions, trans)
 	}
 
@@ -670,6 +674,16 @@ func (b *TransitionBuilder[C]) Do(action ActionType) *TransitionBuilder[C] {
 // to the caller and before any externally sent event.
 func (b *TransitionBuilder[C]) Raise(events ...EventType) *TransitionBuilder[C] {
 	b.raise = append(b.raise, events...)
+	return b
+}
+
+// Internal marks the transition as internal (v1.x): its actions run without
+// exiting or re-entering the source state — entry/exit hooks do not fire and
+// the active state does not change. Target is optional; when set it must be
+// the owning state. Contrast with an external self-transition (a plain
+// Target back to the same state), which does exit and re-enter.
+func (b *TransitionBuilder[C]) Internal() *TransitionBuilder[C] {
+	b.internal = true
 	return b
 }
 

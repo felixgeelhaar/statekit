@@ -108,6 +108,11 @@ type TransitionConfig struct {
 	// events are processed in the same macrostep, before control returns to
 	// the caller and before any external event (v1.x).
 	Raise []EventType
+
+	// Internal marks a transition that runs its actions without exiting or
+	// re-entering the source state — no exit/entry hooks, no state change,
+	// no history recording. The target may be empty (v1.x).
+	Internal bool
 }
 
 // HasTag reports whether the state carries the given tag.

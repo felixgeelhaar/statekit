@@ -57,6 +57,9 @@ type VizTransition struct {
 
 	// Raised internal events (v1.x)
 	Raise []string `json:"raise,omitempty"`
+
+	// Internal transition: runs actions without exit/entry (v1.x)
+	Internal bool `json:"internal,omitempty"`
 }
 
 // VizInvoke represents an invoked service.

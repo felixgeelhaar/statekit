@@ -134,5 +134,6 @@ func convertTransition(t *ir.TransitionConfig) viz.VizTransition {
 	for _, r := range t.Raise {
 		vt.Raise = append(vt.Raise, string(r))
 	}
+	vt.Internal = t.Internal
 	return vt
 }
