@@ -63,6 +63,7 @@ Step-by-step migration guides:
 - History states (shallow and deep)
 - Delayed transitions and parallel/orthogonal regions
 - Eventless (`Always`) transitions, `Raise` internal events, and state `Tags`
+- Wildcard (`*`) event handlers, internal transitions, and `Choose` conditional actions
 - Guards, actions, entry/exit hooks
 - Reflection DSL — define machines with struct tags
 - Build-time validation
@@ -257,6 +258,37 @@ Key behaviors:
 - A macrostep settles all eventless transitions and drains raised events before `Start()`/`Send()` returns (bounded to guard against always-true cycles).
 - `HasTag` matches the active leaf, its ancestors, and active parallel-region leaves.
 - All three round-trip through the Native JSON and XState v5 exporters (`always`, `tags`, and `xstate.raise` action descriptors).
+
+## Wildcard Events, Internal Transitions & Choose
+
+**Wildcard `*`** catches any event not handled by a specific transition (exact
+matches always win; it bubbles like any handler). **`Internal()`** runs a
+transition's actions without exiting or re-entering the state — no entry/exit
+hooks, no state change — in contrast to an external self-transition. **`Choose`**
+is a conditional-action combinator: it runs the first branch whose guard passes.
+
+```go
+machine, _ := statekit.NewMachine[Ctx]("ops").
+    WithInitial("running").
+    WithAction("audit", statekit.Choose(
+        statekit.ChooseBranch[Ctx]{When: isAdmin, Then: logAdmin},
+        statekit.ChooseBranch[Ctx]{Then: logUser}, // else
+    )).
+    State("running").
+        On("TICK").Internal().Do("audit").End().  // no exit/entry, no state change
+        On("*").Target("unknown").End().           // catch-all fallback
+        On("STOP").Target("stopped").End().         // exact match beats "*"
+        Done().
+    State("unknown").Final().Done().
+    State("stopped").Final().Done().
+    Build()
+```
+
+Key behaviors:
+- Wildcard `*` is lowest priority within a state and honors guards; child handlers still take priority over ancestors.
+- Internal transitions accept an empty target (or the owning state); build-time validated.
+- `Choose` is a plain `Action[C]` — register it and reference it anywhere an action is used; a branch with a nil `When` is the else.
+- Wildcard and internal transitions round-trip through both exporters (`on["*"]`, `internal: true`).
 
 ## Reflection DSL
 

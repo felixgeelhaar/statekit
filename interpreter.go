@@ -478,20 +478,35 @@ func (i *Interpreter[C]) UpdateContext(fn func(ctx *C)) {
 }
 
 // findMatchingTransition finds the first transition that matches the event and passes guards
+// wildcardEvent matches any event not handled by an exact transition (v1.x).
+const wildcardEvent EventType = "*"
+
 func (i *Interpreter[C]) findMatchingTransition(state *ir.StateConfig, event Event) *ir.TransitionConfig {
+	// First pass: exact event matches take priority over the wildcard.
+	if t := i.matchTransition(state, event, event.Type); t != nil {
+		return t
+	}
+	// Second pass: a "*" wildcard transition catches any other event.
+	// Eventless transitions (empty Type) must not be swallowed by "*".
+	if event.Type != "" {
+		return i.matchTransition(state, event, wildcardEvent)
+	}
+	return nil
+}
+
+// matchTransition returns the first transition for matchEvent whose guard
+// passes (delayed transitions are excluded — those are timer-driven).
+func (i *Interpreter[C]) matchTransition(state *ir.StateConfig, event Event, matchEvent EventType) *ir.TransitionConfig {
 	for _, t := range state.Transitions {
-		if t.Event != event.Type {
+		if t.Event != matchEvent || t.IsDelayed() {
 			continue
 		}
-
-		// Check guard if present
 		if t.Guard != "" {
 			guard := i.machine.GetGuard(t.Guard)
 			if guard != nil && !guard(i.state.Context, event) {
 				continue // Guard failed, try next transition
 			}
 		}
-
 		return t
 	}
 	return nil
@@ -524,6 +539,18 @@ func (i *Interpreter[C]) findMatchingTransitionHierarchical(state *ir.StateConfi
 // Properly exits states up to LCA and enters states down to target
 func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[C], event Event) {
 	transition := source.transition
+
+	// Internal transition (v1.x): run actions without exiting or re-entering
+	// the source state — no exit/entry hooks, no state change, no history.
+	if transition.Internal {
+		currentLeaf := i.state.Value
+		i.callBeforeTransition(currentLeaf, currentLeaf, event)
+		i.executeActions(transition.Actions, event)
+		i.enqueueRaised(transition)
+		i.callAfterTransition(currentLeaf, currentLeaf, event)
+		return
+	}
+
 	sourceStateID := source.state.ID
 	targetStateID := transition.Target
 

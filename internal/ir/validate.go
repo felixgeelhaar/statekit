@@ -275,8 +275,16 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 		for i, trans := range state.Transitions {
 			transPath := slices.Concat(statePath, []string{"transitions", fmt.Sprintf("%d", i)})
 
-			// Check target state exists
-			if _, ok := m.States[trans.Target]; !ok {
+			// Internal transitions (v1.x) run actions without changing state.
+			// The target is optional; when present it must be the owning state.
+			if trans.Internal {
+				if trans.Target != "" && trans.Target != stateID {
+					errs.AddIssue(ErrCodeInvalidTarget,
+						fmt.Sprintf("internal transition target '%s' must be the owning state '%s' (or empty)", trans.Target, stateID),
+						transPath...)
+				}
+			} else if _, ok := m.States[trans.Target]; !ok {
+				// Check target state exists
 				errs.AddIssue(ErrCodeInvalidTarget,
 					fmt.Sprintf("transition target '%s' not found", trans.Target),
 					transPath...)

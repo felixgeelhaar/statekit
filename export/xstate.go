@@ -230,7 +230,17 @@ func collapseTransitionGroup(group []map[string]any) any {
 // including guard, named actions, and raised events (emitted as
 // xstate.raise action descriptors so the raised event survives export).
 func transitionEntry(t *ir.TransitionConfig) map[string]any {
-	entry := map[string]any{"target": string(t.Target)}
+	entry := map[string]any{}
+	// XState treats a transition without a target as internal; emit the
+	// explicit flag too for clarity. Otherwise carry the target.
+	if t.Internal {
+		entry["internal"] = true
+		if t.Target != "" {
+			entry["target"] = string(t.Target)
+		}
+	} else {
+		entry["target"] = string(t.Target)
+	}
 	if t.Guard != "" {
 		entry["guard"] = string(t.Guard)
 	}
