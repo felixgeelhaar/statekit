@@ -103,6 +103,9 @@ const (
 	// Delayed transition errors (v2.0)
 	ErrCodeDelayNegative = "DELAY_NEGATIVE"
 
+	// Eventless ("always") transition errors (v1.x)
+	ErrCodeAlwaysMissingTarget = "ALWAYS_MISSING_TARGET"
+
 	// Parallel state errors (v2.0)
 	ErrCodeParallelNoRegions       = "PARALLEL_NO_REGIONS"
 	ErrCodeParallelRegionNoInitial = "PARALLEL_REGION_NO_INITIAL"
@@ -302,6 +305,39 @@ func Validate[C any](m *MachineConfig[C]) *ValidationError {
 				errs.AddIssue(ErrCodeDelayNegative,
 					"delay cannot be negative",
 					transPath...)
+			}
+		}
+
+		// Validate eventless ("always") transitions (v1.x)
+		for i, trans := range state.Always {
+			alwaysPath := slices.Concat(statePath, []string{"always", fmt.Sprintf("%d", i)})
+
+			// Eventless transitions must declare a target — a guardless,
+			// targetless always would loop forever in the macrostep.
+			if trans.Target == "" {
+				errs.AddIssue(ErrCodeAlwaysMissingTarget,
+					fmt.Sprintf("eventless transition on state '%s' must have a target", stateID),
+					alwaysPath...)
+			} else if _, ok := m.States[trans.Target]; !ok {
+				errs.AddIssue(ErrCodeInvalidTarget,
+					fmt.Sprintf("eventless transition target '%s' not found", trans.Target),
+					alwaysPath...)
+			}
+
+			if trans.Guard != "" {
+				if _, ok := m.Guards[trans.Guard]; !ok {
+					errs.AddIssue(ErrCodeMissingGuard,
+						fmt.Sprintf("guard '%s' is not defined", trans.Guard),
+						alwaysPath...)
+				}
+			}
+
+			for j, actionName := range trans.Actions {
+				if _, ok := m.Actions[actionName]; !ok {
+					errs.AddIssue(ErrCodeMissingAction,
+						fmt.Sprintf("eventless transition action '%s' is not defined", actionName),
+						append(alwaysPath, "actions", fmt.Sprintf("%d", j))...)
+				}
 			}
 		}
 	}

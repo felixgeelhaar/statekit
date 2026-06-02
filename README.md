@@ -62,6 +62,7 @@ Step-by-step migration guides:
 - Hierarchical states with event bubbling
 - History states (shallow and deep)
 - Delayed transitions and parallel/orthogonal regions
+- Eventless (`Always`) transitions, `Raise` internal events, and state `Tags`
 - Guards, actions, entry/exit hooks
 - Reflection DSL — define machines with struct tags
 - Build-time validation
@@ -216,6 +217,46 @@ interp.Start()
 interp.Send(statekit.Event{Type: "TOGGLE_BOLD"})
 // bold: on, italic: off (independent regions)
 ```
+
+## Eventless Transitions, Raise & Tags
+
+**`Always`** transitions fire automatically on state entry (and after every
+transition), choosing the first whose guard passes — ideal for conditional
+routing without an explicit event. **`Raise`** enqueues an internal event that
+is processed in the same step, before control returns and before any external
+event. **`Tags`** categorize states for lightweight querying via `HasTag`.
+
+```go
+machine, _ := statekit.NewMachine[Ctx]("checkout").
+    WithInitial("validating").
+    WithGuard("ok", func(c Ctx, e statekit.Event) bool { return c.Valid }).
+    State("validating").
+        Tags("busy").
+        Always().Target("approved").Guard("ok").End().
+        Always().Target("rejected").End().            // guardless fallback
+        Done().
+    State("approved").
+        On("SHIP").Target("shipping").Raise("NOTIFY").End().  // raise internal event
+        Done().
+    State("shipping").
+        On("NOTIFY").Target("done").End().            // handled in the same step
+        Done().
+    State("rejected").Final().Done().
+    State("done").Final().Done().
+    Build()
+
+interp := statekit.NewInterpreter(machine)
+interp.Start()
+// validating → approved|rejected resolved automatically via Always
+
+fmt.Println(interp.HasTag("busy"))  // true while in a tagged active state
+```
+
+Key behaviors:
+- `Always` transitions are evaluated in declaration order; the first enabled wins. A target is required (build-time validated) to prevent infinite loops.
+- A macrostep settles all eventless transitions and drains raised events before `Start()`/`Send()` returns (bounded to guard against always-true cycles).
+- `HasTag` matches the active leaf, its ancestors, and active parallel-region leaves.
+- All three round-trip through the Native JSON and XState v5 exporters (`always`, `tags`, and `xstate.raise` action descriptors).
 
 ## Reflection DSL
 

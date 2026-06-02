@@ -39,6 +39,15 @@ type StateConfig struct {
 	Exit        []ActionType
 	Transitions []*TransitionConfig
 
+	// Eventless ("always") transitions (v1.x). Evaluated on state entry and
+	// after every transition, in declaration order; the first whose guard
+	// passes is taken. No triggering event is required.
+	Always []*TransitionConfig
+
+	// Tags categorize the state for lightweight querying via Interpreter.HasTag
+	// without enumerating concrete state IDs (v1.x).
+	Tags []string
+
 	// History state fields (v2.0)
 	HistoryType    HistoryType // Shallow or Deep (only for StateTypeHistory)
 	HistoryDefault StateID     // Default target if no history recorded
@@ -94,6 +103,21 @@ type TransitionConfig struct {
 	// Delayed transition fields (v2.0)
 	// When Delay > 0, this is a delayed (after) transition
 	Delay time.Duration
+
+	// Raise enqueues internal events when this transition is taken. Raised
+	// events are processed in the same macrostep, before control returns to
+	// the caller and before any external event (v1.x).
+	Raise []EventType
+}
+
+// HasTag reports whether the state carries the given tag.
+func (s *StateConfig) HasTag(tag string) bool {
+	for _, t := range s.Tags {
+		if t == tag {
+			return true
+		}
+	}
+	return false
 }
 
 // IsDelayed returns true if this is a delayed transition
