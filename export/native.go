@@ -87,20 +87,15 @@ func (e *NativeExporter[C]) convertState(state *ir.StateConfig) *viz.VizState {
 	}
 
 	for _, t := range state.Transitions {
-		vt := viz.VizTransition{
-			Event:   string(t.Event),
-			Target:  string(t.Target),
-			Guard:   string(t.Guard),
-			Actions: make([]string, len(t.Actions)),
-		}
-		for i, a := range t.Actions {
-			vt.Actions[i] = string(a)
-		}
-		if t.IsDelayed() {
-			vt.IsDelayed = true
-			vt.DelayMs = t.Delay.Milliseconds()
-		}
-		vs.Transitions = append(vs.Transitions, vt)
+		vs.Transitions = append(vs.Transitions, convertTransition(t))
+	}
+
+	// Eventless ("always") transitions and tags (v1.x)
+	for _, t := range state.Always {
+		vs.Always = append(vs.Always, convertTransition(t))
+	}
+	if len(state.Tags) > 0 {
+		vs.Tags = append(vs.Tags, state.Tags...)
 	}
 
 	for _, inv := range state.Invocations {
@@ -118,4 +113,26 @@ func (e *NativeExporter[C]) convertState(state *ir.StateConfig) *viz.VizState {
 	}
 
 	return vs
+}
+
+// convertTransition maps an IR transition to its visualization form,
+// including delayed metadata and raised internal events (v1.x).
+func convertTransition(t *ir.TransitionConfig) viz.VizTransition {
+	vt := viz.VizTransition{
+		Event:   string(t.Event),
+		Target:  string(t.Target),
+		Guard:   string(t.Guard),
+		Actions: make([]string, len(t.Actions)),
+	}
+	for i, a := range t.Actions {
+		vt.Actions[i] = string(a)
+	}
+	if t.IsDelayed() {
+		vt.IsDelayed = true
+		vt.DelayMs = t.Delay.Milliseconds()
+	}
+	for _, r := range t.Raise {
+		vt.Raise = append(vt.Raise, string(r))
+	}
+	return vt
 }

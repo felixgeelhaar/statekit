@@ -30,6 +30,8 @@ type StateBuilder[C any] struct {
 	entry       []ActionType
 	exit        []ActionType
 	transitions []*TransitionBuilder[C]
+	always      []*TransitionBuilder[C] // eventless transitions (v1.x)
+	tags        []string                // state tags (v1.x)
 
 	// History state fields (v2.0)
 	historyType    HistoryType
@@ -109,6 +111,12 @@ type TransitionBuilder[C any] struct {
 
 	// Delayed transition fields (v2.0)
 	delay time.Duration
+
+	// Eventless ("always") transition flag (v1.x)
+	eventless bool
+
+	// Raised internal events (v1.x)
+	raise []EventType
 }
 
 // NewMachine creates a new MachineBuilder with the given ID
@@ -233,13 +241,26 @@ func buildStateRecursive[C any](sb *StateBuilder[C], parentID ir.StateID, machin
 	state.Entry = append(state.Entry, sb.entry...)
 	state.Exit = append(state.Exit, sb.exit...)
 
+	// Copy state tags (v1.x)
+	state.Tags = append(state.Tags, sb.tags...)
+
 	// Build transitions
 	for _, tb := range sb.transitions {
 		trans := ir.NewTransitionConfig(tb.event, tb.target)
 		trans.Guard = tb.guard
 		trans.Actions = append(trans.Actions, tb.actions...)
 		trans.Delay = tb.delay // Delayed transitions (v2.0)
+		trans.Raise = append(trans.Raise, tb.raise...)
 		state.Transitions = append(state.Transitions, trans)
+	}
+
+	// Build eventless ("always") transitions (v1.x)
+	for _, tb := range sb.always {
+		trans := ir.NewTransitionConfig("", tb.target)
+		trans.Guard = tb.guard
+		trans.Actions = append(trans.Actions, tb.actions...)
+		trans.Raise = append(trans.Raise, tb.raise...)
+		state.Always = append(state.Always, trans)
 	}
 
 	// Build invocations (v3.0)
@@ -339,6 +360,27 @@ func (b *StateBuilder[C]) On(event EventType) *TransitionBuilder[C] {
 	}
 	b.transitions = append(b.transitions, tb)
 	return tb
+}
+
+// Always starts building an eventless ("always") transition (v1.x). It is
+// evaluated when the state is entered and after every transition, in
+// declaration order; the first whose guard passes is taken. A target is
+// required. Use multiple Always() calls to express guarded routing with a
+// final guardless fallback.
+func (b *StateBuilder[C]) Always() *TransitionBuilder[C] {
+	tb := &TransitionBuilder[C]{
+		state:     b,
+		eventless: true,
+	}
+	b.always = append(b.always, tb)
+	return tb
+}
+
+// Tags attaches one or more tags to the state for lightweight querying via
+// Interpreter.HasTag (v1.x).
+func (b *StateBuilder[C]) Tags(tags ...string) *StateBuilder[C] {
+	b.tags = append(b.tags, tags...)
+	return b
 }
 
 // Done completes the state definition and returns the root MachineBuilder.
@@ -620,6 +662,14 @@ func (b *TransitionBuilder[C]) Guard(guard GuardType) *TransitionBuilder[C] {
 // Do adds an action to be executed during the transition
 func (b *TransitionBuilder[C]) Do(action ActionType) *TransitionBuilder[C] {
 	b.actions = append(b.actions, action)
+	return b
+}
+
+// Raise enqueues internal events emitted when this transition is taken (v1.x).
+// Raised events are processed in the same macrostep — before control returns
+// to the caller and before any externally sent event.
+func (b *TransitionBuilder[C]) Raise(events ...EventType) *TransitionBuilder[C] {
+	b.raise = append(b.raise, events...)
 	return b
 }
 

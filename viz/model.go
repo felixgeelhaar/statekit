@@ -17,8 +17,10 @@ type VizState struct {
 	Parent      string          `json:"parent,omitempty"`
 	Children    []string        `json:"children,omitempty"`
 	Transitions []VizTransition `json:"transitions,omitempty"`
+	Always      []VizTransition `json:"always,omitempty"` // eventless transitions (v1.x)
 	Entry       []string        `json:"entry,omitempty"`
 	Exit        []string        `json:"exit,omitempty"`
+	Tags        []string        `json:"tags,omitempty"` // state tags (v1.x)
 
 	// History-specific fields
 	HistoryType    string `json:"historyType,omitempty"`    // "shallow" or "deep"
@@ -52,6 +54,9 @@ type VizTransition struct {
 	// Delayed transition fields
 	IsDelayed bool  `json:"isDelayed,omitempty"`
 	DelayMs   int64 `json:"delayMs,omitempty"`
+
+	// Raised internal events (v1.x)
+	Raise []string `json:"raise,omitempty"`
 }
 
 // VizInvoke represents an invoked service.

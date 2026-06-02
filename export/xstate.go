@@ -23,10 +23,12 @@ import (
 //   - entry, exit action arrays
 //   - invoke array (services with onDone / onError)
 //   - history: shallow | deep
+//   - always: eventless transitions (v1.x)
+//   - tags: state tags (v1.x)
+//   - raise: emitted as xstate.raise action descriptors on a transition (v1.x)
 //
-// Out-of-scope (kept minimal): conditional transitions with multiple
-// branches per event, internal-vs-external transition flags, action
-// argument schemas, raise/sendTo/log built-ins.
+// Out-of-scope (kept minimal): internal-vs-external transition flags,
+// action argument schemas, sendTo/log built-ins.
 type XStateExporter[C any] struct {
 	machine *ir.MachineConfig[C]
 }
@@ -134,6 +136,20 @@ func (e *XStateExporter[C]) exportState(id ir.StateID) map[string]any {
 		}
 	}
 
+	// Eventless ("always") transitions (v1.x).
+	if len(state.Always) > 0 {
+		group := make([]map[string]any, 0, len(state.Always))
+		for _, t := range state.Always {
+			group = append(group, transitionEntry(t))
+		}
+		out["always"] = collapseTransitionGroup(group)
+	}
+
+	// State tags (v1.x).
+	if len(state.Tags) > 0 {
+		out["tags"] = append([]string(nil), state.Tags...)
+	}
+
 	// Nested child states.
 	if len(state.Children) > 0 {
 		children := make(map[string]any, len(state.Children))
@@ -177,13 +193,7 @@ func (e *XStateExporter[C]) exportTransitions(transitions []*ir.TransitionConfig
 	afterGroups := make(map[string][]map[string]any)
 
 	for _, t := range transitions {
-		entry := map[string]any{"target": string(t.Target)}
-		if t.Guard != "" {
-			entry["guard"] = string(t.Guard)
-		}
-		if len(t.Actions) > 0 {
-			entry["actions"] = stringifyActions(t.Actions)
-		}
+		entry := transitionEntry(t)
 		if t.IsDelayed() {
 			delay := strconv.FormatInt(t.Delay.Milliseconds(), 10)
 			afterGroups[delay] = append(afterGroups[delay], entry)
@@ -214,6 +224,39 @@ func collapseTransitionGroup(group []map[string]any) any {
 		out = append(out, entry)
 	}
 	return out
+}
+
+// transitionEntry builds the XState entry object for a transition,
+// including guard, named actions, and raised events (emitted as
+// xstate.raise action descriptors so the raised event survives export).
+func transitionEntry(t *ir.TransitionConfig) map[string]any {
+	entry := map[string]any{"target": string(t.Target)}
+	if t.Guard != "" {
+		entry["guard"] = string(t.Guard)
+	}
+
+	// Keep the common case (named actions only) as []string for stable
+	// output; widen to []any only when raised events must be embedded as
+	// xstate.raise action descriptors.
+	if len(t.Raise) == 0 {
+		if len(t.Actions) > 0 {
+			entry["actions"] = stringifyActions(t.Actions)
+		}
+		return entry
+	}
+
+	actions := make([]any, 0, len(t.Actions)+len(t.Raise))
+	for _, a := range t.Actions {
+		actions = append(actions, string(a))
+	}
+	for _, r := range t.Raise {
+		actions = append(actions, map[string]any{
+			"type":  "xstate.raise",
+			"event": map[string]any{"type": string(r)},
+		})
+	}
+	entry["actions"] = actions
+	return entry
 }
 
 func stringifyActions(actions []ir.ActionType) []string {

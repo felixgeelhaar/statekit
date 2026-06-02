@@ -61,7 +61,16 @@ type Interpreter[C any] struct {
 	// Invoked machine management (v0.14)
 	// Maps invoke key (stateID:invokeID) to running child interpreter
 	activeInvokedMachines map[string]ir.ChildInterpreter
+
+	// Internal event queue for raised events (v1.x). Drained within the same
+	// macrostep before control returns to the caller. Protected by mu.
+	internalQueue []Event
 }
+
+// maxMicrosteps bounds a single macrostep (eventless + raised-event
+// processing) to guard against guard-always-true cycles. Exceeding it stops
+// the macrostep and reports via the OnError plugin hook.
+const maxMicrosteps = 10_000
 
 // transitionSource holds the state that owns the transition and the transition itself
 type transitionSource[C any] struct {
@@ -255,6 +264,9 @@ func (i *Interpreter[C]) Start() {
 
 	// Enter initial state, resolving to deepest leaf
 	i.enterStateHierarchy(i.machine.Initial)
+
+	// Run eventless transitions / drain raised events from the initial state
+	i.macrostep()
 }
 
 // State returns the current state of the interpreter
@@ -289,6 +301,118 @@ func (i *Interpreter[C]) matchesUnlocked(id StateID) bool {
 		}
 	}
 	return false
+}
+
+// HasTag reports whether any currently active state carries the given tag.
+// "Active" means the current leaf state, its ancestors, and — when inside a
+// parallel state — every active region leaf and its ancestors (v1.x).
+func (i *Interpreter[C]) HasTag(tag string) bool {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	if !i.started {
+		return false
+	}
+
+	if i.stateChainHasTag(i.state.Value, tag) {
+		return true
+	}
+	for _, leafID := range i.state.ActiveInParallel {
+		if i.stateChainHasTag(leafID, tag) {
+			return true
+		}
+	}
+	return false
+}
+
+// stateChainHasTag checks the given state and all its ancestors for the tag.
+func (i *Interpreter[C]) stateChainHasTag(leaf StateID, tag string) bool {
+	for _, id := range i.machine.GetPath(leaf) {
+		if sc := i.machine.GetState(id); sc != nil && sc.HasTag(tag) {
+			return true
+		}
+	}
+	return false
+}
+
+// findEventlessTransition returns the first enabled eventless ("always")
+// transition for the current leaf, bubbling up through ancestors. Returns nil
+// when none is enabled.
+func (i *Interpreter[C]) findEventlessTransition() *transitionSource[C] {
+	current := i.machine.GetState(i.state.Value)
+	for current != nil {
+		for _, t := range current.Always {
+			if t.Guard != "" {
+				guard := i.machine.GetGuard(t.Guard)
+				if guard != nil && !guard(i.state.Context, Event{}) {
+					continue
+				}
+			}
+			return &transitionSource[C]{state: current, transition: t}
+		}
+		if current.Parent == "" {
+			break
+		}
+		current = i.machine.GetState(current.Parent)
+	}
+	return nil
+}
+
+// enqueueRaised appends a transition's raised events to the internal queue.
+func (i *Interpreter[C]) enqueueRaised(t *ir.TransitionConfig) {
+	for _, evt := range t.Raise {
+		i.internalQueue = append(i.internalQueue, Event{Type: evt})
+	}
+}
+
+// macrostep runs to quiescence: it repeatedly takes enabled eventless
+// transitions and processes raised internal events until neither remains.
+// Eventless transitions have priority over queued events within an iteration.
+// Bounded by maxMicrosteps to guard against always-true cycles.
+//
+// Scoped to non-parallel configurations for v1.x; inside a parallel state the
+// macrostep is a no-op (eventless/raise within regions is a future addition).
+func (i *Interpreter[C]) macrostep() {
+	if i.currentParallel != "" {
+		return
+	}
+
+	for step := 0; ; step++ {
+		if step >= maxMicrosteps {
+			i.callOnError(fmt.Errorf("statekit: macrostep exceeded %d microsteps (likely an always-true eventless cycle)", maxMicrosteps))
+			i.internalQueue = nil
+			return
+		}
+
+		// 1. Eventless transitions take priority.
+		if src := i.findEventlessTransition(); src != nil {
+			i.executeTransitionHierarchical(src, Event{})
+			if i.currentParallel != "" {
+				return // entered a parallel state; stop settling
+			}
+			continue
+		}
+
+		// 2. Drain one raised internal event.
+		if len(i.internalQueue) > 0 {
+			evt := i.internalQueue[0]
+			i.internalQueue = i.internalQueue[1:]
+
+			current := i.machine.GetState(i.state.Value)
+			if current == nil {
+				continue
+			}
+			if source := i.findMatchingTransitionHierarchical(current, evt); source != nil {
+				i.executeTransitionHierarchical(source, evt)
+				if i.currentParallel != "" {
+					return
+				}
+			}
+			continue
+		}
+
+		// Quiescent.
+		return
+	}
 }
 
 // Done returns true if the machine is in a final state
@@ -341,6 +465,9 @@ func (i *Interpreter[C]) Send(event Event) {
 
 	// Execute the transition
 	i.executeTransitionHierarchical(source, event)
+
+	// Settle eventless transitions and drain any raised events
+	i.macrostep()
 }
 
 // UpdateContext allows updating the context with a function
@@ -464,8 +591,9 @@ func (i *Interpreter[C]) executeTransitionHierarchical(source *transitionSource[
 		}
 	}
 
-	// 2. Execute transition actions
+	// 2. Execute transition actions, then enqueue any raised internal events
 	i.executeActions(transition.Actions, event)
+	i.enqueueRaised(transition)
 
 	// 3. Check if target is a parallel state (v2.0)
 	targetConfig := i.machine.GetState(resolvedTarget)
