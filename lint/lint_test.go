@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/internal/ir"
-	"github.com/felixgeelhaar/statekit/lint"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/internal/ir"
+	"go.klarlabs.de/statekit/lint"
 )
 
 func TestLint_CleanMachine(t *testing.T) {

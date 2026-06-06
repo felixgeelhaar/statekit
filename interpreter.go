@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit/internal/ir"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 // Interpreter is the statechart runtime that processes events and manages state

@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/debug"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/debug"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 type TestContext struct {

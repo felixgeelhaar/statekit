@@ -3,7 +3,7 @@ package statetest
 import (
 	"sync"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // SendEvents sends multiple events to an interpreter in sequence.

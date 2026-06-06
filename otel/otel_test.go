@@ -8,7 +8,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 func TestTracingInterpreter_Basic(t *testing.T) {

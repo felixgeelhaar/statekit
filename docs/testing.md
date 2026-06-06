@@ -7,15 +7,15 @@ Statekit provides dedicated testing and debugging packages to help you write com
 The testing and debug packages are included with statekit:
 
 ```bash
-go get github.com/felixgeelhaar/statekit
+go get go.klarlabs.de/statekit
 ```
 
 Import the packages in your test files:
 
 ```go
 import (
-    "github.com/felixgeelhaar/statekit/statetest"
-    "github.com/felixgeelhaar/statekit/debug"
+    "go.klarlabs.de/statekit/statetest"
+    "go.klarlabs.de/statekit/debug"
 )
 ```
 

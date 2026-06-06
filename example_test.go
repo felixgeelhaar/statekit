@@ -3,7 +3,7 @@ package statekit_test
 import (
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 func Example() {

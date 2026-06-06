@@ -3,10 +3,10 @@ package mcp
 import (
 	"testing"
 
-	mcpgo "github.com/felixgeelhaar/mcp-go"
-	"github.com/felixgeelhaar/mcp-go/server"
+	mcpgo "go.klarlabs.de/mcp"
+	"go.klarlabs.de/mcp/server"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 type exposeCtx struct {

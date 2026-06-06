@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // --- Distributed Locking Interfaces ---

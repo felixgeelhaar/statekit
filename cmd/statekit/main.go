@@ -4,7 +4,7 @@ package main
 import (
 	"os"
 
-	"github.com/felixgeelhaar/statekit/cmd/statekit/commands"
+	"go.klarlabs.de/statekit/cmd/statekit/commands"
 )
 
 func main() {

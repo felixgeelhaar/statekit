@@ -76,7 +76,7 @@ go run ./examples/text_editor/
 package main
 
 import (
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

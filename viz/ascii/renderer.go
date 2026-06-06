@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // BoxChars contains characters for drawing boxes.

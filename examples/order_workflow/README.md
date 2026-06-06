@@ -58,7 +58,7 @@ package main
 
 import (
     "fmt"
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 // Define states using struct tags

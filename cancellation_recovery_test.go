@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // TestCancellation_ServiceCancelledOnExit_NoStuckTransition exercises

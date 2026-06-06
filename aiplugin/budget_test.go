@@ -4,9 +4,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/aiplugin"
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/aiplugin"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 type budgetCtx struct{}

@@ -5,7 +5,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 func createTestMachine() *viz.VizMachine {

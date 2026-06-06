@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/export"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/export"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // TestHistoryState_ShallowWithTransition tests shallow history with proper exit/enter

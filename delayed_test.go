@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/felixgeelhaar/statekit/export"
+	"go.klarlabs.de/statekit/export"
 )
 
 // fixedAnchor is the anchor time used by every FakeClock in this file.

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // Renderer generates a standalone HTML visualizer.

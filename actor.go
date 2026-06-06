@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // ErrActorNotFound is returned when an actor ID doesn't exist in the registry

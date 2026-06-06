@@ -67,7 +67,7 @@ go run ./examples/incident_lifecycle/
 package main
 
 import (
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

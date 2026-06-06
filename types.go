@@ -1,6 +1,6 @@
 package statekit
 
-import "github.com/felixgeelhaar/statekit/internal/ir"
+import "go.klarlabs.de/statekit/internal/ir"
 
 // Re-export non-generic types from internal/ir for public API
 type (

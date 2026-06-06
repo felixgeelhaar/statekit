@@ -52,7 +52,7 @@ export function readMachineFromHash(): MachineConfig | null {
 /** Builds a shareable permalink that round-trips through this site. */
 export function buildPermalink(machine: MachineConfig): string {
   if (typeof window === 'undefined') {
-    return `https://felixgeelhaar.github.io/statekit/play#${HASH_KEY}=${encodeMachine(machine)}`;
+    return `https://klarlabs-studio.github.io/statekit/play#${HASH_KEY}=${encodeMachine(machine)}`;
   }
   const url = new URL(window.location.href);
   url.hash = `${HASH_KEY}=${encodeMachine(machine)}`;

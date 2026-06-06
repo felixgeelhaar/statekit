@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // Parser extracts VizMachine definitions from Go source code.

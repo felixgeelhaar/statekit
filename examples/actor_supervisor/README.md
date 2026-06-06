@@ -58,7 +58,7 @@ go run ./examples/actor_supervisor/
 package main
 
 import (
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

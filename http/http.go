@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // --- Framework-agnostic HTTP Handlers ---

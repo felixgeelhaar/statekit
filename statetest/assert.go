@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // AssertState asserts that the interpreter is in the expected state.

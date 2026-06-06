@@ -3,8 +3,8 @@ package statetest_test
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	statetesting "github.com/felixgeelhaar/statekit/statetest"
+	"go.klarlabs.de/statekit"
+	statetesting "go.klarlabs.de/statekit/statetest"
 )
 
 type TestContext struct {

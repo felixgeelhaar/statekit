@@ -15,7 +15,7 @@ Plugins implement one or more hook interfaces to receive callbacks at specific p
 ## Basic Usage
 
 ```go
-import "github.com/felixgeelhaar/statekit/plugin"
+import "go.klarlabs.de/statekit/plugin"
 
 // Create a plugin by implementing the hooks you need
 type LoggingPlugin[C any] struct {

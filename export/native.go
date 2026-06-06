@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/internal/ir"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // NativeExporter converts a MachineConfig to the native Statekit visualization format.

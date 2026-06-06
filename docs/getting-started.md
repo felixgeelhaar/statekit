@@ -5,7 +5,7 @@ Statekit is a Go-native statechart execution engine with XState JSON compatibili
 ## Installation
 
 ```bash
-go get github.com/felixgeelhaar/statekit
+go get go.klarlabs.de/statekit
 ```
 
 ## Your First State Machine
@@ -17,7 +17,7 @@ package main
 
 import (
     "fmt"
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 type Context struct{}

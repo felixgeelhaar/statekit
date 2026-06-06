@@ -26,4 +26,4 @@ Any alternative solutions or workarounds you've considered.
 
 ## Additional Context
 
-Any other context, including whether this fits within our [scope constraints](https://github.com/felixgeelhaar/statekit/blob/main/CLAUDE.md#scope-constraints-v1).
+Any other context, including whether this fits within our [scope constraints](https://github.com/klarlabs-studio/statekit/blob/main/CLAUDE.md#scope-constraints-v1).

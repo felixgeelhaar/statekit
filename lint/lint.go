@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // Severity indicates the importance of a diagnostic.

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // WorkerContext tracks the worker's current task

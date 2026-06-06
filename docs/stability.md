@@ -55,5 +55,5 @@ The `internal/` packages (`internal/ir`, `internal/parser`) are not subject to s
 
 ## See also
 
-- [v1.0 release notes](https://github.com/felixgeelhaar/statekit/releases)
+- [v1.0 release notes](https://github.com/klarlabs-studio/statekit/releases)
 - [Backlog](./backlog.md) — what's planned next

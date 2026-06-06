@@ -5,7 +5,7 @@ The `otel` package provides OpenTelemetry tracing integration for state machines
 ## Installation
 
 ```go
-import statekotel "github.com/felixgeelhaar/statekit/otel"
+import statekotel "go.klarlabs.de/statekit/otel"
 ```
 
 You'll also need the OpenTelemetry SDK:
@@ -23,8 +23,8 @@ package main
 import (
     "context"
 
-    "github.com/felixgeelhaar/statekit"
-    statekotel "github.com/felixgeelhaar/statekit/otel"
+    "go.klarlabs.de/statekit"
+    statekotel "go.klarlabs.de/statekit/otel"
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
     "go.opentelemetry.io/otel/sdk/trace"
@@ -264,7 +264,7 @@ defer span.End()
 import (
     "net/http"
 
-    statekotel "github.com/felixgeelhaar/statekit/otel"
+    statekotel "go.klarlabs.de/statekit/otel"
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/propagation"
 )
@@ -293,7 +293,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 import (
     "context"
 
-    statekotel "github.com/felixgeelhaar/statekit/otel"
+    statekotel "go.klarlabs.de/statekit/otel"
     "go.opentelemetry.io/otel"
 )
 
@@ -376,8 +376,8 @@ import (
     "log"
     "time"
 
-    "github.com/felixgeelhaar/statekit"
-    statekotel "github.com/felixgeelhaar/statekit/otel"
+    "go.klarlabs.de/statekit"
+    statekotel "go.klarlabs.de/statekit/otel"
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
     "go.opentelemetry.io/otel/sdk/trace"

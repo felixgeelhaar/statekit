@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // PersistentInterpreter wraps an Interpreter with event sourcing capabilities.

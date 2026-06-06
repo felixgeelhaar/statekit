@@ -60,7 +60,7 @@ package main
 
 import (
     "time"
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

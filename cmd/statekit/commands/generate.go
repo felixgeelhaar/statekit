@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/felixgeelhaar/statekit/generate"
+	"go.klarlabs.de/statekit/generate"
 	"github.com/spf13/cobra"
 )
 

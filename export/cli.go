@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // MachineExporter is implemented by types that can export to Native Visualization format.

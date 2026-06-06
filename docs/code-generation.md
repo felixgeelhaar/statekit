@@ -79,7 +79,7 @@ Running `statekit generate order.json -p orders -t OrderMachine` produces:
 package orders
 
 import (
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 // OrderMachineContext is the context type for the state machine.
@@ -149,7 +149,7 @@ statekit generate order.json -p orders -t OrderMachine -c "OrderContext" -o orde
 cat > order_context.go << 'EOF'
 package orders
 
-import "github.com/felixgeelhaar/statekit"
+import "go.klarlabs.de/statekit"
 
 type OrderContext struct {
     OrderID    string
@@ -259,7 +259,7 @@ func BuildEditorMachine() (*statekit.MachineConfig[EditorMachineContext], error)
 Use the `generate` package directly in Go:
 
 ```go
-import "github.com/felixgeelhaar/statekit/generate"
+import "go.klarlabs.de/statekit/generate"
 
 // Create generator with options
 gen := generate.NewGenerator("mypackage", "MyMachine", "MyContext")

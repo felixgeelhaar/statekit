@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/debug"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/debug"
 )
 
 func buildGraphTestMachine() *statekit.MachineConfig[struct{}] {

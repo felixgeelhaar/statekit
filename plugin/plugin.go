@@ -17,7 +17,7 @@
 //	interp.Use(&MyPlugin{})
 package plugin
 
-import "github.com/felixgeelhaar/statekit/internal/ir"
+import "go.klarlabs.de/statekit/internal/ir"
 
 // Re-export types from internal/ir to ensure type compatibility with statekit
 type (

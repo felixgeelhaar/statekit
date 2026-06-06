@@ -12,7 +12,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // Generator generates Go code from Native JSON.
@@ -236,7 +236,7 @@ var codeTemplate = template.Must(template.New("code").Funcs(templateFuncs).Parse
 package {{.Package}}
 
 import (
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // {{.TypeName}}Context is the context type for the state machine.

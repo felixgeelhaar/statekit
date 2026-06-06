@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // syntheticStartEvent is the event type used to record the initial state entry.

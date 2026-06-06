@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // Snapshot captures the complete state of an interpreter for persistence.

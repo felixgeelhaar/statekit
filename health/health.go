@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // Status represents the health status of a component.

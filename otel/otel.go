@@ -10,12 +10,12 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 const (
 	// TracerName is the name of the tracer used by this package.
-	TracerName = "github.com/felixgeelhaar/statekit/otel"
+	TracerName = "go.klarlabs.de/statekit/otel"
 )
 
 // TracingInterpreter wraps an Interpreter with OpenTelemetry tracing.

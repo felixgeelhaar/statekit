@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 func TestTextEditor_InitialState(t *testing.T) {

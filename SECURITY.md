@@ -15,7 +15,7 @@ We take the security of statekit seriously. If you discover a security vulnerabi
 
 1. **Do NOT open a public GitHub issue** for security vulnerabilities
 2. **Use GitHub's private vulnerability reporting**:
-   - Go to the [Security tab](https://github.com/felixgeelhaar/statekit/security)
+   - Go to the [Security tab](https://github.com/klarlabs-studio/statekit/security)
    - Click "Report a vulnerability"
    - Provide a detailed description of the vulnerability
 
@@ -38,7 +38,7 @@ We take the security of statekit seriously. If you discover a security vulnerabi
 
 The following are in scope for security reports:
 
-- The statekit library (`github.com/felixgeelhaar/statekit`)
+- The statekit library (`go.klarlabs.de/statekit`)
 - All sub-packages (http, otel, viz, health, metrics, etc.)
 - The CLI tool (`cmd/statekit`)
 - Example code in the `examples/` directory

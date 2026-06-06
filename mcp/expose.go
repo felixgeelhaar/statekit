@@ -3,8 +3,8 @@ package mcp
 import (
 	"fmt"
 
-	"github.com/felixgeelhaar/mcp-go/server"
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/mcp/server"
+	"go.klarlabs.de/statekit"
 )
 
 // ExposeInput identifies an event to send to an exposed interpreter.

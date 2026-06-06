@@ -7,8 +7,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/health"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/health"
 )
 
 func buildTestMachine() *statekit.MachineConfig[struct{}] {

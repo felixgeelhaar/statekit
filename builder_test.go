@@ -3,7 +3,7 @@ package statekit
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 type testContext struct {

@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"strings"
 
-	"github.com/felixgeelhaar/mcp-go/server"
+	"go.klarlabs.de/mcp/server"
 )
 
 //go:embed ui/visualizer.html

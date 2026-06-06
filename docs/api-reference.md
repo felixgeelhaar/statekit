@@ -566,7 +566,7 @@ func TransitionAttributes(
 ### Constants
 
 ```go
-const TracerName = "github.com/felixgeelhaar/statekit/otel"
+const TracerName = "go.klarlabs.de/statekit/otel"
 ```
 
 ### Span Attributes

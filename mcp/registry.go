@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // Registry manages type-erased machine instances for MCP tools.

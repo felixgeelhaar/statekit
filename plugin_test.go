@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 // testPlugin tracks all hook invocations for testing.

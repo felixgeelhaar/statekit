@@ -40,5 +40,5 @@ Release 1.1.0
 - Final states support
 - Traffic light example
 
-[0.2.0]: https://github.com/felixgeelhaar/statekit/releases/tag/v0.2.0
-[0.1.0]: https://github.com/felixgeelhaar/statekit/releases/tag/v0.1.0
+[0.2.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v0.2.0
+[0.1.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v0.1.0

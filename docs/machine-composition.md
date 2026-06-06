@@ -14,8 +14,8 @@ When a state invokes a child machine:
 
 ```go
 import (
-    "github.com/felixgeelhaar/statekit"
-    "github.com/felixgeelhaar/statekit/internal/ir"
+    "go.klarlabs.de/statekit"
+    "go.klarlabs.de/statekit/internal/ir"
 )
 
 // Define child machine

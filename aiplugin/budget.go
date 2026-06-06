@@ -3,7 +3,7 @@ package aiplugin
 import (
 	"sync/atomic"
 
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 // TransitionBudget caps the number of transitions an interpreter is

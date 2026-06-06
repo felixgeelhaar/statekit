@@ -67,7 +67,7 @@ go run ./examples/form_wizard/
 package main
 
 import (
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

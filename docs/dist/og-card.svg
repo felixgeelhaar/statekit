@@ -59,7 +59,7 @@
 
   <!-- code line -->
   <text x="80" y="540" font-family="'JetBrains Mono', monospace" font-size="22" fill="#6e7781">$</text>
-  <text x="105" y="540" font-family="'JetBrains Mono', monospace" font-size="22" fill="#e6edf3">go get github.com/felixgeelhaar/statekit</text>
+  <text x="105" y="540" font-family="'JetBrains Mono', monospace" font-size="22" fill="#e6edf3">go get go.klarlabs.de/statekit</text>
 
-  <text x="80" y="585" font-family="'JetBrains Mono', monospace" font-size="18" fill="#6e7781">felixgeelhaar.github.io/statekit · v1.4.1 · MIT</text>
+  <text x="80" y="585" font-family="'JetBrains Mono', monospace" font-size="18" fill="#6e7781">klarlabs-studio.github.io/statekit · v1.4.1 · MIT</text>
 </svg>

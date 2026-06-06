@@ -24,7 +24,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 // Payload keys recognized by aiplugin plugins.

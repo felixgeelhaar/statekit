@@ -1,8 +1,8 @@
 package trafficlight
 
 import (
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // Context holds the state machine context

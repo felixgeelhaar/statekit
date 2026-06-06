@@ -6,7 +6,7 @@ policy:
   domains:
     - name: core
       match:
-        - github.com/felixgeelhaar/statekit
+        - go.klarlabs.de/statekit
       exclude:
         - ./internal/...
         - ./export/...

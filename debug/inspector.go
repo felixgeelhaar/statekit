@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // Inspector provides debugging and inspection capabilities for a state machine.

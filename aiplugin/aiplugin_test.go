@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 type ctx struct{}

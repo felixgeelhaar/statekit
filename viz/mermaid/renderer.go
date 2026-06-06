@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // Renderer produces Mermaid stateDiagram-v2 syntax.

@@ -31,7 +31,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // -- Domain types ------------------------------------------------------------

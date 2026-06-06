@@ -10,8 +10,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/export"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/export"
 )
 
 // FormContext holds the form wizard state

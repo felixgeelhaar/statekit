@@ -11,8 +11,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/export"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/export"
 )
 
 // OrderContext holds the state of an order.

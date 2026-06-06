@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 func TestSnapshot_CapturesActorMetadata(t *testing.T) {

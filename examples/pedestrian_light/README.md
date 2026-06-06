@@ -60,8 +60,8 @@ package main
 
 import (
     "fmt"
-    pedestrianlight "github.com/felixgeelhaar/statekit/examples/pedestrian_light"
-    "github.com/felixgeelhaar/statekit"
+    pedestrianlight "go.klarlabs.de/statekit/examples/pedestrian_light"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

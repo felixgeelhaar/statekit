@@ -7,15 +7,15 @@ Statekit provides built-in observability features for production monitoring thro
 The observability packages are included with statekit:
 
 ```bash
-go get github.com/felixgeelhaar/statekit
+go get go.klarlabs.de/statekit
 ```
 
 Import the packages:
 
 ```go
 import (
-    "github.com/felixgeelhaar/statekit/metrics"
-    "github.com/felixgeelhaar/statekit/health"
+    "go.klarlabs.de/statekit/metrics"
+    "go.klarlabs.de/statekit/health"
 )
 ```
 
@@ -29,8 +29,8 @@ The `metrics` package provides Prometheus integration for monitoring state machi
 import (
     "github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promhttp"
-    "github.com/felixgeelhaar/statekit"
-    "github.com/felixgeelhaar/statekit/metrics"
+    "go.klarlabs.de/statekit"
+    "go.klarlabs.de/statekit/metrics"
 )
 
 func main() {
@@ -117,8 +117,8 @@ The `health` package provides Kubernetes-compatible health probes for state mach
 ```go
 import (
     "net/http"
-    "github.com/felixgeelhaar/statekit"
-    "github.com/felixgeelhaar/statekit/health"
+    "go.klarlabs.de/statekit"
+    "go.klarlabs.de/statekit/health"
 )
 
 func main() {

@@ -28,13 +28,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </p>
 
         <div class="hero-cta">
-          <a class="btn btn-primary" href="https://pkg.go.dev/github.com/felixgeelhaar/statekit" target="_blank" rel="noopener">Read the docs</a>
+          <a class="btn btn-primary" href="https://pkg.go.dev/go.klarlabs.de/statekit" target="_blank" rel="noopener">Read the docs</a>
           <a class="btn btn-secondary" href={`${base}/play`}>Try the visualizer</a>
-          <a class="btn btn-ghost" href="https://github.com/felixgeelhaar/statekit" target="_blank" rel="noopener">Star on GitHub</a>
+          <a class="btn btn-ghost" href="https://github.com/klarlabs-studio/statekit" target="_blank" rel="noopener">Star on GitHub</a>
         </div>
 
         <pre class="hero-code"><code><span class="tok-comment"># Install</span>
-<span class="tok-prompt">$</span> go get github.com/felixgeelhaar/statekit
+<span class="tok-prompt">$</span> go get go.klarlabs.de/statekit
 
 <span class="tok-comment">// A working machine in 10 lines</span>
 machine, _ := statekit.<span class="tok-fn">NewMachine</span>[Order](<span class="tok-str">"checkout"</span>).
@@ -137,9 +137,9 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
           </tbody>
         </table>
         <div class="compare-cta">
-          <a href="https://github.com/felixgeelhaar/statekit/blob/main/docs/migration-from-looplab-fsm.md" target="_blank" rel="noopener">From looplab/fsm →</a>
-          <a href="https://github.com/felixgeelhaar/statekit/blob/main/docs/migration-from-qmuntal-stateless.md" target="_blank" rel="noopener">From qmuntal/stateless →</a>
-          <a href="https://github.com/felixgeelhaar/statekit/blob/main/docs/xstate-migration.md" target="_blank" rel="noopener">From XState →</a>
+          <a href="https://github.com/klarlabs-studio/statekit/blob/main/docs/migration-from-looplab-fsm.md" target="_blank" rel="noopener">From looplab/fsm →</a>
+          <a href="https://github.com/klarlabs-studio/statekit/blob/main/docs/migration-from-qmuntal-stateless.md" target="_blank" rel="noopener">From qmuntal/stateless →</a>
+          <a href="https://github.com/klarlabs-studio/statekit/blob/main/docs/xstate-migration.md" target="_blank" rel="noopener">From XState →</a>
         </div>
       </section>
 
@@ -149,12 +149,12 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
           <article class="job-card">
             <h3>Backend domain workflows</h3>
             <p>Order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across <code>switch event.Type</code> and accumulate bugs around partial failure, retry, and idempotency.</p>
-            <a href="https://github.com/felixgeelhaar/statekit/tree/main/examples/stripe_webhook" target="_blank" rel="noopener">See the Stripe webhook saga →</a>
+            <a href="https://github.com/klarlabs-studio/statekit/tree/main/examples/stripe_webhook" target="_blank" rel="noopener">See the Stripe webhook saga →</a>
           </article>
           <article class="job-card">
             <h3>Deterministic AI agent runtime</h3>
             <p>RAG pipelines, tool-call workflows, multi-step agents with human-in-the-loop. Statecharts give you reproducibility, bounded blast radius, and audit-grade observability for LLM-backed systems.</p>
-            <a href="https://github.com/felixgeelhaar/statekit/tree/main/examples/llm_agent" target="_blank" rel="noopener">See the RAG agent example →</a>
+            <a href="https://github.com/klarlabs-studio/statekit/tree/main/examples/llm_agent" target="_blank" rel="noopener">See the RAG agent example →</a>
           </article>
         </div>
       </section>
@@ -163,7 +163,7 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
         <h2 id="cta-heading" class="section-title">Ready?</h2>
         <p class="cta-lede">Drop it into your service. Or paste any Native JSON into the visualizer first.</p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href="https://github.com/felixgeelhaar/statekit#readme" target="_blank" rel="noopener">Quickstart on GitHub</a>
+          <a class="btn btn-primary" href="https://github.com/klarlabs-studio/statekit#readme" target="_blank" rel="noopener">Quickstart on GitHub</a>
           <a class="btn btn-secondary" href={`${base}/play`}>Try the visualizer</a>
         </div>
       </section>

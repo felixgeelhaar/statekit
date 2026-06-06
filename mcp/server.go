@@ -1,8 +1,8 @@
 package mcp
 
 import (
-	mcpgo "github.com/felixgeelhaar/mcp-go"
-	"github.com/felixgeelhaar/mcp-go/server"
+	mcpgo "go.klarlabs.de/mcp"
+	"go.klarlabs.de/mcp/server"
 )
 
 // NewServer creates a new MCP server with all statekit tools and resources registered.

@@ -3,7 +3,7 @@ package statekit
 import (
 	"time"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // MachineBuilder provides a fluent API for constructing state machines

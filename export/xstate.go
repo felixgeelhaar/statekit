@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // XStateExporter converts a MachineConfig to XState v5 JSON.

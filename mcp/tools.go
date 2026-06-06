@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/export"
-	"github.com/felixgeelhaar/statekit/lint"
-	"github.com/felixgeelhaar/statekit/viz"
-	"github.com/felixgeelhaar/statekit/viz/ascii"
-	"github.com/felixgeelhaar/statekit/viz/mermaid"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/export"
+	"go.klarlabs.de/statekit/lint"
+	"go.klarlabs.de/statekit/viz"
+	"go.klarlabs.de/statekit/viz/ascii"
+	"go.klarlabs.de/statekit/viz/mermaid"
 )
 
 // Tool input types

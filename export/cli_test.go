@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // mockExporter implements MachineExporter for testing

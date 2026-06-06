@@ -6,8 +6,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/metrics"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/metrics"
 )
 
 func buildTestMachine() *statekit.MachineConfig[struct{}] {

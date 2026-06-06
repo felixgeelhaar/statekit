@@ -42,7 +42,7 @@ console.log(service.getSnapshot().value); // 'active'
 
 **Statekit (Go):**
 ```go
-import "github.com/felixgeelhaar/statekit"
+import "go.klarlabs.de/statekit"
 
 type Context struct{}
 
@@ -688,7 +688,7 @@ newInterp.Restore(snapshot)
 Statekit provides a plugin system for extending interpreter behavior:
 
 ```go
-import "github.com/felixgeelhaar/statekit/plugin"
+import "go.klarlabs.de/statekit/plugin"
 
 // Implement plugin interfaces
 type LoggingPlugin[C any] struct{}

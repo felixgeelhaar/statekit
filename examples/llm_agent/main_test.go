@@ -3,8 +3,8 @@ package main
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/aiplugin"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/aiplugin"
 )
 
 func TestAgent_HappyPath(t *testing.T) {

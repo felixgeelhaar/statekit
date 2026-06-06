@@ -6,8 +6,8 @@ import (
 	"os"
 	"os/signal"
 
-	mcpgo "github.com/felixgeelhaar/mcp-go"
-	statekmcp "github.com/felixgeelhaar/statekit/mcp"
+	mcpgo "go.klarlabs.de/mcp"
+	statekmcp "go.klarlabs.de/statekit/mcp"
 )
 
 func main() {

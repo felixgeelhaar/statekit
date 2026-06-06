@@ -7,12 +7,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/felixgeelhaar/statekit/viz"
-	"github.com/felixgeelhaar/statekit/viz/ascii"
-	"github.com/felixgeelhaar/statekit/viz/goparser"
-	"github.com/felixgeelhaar/statekit/viz/html"
-	"github.com/felixgeelhaar/statekit/viz/mermaid"
-	"github.com/felixgeelhaar/statekit/viz/tui"
+	"go.klarlabs.de/statekit/viz"
+	"go.klarlabs.de/statekit/viz/ascii"
+	"go.klarlabs.de/statekit/viz/goparser"
+	"go.klarlabs.de/statekit/viz/html"
+	"go.klarlabs.de/statekit/viz/mermaid"
+	"go.klarlabs.de/statekit/viz/tui"
 )
 
 var (

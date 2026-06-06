@@ -1,9 +1,9 @@
 # Statekit
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/felixgeelhaar/statekit.svg)](https://pkg.go.dev/github.com/felixgeelhaar/statekit)
-[![Go Report Card](https://goreportcard.com/badge/github.com/felixgeelhaar/statekit)](https://goreportcard.com/report/github.com/felixgeelhaar/statekit)
-[![CI](https://github.com/felixgeelhaar/statekit/actions/workflows/ci.yml/badge.svg)](https://github.com/felixgeelhaar/statekit/actions/workflows/ci.yml)
-[![Security: A](https://raw.githubusercontent.com/felixgeelhaar/statekit/main/.nox/security-badge.svg)](https://github.com/felixgeelhaar/statekit/security)
+[![Go Reference](https://pkg.go.dev/badge/go.klarlabs.de/statekit.svg)](https://pkg.go.dev/go.klarlabs.de/statekit)
+[![Go Report Card](https://goreportcard.com/badge/go.klarlabs.de/statekit)](https://goreportcard.com/report/go.klarlabs.de/statekit)
+[![CI](https://github.com/klarlabs-studio/statekit/actions/workflows/ci.yml/badge.svg)](https://github.com/klarlabs-studio/statekit/actions/workflows/ci.yml)
+[![Security: A](https://raw.githubusercontent.com/klarlabs-studio/statekit/main/.nox/security-badge.svg)](https://github.com/klarlabs-studio/statekit/security)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Stop modeling order, payment, and incident lifecycles with switch statements and ad-hoc FSMs.** Statekit is a typed statechart library for Go: hierarchical states, guards, actions, delayed and parallel transitions, with built-in visualization and lint.
@@ -89,7 +89,7 @@ These ship in v1.0 but reserve room to iterate within v1.x:
 ## Installation
 
 ```bash
-go get github.com/felixgeelhaar/statekit
+go get go.klarlabs.de/statekit
 ```
 
 Requires Go 1.25 or later.
@@ -101,7 +101,7 @@ package main
 
 import (
     "fmt"
-    "github.com/felixgeelhaar/statekit"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {
@@ -342,7 +342,7 @@ machine, _ := statekit.NewMachine[Context]("counter").
 
 Statekit provides a native `viz` command to visualize state machines from Go source code or JSON.
 
-Try the [Live Visualizer](https://felixgeelhaar.github.io/statekit/play) to paste your JSON and interact with it. The [landing page](https://felixgeelhaar.github.io/statekit/) has the project overview.
+Try the [Live Visualizer](https://klarlabs-studio.github.io/statekit/play) to paste your JSON and interact with it. The [landing page](https://klarlabs-studio.github.io/statekit/) has the project overview.
 
 ```bash
 # Interactive HTML simulation
@@ -361,7 +361,7 @@ It supports multiple output formats:
 To export JSON programmatically:
 
 ```go
-import "github.com/felixgeelhaar/statekit/export"
+import "go.klarlabs.de/statekit/export"
 
 exporter := export.NewNativeExporter(machine)
 jsonStr, _ := exporter.ExportJSONIndent("", "  ")
@@ -374,7 +374,7 @@ Statekit includes a built-in [Model Context Protocol](https://modelcontextprotoc
 
 ```bash
 # Add to your MCP configuration
-go install github.com/felixgeelhaar/statekit/cmd/statekit-mcp@latest
+go install go.klarlabs.de/statekit/cmd/statekit-mcp@latest
 ```
 
 ```json
@@ -435,7 +435,7 @@ See the [examples](./examples) directory:
 
 ## API Reference
 
-See the full [API documentation on pkg.go.dev](https://pkg.go.dev/github.com/felixgeelhaar/statekit).
+See the full [API documentation on pkg.go.dev](https://pkg.go.dev/go.klarlabs.de/statekit).
 
 ### Core Types
 

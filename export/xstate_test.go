@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/export"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/export"
 )
 
 func TestXStateExporter_Atomic(t *testing.T) {

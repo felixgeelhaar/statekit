@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 // OrderContext holds order processing state

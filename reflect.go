@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
-	"github.com/felixgeelhaar/statekit/internal/parser"
+	"go.klarlabs.de/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/parser"
 )
 
 // MachineDef is a marker type that must be embedded in a struct

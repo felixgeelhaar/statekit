@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 func TestRenderer_Render(t *testing.T) {

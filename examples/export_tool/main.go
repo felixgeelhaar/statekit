@@ -16,9 +16,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/export"
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/export"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 // TrafficLightContext holds state for the traffic light machine.

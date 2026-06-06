@@ -26,7 +26,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 // Decider chooses the next event to send to a state machine, given

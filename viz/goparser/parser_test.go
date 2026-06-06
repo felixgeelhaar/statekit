@@ -3,13 +3,13 @@ package goparser
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit/viz"
 )
 
 func TestParser_ParsePackage_StatekitReflectTest(t *testing.T) {
 	// Parse the actual statekit package to find machine definitions in reflect_test.go
 	parser := NewParser()
-	machines, err := parser.ParsePackage("github.com/felixgeelhaar/statekit")
+	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
 		t.Fatalf("parse package: %v", err)
 	}
@@ -35,7 +35,7 @@ func TestParser_ParsePackage_StatekitReflectTest(t *testing.T) {
 
 func TestParser_ParsePackage_WithTypeFilter(t *testing.T) {
 	parser := NewParser().WithTypeFilter("SimpleReflectMachine")
-	machines, err := parser.ParsePackage("github.com/felixgeelhaar/statekit")
+	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
 		t.Fatalf("parse package: %v", err)
 	}
@@ -51,7 +51,7 @@ func TestParser_ParsePackage_WithTypeFilter(t *testing.T) {
 
 func TestParser_VerifyMachineStructure(t *testing.T) {
 	parser := NewParser().WithTypeFilter("SimpleReflectMachine")
-	machines, err := parser.ParsePackage("github.com/felixgeelhaar/statekit")
+	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
 		t.Fatalf("parse package: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestParser_VerifyMachineStructure(t *testing.T) {
 
 func TestParser_MachineWithActions(t *testing.T) {
 	parser := NewParser().WithTypeFilter("ActionReflectMachine")
-	machines, err := parser.ParsePackage("github.com/felixgeelhaar/statekit")
+	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
 		t.Fatalf("parse package: %v", err)
 	}
@@ -126,7 +126,7 @@ func TestParser_MachineWithActions(t *testing.T) {
 
 func TestParser_MachineWithGuards(t *testing.T) {
 	parser := NewParser().WithTypeFilter("GuardReflectMachine")
-	machines, err := parser.ParsePackage("github.com/felixgeelhaar/statekit")
+	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
 		t.Fatalf("parse package: %v", err)
 	}
@@ -151,7 +151,7 @@ func TestParser_MachineWithGuards(t *testing.T) {
 
 func TestParser_FinalState(t *testing.T) {
 	parser := NewParser().WithTypeFilter("FinalReflectMachine")
-	machines, err := parser.ParsePackage("github.com/felixgeelhaar/statekit")
+	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
 		t.Fatalf("parse package: %v", err)
 	}

@@ -34,8 +34,8 @@ package main
 
 import (
     "fmt"
-    trafficlight "github.com/felixgeelhaar/statekit/examples/traffic_light"
-    "github.com/felixgeelhaar/statekit"
+    trafficlight "go.klarlabs.de/statekit/examples/traffic_light"
+    "go.klarlabs.de/statekit"
 )
 
 func main() {

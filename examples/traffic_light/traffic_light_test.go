@@ -3,7 +3,7 @@ package trafficlight
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 func TestTrafficLight_FullCycle(t *testing.T) {

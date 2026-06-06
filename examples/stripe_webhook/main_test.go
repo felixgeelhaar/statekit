@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 func waitForSagaSettled(t *testing.T, interp *statekit.Interpreter[SagaContext]) {

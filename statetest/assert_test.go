@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	statetesting "github.com/felixgeelhaar/statekit/statetest"
+	"go.klarlabs.de/statekit"
+	statetesting "go.klarlabs.de/statekit/statetest"
 )
 
 // mockT is a mock testing.TB for testing assertions

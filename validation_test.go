@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/internal/ir"
+	"go.klarlabs.de/statekit/internal/ir"
 )
 
 func TestBuild_Validation_MissingInitial(t *testing.T) {

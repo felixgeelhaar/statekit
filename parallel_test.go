@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit/export"
+	"go.klarlabs.de/statekit/export"
 )
 
 // TestParallelState_Basic tests basic parallel state entry

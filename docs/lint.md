@@ -7,13 +7,13 @@ The `lint` package provides static analysis for statekit state machines, detecti
 The lint package is included with statekit:
 
 ```bash
-go get github.com/felixgeelhaar/statekit
+go get go.klarlabs.de/statekit
 ```
 
 Import the package:
 
 ```go
-import "github.com/felixgeelhaar/statekit/lint"
+import "go.klarlabs.de/statekit/lint"
 ```
 
 ## Quick Start
@@ -21,8 +21,8 @@ import "github.com/felixgeelhaar/statekit/lint"
 ```go
 import (
     "fmt"
-    "github.com/felixgeelhaar/statekit"
-    "github.com/felixgeelhaar/statekit/lint"
+    "go.klarlabs.de/statekit"
+    "go.klarlabs.de/statekit/lint"
 )
 
 func main() {

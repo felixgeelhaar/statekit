@@ -5,7 +5,7 @@ The `http` package provides framework-agnostic HTTP handlers and middleware for 
 ## Installation
 
 ```go
-import statekithttp "github.com/felixgeelhaar/statekit/http"
+import statekithttp "go.klarlabs.de/statekit/http"
 ```
 
 ## Quick Start
@@ -16,8 +16,8 @@ package main
 import (
     "net/http"
 
-    "github.com/felixgeelhaar/statekit"
-    statekithttp "github.com/felixgeelhaar/statekit/http"
+    "go.klarlabs.de/statekit"
+    statekithttp "go.klarlabs.de/statekit/http"
 )
 
 func main() {
@@ -337,8 +337,8 @@ import (
     "net/http"
     "strings"
 
-    "github.com/felixgeelhaar/statekit"
-    statekithttp "github.com/felixgeelhaar/statekit/http"
+    "go.klarlabs.de/statekit"
+    statekithttp "go.klarlabs.de/statekit/http"
 )
 
 type OrderContext struct {

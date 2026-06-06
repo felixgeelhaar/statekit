@@ -22,8 +22,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/aiplugin"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/aiplugin"
 )
 
 // AgentContext holds the agent's working state across transitions.

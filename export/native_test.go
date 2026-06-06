@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/viz"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/viz"
 )
 
 func TestNativeExporter_SimpleMachine(t *testing.T) {

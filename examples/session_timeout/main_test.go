@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/felixgeelhaar/statekit"
+	"go.klarlabs.de/statekit"
 )
 
 func TestSessionTimeout_BasicFlow(t *testing.T) {

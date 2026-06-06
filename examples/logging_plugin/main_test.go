@@ -3,8 +3,8 @@ package main
 import (
 	"testing"
 
-	"github.com/felixgeelhaar/statekit"
-	"github.com/felixgeelhaar/statekit/plugin"
+	"go.klarlabs.de/statekit"
+	"go.klarlabs.de/statekit/plugin"
 )
 
 // TestPlugin is a simple test plugin that tracks calls
