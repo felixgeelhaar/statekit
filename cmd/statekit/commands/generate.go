@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"go.klarlabs.de/statekit/generate"
 	"github.com/spf13/cobra"
+	"go.klarlabs.de/statekit/generate"
 )
 
 // GenerateCmd creates the generate command.
