@@ -672,6 +672,38 @@
       "severity": "high",
       "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
       "created_at": "2026-05-10T09:30:00Z"
+    },
+    {
+      "fingerprint": "c69d1f1cfd0b43f7d6da2796fbe826a0612ec1b043a49dd2166ac762562878bc",
+      "rule_id": "",
+      "file_path": "",
+      "severity": "",
+      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
+      "created_at": "2026-06-06T20:13:11.564822Z"
+    },
+    {
+      "fingerprint": "f392c48f170286d771065afff0c60499fff68aa409a898f828b2500010c1b44b",
+      "rule_id": "",
+      "file_path": "",
+      "severity": "",
+      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
+      "created_at": "2026-06-06T20:13:11.564822Z"
+    },
+    {
+      "fingerprint": "ce4b20d3258d136b6bfda1c4c62ad3ddeb946fca0ef28406d8cf287e90091f20",
+      "rule_id": "",
+      "file_path": "",
+      "severity": "",
+      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
+      "created_at": "2026-06-06T20:13:11.564822Z"
+    },
+    {
+      "fingerprint": "142896d21f3d1f1f23e426cad78577c83863163d9156fbcc04bb924cef20866a",
+      "rule_id": "",
+      "file_path": "",
+      "severity": "",
+      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
+      "created_at": "2026-06-06T20:13:11.564822Z"
     }
   ]
 }
