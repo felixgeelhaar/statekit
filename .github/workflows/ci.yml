@@ -61,7 +61,7 @@ jobs:
           cache: true
 
       - name: Install coverctl
-        run: go install github.com/felixgeelhaar/coverctl@latest
+        run: go install go.klarlabs.de/coverctl@v1.17.0
 
       - name: Check coverage
         run: coverctl check
