@@ -249,6 +249,7 @@ func NewActionCounter() *ActionCounter {
 }
 
 // Action returns an action that increments the counter for the given name.
+//
 // Deprecated: Use ActionFor[C] for type-safe actions.
 func (c *ActionCounter) Action(name statekit.ActionType) func(ctx *any, e statekit.Event) {
 	return func(_ *any, _ statekit.Event) {

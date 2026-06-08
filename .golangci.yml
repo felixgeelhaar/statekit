@@ -7,6 +7,10 @@ run:
   timeout: 5m
 
 linters:
+  # Mandatory org bar. gocritic is non-negotiable; gosec covers code-level
+  # security alongside the nox scan. gocyclo/dupl are intentionally NOT here
+  # — they are noisy and repo-specific; opt in per repo if a codebase wants
+  # them, but they are not part of the shared gate.
   default: standard
   enable:
     - errcheck
@@ -18,9 +22,13 @@ linters:
     - unconvert
     - unparam
     - gocritic     # org engineering bar — do not drop
-    - gocyclo
     - gosec
-    - dupl
+  exclusions:
+    rules:
+      # Tests legitimately use math/rand (deterministic fixtures, fuzz
+      # seeds). G404 weak-RNG does not apply to test code.
+      - path: _test\.go
+        linters: [gosec]
 
 formatters:
   enable:
