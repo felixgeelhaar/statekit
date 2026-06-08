@@ -53,7 +53,7 @@ const (
 // ParseMachineStruct parses a struct type into a MachineSchema.
 // The struct must have an embedded MachineDef marker type.
 func ParseMachineStruct(t reflect.Type) (*MachineSchema, error) {
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {
@@ -100,7 +100,7 @@ func ParseMachineStruct(t reflect.Type) (*MachineSchema, error) {
 // parseStateField parses a struct field into a StateSchema.
 func parseStateField(field reflect.StructField) (*StateSchema, error) {
 	fieldType := field.Type
-	if fieldType.Kind() == reflect.Ptr {
+	if fieldType.Kind() == reflect.Pointer {
 		fieldType = fieldType.Elem()
 	}
 
@@ -339,7 +339,7 @@ func parseTransition(s string) (TransitionSchema, error) {
 
 // isMarkerType checks if a type matches a marker type name.
 func isMarkerType(t reflect.Type, markerName string) bool {
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	return t.Name() == markerName
