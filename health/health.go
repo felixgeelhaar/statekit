@@ -260,16 +260,17 @@ func (c *Checker[C]) HealthHandler() http.Handler {
 			},
 		}
 
-		if liveness.Status == StatusHealthy && readiness.Status == StatusHealthy {
+		switch {
+		case liveness.Status == StatusHealthy && readiness.Status == StatusHealthy:
 			result.Status = StatusHealthy
 			result.Message = "all checks passed"
-		} else if liveness.Status == StatusUnhealthy {
+		case liveness.Status == StatusUnhealthy:
 			result.Status = StatusUnhealthy
 			result.Message = "liveness check failed: " + liveness.Message
-		} else if readiness.Status == StatusUnhealthy {
+		case readiness.Status == StatusUnhealthy:
 			result.Status = StatusUnhealthy
 			result.Message = "readiness check failed: " + readiness.Message
-		} else {
+		default:
 			result.Status = StatusDegraded
 			result.Message = "some checks degraded"
 		}
