@@ -1,3 +1,6 @@
+# Reference .golangci.yml for klarlabs-studio Go repos (golangci-lint v2).
+# Copy to a repo's root as `.golangci.yml`. gocritic is part of the bar —
+# keep it enabled. Add repo-specific exclusions under `exclusions.rules`.
 version: "2"
 
 run:
@@ -14,6 +17,10 @@ linters:
     - misspell
     - unconvert
     - unparam
+    - gocritic     # org engineering bar — do not drop
+    - gocyclo
+    - gosec
+    - dupl
 
 formatters:
   enable:

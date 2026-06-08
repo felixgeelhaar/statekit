@@ -1,180 +1,24 @@
 name: CI
+
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'LICENSE'
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'LICENSE'
-  schedule:
-    # Weekly nox sweep — catches new CVEs in deps even when no commits land.
-    - cron: '17 6 * * 1'
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  security-events: write
-
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ["1.25"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
-        with:
-          go-version: ${{ matrix.go-version }}
-          cache: true
-
-      - name: Verify dependencies
-        run: go mod verify
-
-      - name: Run tests
-        run: go test -v -race ./...
-
-  coverage:
-    name: Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Setup Go
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
-        with:
-          go-version: "1.25"
-          cache: true
-
-      - name: Install coverctl
-        run: go install go.klarlabs.de/coverctl@v1.17.0
-
-      - name: Check coverage
-        run: coverctl check
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Setup Go
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
-        with:
-          go-version: "1.25"
-          cache: true
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9
-        with:
-          version: v2.7.2
-
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Setup Go
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
-        with:
-          go-version: "1.25"
-          cache: true
-
-      - name: Install Nox
-        env:
-          NOX_VERSION: 0.8.1
-        run: |
-          curl -sL "https://github.com/nox-hq/nox/releases/download/v${NOX_VERSION}/nox_${NOX_VERSION}_linux_amd64.tar.gz" | tar xz
-          sudo mv nox /usr/local/bin/
-          nox version
-
-      - name: Run Nox Security Scan
-        # nox exits non-zero on any unsuppressed finding regardless of severity;
-        # we let the gate step below decide what's actually fatal.
-        run: nox scan . -format json,sarif -output nox-results || true
-
-      - name: Upload Nox SARIF
-        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4
-        with:
-          sarif_file: nox-results/findings.sarif
-        if: always() && hashFiles('nox-results/findings.sarif') != ''
-        continue-on-error: true
-
-      - name: Annotate PR
-        if: github.event_name == 'pull_request'
-        run: nox annotate -input nox-results/findings.json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate remediation plan
-        if: always() && hashFiles('nox-results/findings.json') != ''
-        run: |
-          nox fix --plan --input nox-results/findings.json --output nox-results/fix-plan.json || true
-          if [ -s nox-results/fix-plan.json ]; then
-            echo "## Remediation plan" >> "$GITHUB_STEP_SUMMARY"
-            echo '```json' >> "$GITHUB_STEP_SUMMARY"
-            cat nox-results/fix-plan.json >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-          fi
-        continue-on-error: true
-
-      - name: Refresh security badge
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule')
-        run: nox badge --label security --output .nox/security-badge.svg || true
-        continue-on-error: true
-
-      - name: Check baseline status
-        if: always()
-        run: |
-          nox baseline status > nox-results/baseline-status.txt 2>&1 || true
-          if [ -s nox-results/baseline-status.txt ]; then
-            echo "## Baseline status" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            cat nox-results/baseline-status.txt >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-          fi
-        continue-on-error: true
-
-      - name: Gate on unbaselined critical/high findings
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
-        run: |
-          if [ ! -f nox-results/findings.json ]; then
-            echo "no findings.json — skipping gate"
-            exit 0
-          fi
-          # Count findings whose severity is critical or high AND that are
-          # NOT already in the baseline. nox emits Status="baselined" on
-          # baselined entries; the gate only fails on net-new issues so
-          # day-to-day commits aren't blocked by historic noise.
-          new=$(jq '[.findings[]? | select((.Severity == "critical" or .Severity == "high") and (.Status != "baselined"))] | length' nox-results/findings.json 2>/dev/null || echo 0)
-          echo "unbaselined critical/high findings: $new"
-          if [ "$new" -gt 0 ]; then
-            echo "::error::Net-new critical or high findings detected. Run 'nox baseline add' or remediate before merging."
-            jq '.findings[] | select((.Severity == "critical" or .Severity == "high") and (.Status != "baselined")) | {severity: .Severity, rule_id: .RuleID, file: .Location.FilePath, line: .Location.StartLine, message: .Message}' nox-results/findings.json
-            exit 1
-          fi
-
-      - name: Upload Nox results
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: security-scan-results
-          path: nox-results/
-        if: always()
-
+  ci:
+    uses: klarlabs-studio/.github/.github/workflows/go-ci.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+    secrets: inherit
+    with:
+      cross-platform: false   # pure-logic lib; ubuntu is sufficient
