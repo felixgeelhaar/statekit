@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-06-20
+## [1.9.0] - 2026-06-20
 
 ### Removed
 
-- **BREAKING: `ai` package** — LLM-driven transitions (`Drive`, `Tool` schema) have been removed. statekit core no longer knows about LLMs. This capability has been rehomed in agent-go as `contrib/ai`.
-- **BREAKING: `aiplugin` package** — AI plugins (`TokenCounter`, `PromptRecorder`, `TransitionBudget`) have been removed. They have been rehomed in agent-go as `contrib/aiplugin`. No deprecated shims are left behind.
+- **`ai` package** — LLM-driven transitions (`Drive`, `Tool` schema) removed; statekit core no longer knows about LLMs. Rehomed in agent-go as `contrib/ai`. The only in-stack consumer was `examples/llm_agent` (dropped below), so no remaining package imports it.
+- **`aiplugin` package** — `TokenCounter`, `PromptRecorder`, `TransitionBudget` removed. Rehomed in agent-go as `contrib/aiplugin`. No deprecated shims are left behind.
 - **`examples/llm_agent`** — the deterministic RAG agent example has been dropped.
 
 ### Changed
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Migration
 
-- Replace imports of `go.klarlabs.de/statekit/ai` and `go.klarlabs.de/statekit/aiplugin` with their agent-go `contrib/ai` and `contrib/aiplugin` equivalents.
+- Anyone importing `go.klarlabs.de/statekit/ai` or `go.klarlabs.de/statekit/aiplugin` should switch to the agent-go `contrib/ai` / `contrib/aiplugin` equivalents. The statekit module path is unchanged — this stays on the v1 line.
 
 ## [0.2.0] - 2025-12-25
 
@@ -52,6 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Final states support
 - Traffic light example
 
-[2.0.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v2.0.0
+[1.9.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v1.9.0
 [0.2.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v0.2.0
 [0.1.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v0.1.0
