@@ -1,4 +1,4 @@
-package statekit
+package distributed
 
 import (
 	"context"
@@ -6,19 +6,21 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"go.klarlabs.de/statekit"
 )
 
 func TestDistributedInterpreter_Basic(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	machine, _ := NewMachine[struct{}]("test").
+	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
 		State("running").On("STOP").Target("idle").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	di, err := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
@@ -33,7 +35,7 @@ func TestDistributedInterpreter_Basic(t *testing.T) {
 	}
 
 	// Send event
-	if err := di.Send(Event{Type: "START"}); err != nil {
+	if err := di.Send(statekit.Event{Type: "START"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -55,13 +57,13 @@ func TestDistributedInterpreter_LockContention(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	machine, _ := NewMachine[struct{}]("test").
+	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
 		State("running").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	// First node acquires lock
@@ -88,12 +90,12 @@ func TestDistributedInterpreter_LockRelease(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	machine, _ := NewMachine[struct{}]("test").
+	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	// First node acquires and releases lock
@@ -102,7 +104,7 @@ func TestDistributedInterpreter_LockRelease(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_ = di1.Send(Event{Type: "NOOP"}) // Won't match but exercises code
+	_ = di1.Send(statekit.Event{Type: "NOOP"}) // Won't match but exercises code
 	_, _ = di1.Commit(ctx)
 	_ = di1.Stop(ctx)
 
@@ -122,9 +124,9 @@ func TestDistributedInterpreter_Hydration(t *testing.T) {
 		Count int
 	}
 
-	machine, _ := NewMachine[Context]("counter").
+	machine, _ := statekit.NewMachine[Context]("counter").
 		WithInitial("counting").
-		WithAction("inc", func(ctx *Context, e Event) {
+		WithAction("inc", func(ctx *Context, e statekit.Event) {
 			ctx.Count++
 		}).
 		State("counting").
@@ -134,14 +136,14 @@ func TestDistributedInterpreter_Hydration(t *testing.T) {
 		State("finished").Final().Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	// First node processes some events
 	di1, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
-	_ = di1.Send(Event{Type: "INC"})
-	_ = di1.Send(Event{Type: "INC"})
-	_ = di1.Send(Event{Type: "INC"})
+	_ = di1.Send(statekit.Event{Type: "INC"})
+	_ = di1.Send(statekit.Event{Type: "INC"})
+	_ = di1.Send(statekit.Event{Type: "INC"})
 	_, _ = di1.Commit(ctx)
 
 	if di1.Context().Count != 3 {
@@ -166,12 +168,12 @@ func TestDistributedInterpreter_LockExpiry(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	machine, _ := NewMachine[struct{}]("test").
+	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	// First node acquires with short TTL and no renewal
@@ -196,7 +198,7 @@ func TestDistributedInterpreter_LockExpiry(t *testing.T) {
 	defer func() { _ = di2.Stop(ctx) }()
 
 	// First node should fail on send
-	err = di1.Send(Event{Type: "TEST"})
+	err = di1.Send(statekit.Event{Type: "TEST"})
 	if err != ErrLockLost {
 		t.Errorf("expected ErrLockLost, got %v", err)
 	}
@@ -210,9 +212,9 @@ func TestDistributedInterpreter_ConcurrentNodes(t *testing.T) {
 		Value int
 	}
 
-	machine, _ := NewMachine[Context]("test").
+	machine, _ := statekit.NewMachine[Context]("test").
 		WithInitial("a").
-		WithAction("set", func(ctx *Context, e Event) {
+		WithAction("set", func(ctx *Context, e statekit.Event) {
 			if v, ok := e.Payload.(int); ok {
 				ctx.Value = v
 			}
@@ -221,7 +223,7 @@ func TestDistributedInterpreter_ConcurrentNodes(t *testing.T) {
 		State("b").On("NEXT").Target("a").Do("set").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	var wg sync.WaitGroup
@@ -252,7 +254,7 @@ func TestDistributedInterpreter_ConcurrentNodes(t *testing.T) {
 
 			// Process some events (hold the lock for a bit)
 			for j := 0; j < 3; j++ {
-				_ = di.Send(Event{Type: "NEXT", Payload: nodeID*10 + j})
+				_ = di.Send(statekit.Event{Type: "NEXT", Payload: nodeID*10 + j})
 			}
 			_, _ = di.Commit(ctx)
 			acquired <- nodeID
@@ -440,9 +442,9 @@ func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
 		Count int
 	}
 
-	machine, _ := NewMachine[Context]("counter").
+	machine, _ := statekit.NewMachine[Context]("counter").
 		WithInitial("counting").
-		WithAction("inc", func(ctx *Context, e Event) {
+		WithAction("inc", func(ctx *Context, e statekit.Event) {
 			ctx.Count++
 		}).
 		State("counting").
@@ -450,28 +452,28 @@ func TestDistributedInterpreter_WithSnapshot(t *testing.T) {
 		Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
-	snapshotStore := NewMemorySnapshotStore[Context]()
+	eventStore := statekit.NewMemoryEventStore()
+	snapshotStore := statekit.NewMemorySnapshotStore[Context]()
 	streamLock := NewMemoryStreamLock()
 
 	// First node with snapshots
 	di1, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock,
 		WithDistributedSnapshotStore[Context](snapshotStore),
-		WithDistributedSnapshotConfig[Context](SnapshotConfig{
-			Strategy: SnapshotByInterval,
+		WithDistributedSnapshotConfig[Context](statekit.SnapshotConfig{
+			Strategy: statekit.SnapshotByInterval,
 			Interval: 3,
 		}),
 	)
 
 	// Send 3 events and commit - should trigger snapshot
 	for i := 0; i < 3; i++ {
-		_ = di1.Send(Event{Type: "INC"})
+		_ = di1.Send(statekit.Event{Type: "INC"})
 	}
 	_, _ = di1.Commit(ctx)
 
 	// Send 2 more events and commit
 	for i := 0; i < 2; i++ {
-		_ = di1.Send(Event{Type: "INC"})
+		_ = di1.Send(statekit.Event{Type: "INC"})
 	}
 	_, _ = di1.Commit(ctx)
 	_ = di1.Stop(ctx)
@@ -500,12 +502,12 @@ func TestDistributedInterpreter_LockHeld(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	machine, _ := NewMachine[struct{}]("test").
+	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	di, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
@@ -529,22 +531,22 @@ func TestDistributedInterpreter_SendAll(t *testing.T) {
 		Count int
 	}
 
-	machine, _ := NewMachine[Context]("counter").
+	machine, _ := statekit.NewMachine[Context]("counter").
 		WithInitial("a").
-		WithAction("inc", func(ctx *Context, e Event) {
+		WithAction("inc", func(ctx *Context, e statekit.Event) {
 			ctx.Count++
 		}).
 		State("a").On("NEXT").Target("b").Do("inc").Done().
 		State("b").On("NEXT").Target("a").Do("inc").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
+	eventStore := statekit.NewMemoryEventStore()
 	streamLock := NewMemoryStreamLock()
 
 	di, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
 	defer func() { _ = di.Stop(ctx) }()
 
-	events := []Event{
+	events := []statekit.Event{
 		{Type: "NEXT"},
 		{Type: "NEXT"},
 		{Type: "NEXT"},
@@ -563,13 +565,13 @@ func TestDistributedInterpreter_ForceSnapshot(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	machine, _ := NewMachine[struct{}]("test").
+	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
 		Build()
 
-	eventStore := NewMemoryEventStore()
-	snapshotStore := NewMemorySnapshotStore[struct{}]()
+	eventStore := statekit.NewMemoryEventStore()
+	snapshotStore := statekit.NewMemorySnapshotStore[struct{}]()
 	streamLock := NewMemoryStreamLock()
 
 	di, _ := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock,
