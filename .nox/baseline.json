@@ -434,14 +434,6 @@
       "created_at": "2026-03-25T08:30:00Z"
     },
     {
-      "fingerprint": "abff5c8c644e13b684d5bc96c53f7d5c98b5633f728f58269215884d09a64c0b",
-      "rule_id": "AI-006",
-      "file_path": "examples/llm_agent/main.go",
-      "severity": "medium",
-      "reason": "False positive: example/llm_agent prints prompt for demo output, not production logging",
-      "created_at": "2026-05-10T07:06:09.999084Z"
-    },
-    {
       "fingerprint": "298e486e28eb85310c171d94ecd195f1e4ee3602037b7c64f94313765195dd7b",
       "rule_id": "AI-028",
       "file_path": "viz/fuzz_test.go",
@@ -474,14 +466,6 @@
       "created_at": "2026-05-10T07:06:43.182859Z"
     },
     {
-      "fingerprint": "37b10e9357cb0aa52b442a2da32eb7f0e45553e2b7c3a747750a4d79f296b8bb",
-      "rule_id": "DATA-001",
-      "file_path": "ai/ai_test.go",
-      "severity": "medium",
-      "reason": "False positive: example.com email in ai/ai_test.go test fixture",
-      "created_at": "2026-05-10T07:06:50.375845Z"
-    },
-    {
       "fingerprint": "db2c0ab8be7fd3900b2e2381f725f5558b7f1743e01de20665da35d57e3f5f57",
       "rule_id": "IAC-013",
       "file_path": ".github/workflows/deploy.yml",
@@ -512,14 +496,6 @@
       "severity": "high",
       "reason": "False positive: JSON-LD license URL in Layout.astro, not embedded credential",
       "created_at": "2026-05-10T07:07:22.787149Z"
-    },
-    {
-      "fingerprint": "028b196967f26443ea9a919e5da370ff6303c6a61eb954861f7297c172be0b88",
-      "rule_id": "SEC-163",
-      "file_path": "aiplugin/aiplugin_test.go",
-      "severity": "medium",
-      "reason": "False positive: TestTokenCounter_Concurrent loop counters in aiplugin test, not a secret",
-      "created_at": "2026-05-10T07:07:30.354836Z"
     },
     {
       "fingerprint": "723239771a6e085cd1f8120c0331bf0fefbc9b7861f5d2d697dfbc3059804508",

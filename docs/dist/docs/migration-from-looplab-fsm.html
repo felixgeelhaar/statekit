@@ -228,7 +228,6 @@ GitHub
 <li><strong>Lint</strong> — <code>lint.Lint(machine)</code> reports unreachable states, dead ends, non-determinism, missing OnError on Invoke, etc.</li>
 <li><strong>Snapshots</strong> — pause/resume long-running workflows, persist them to a database. <code>Snapshot[C]</code> round-trips through <code>encoding/json</code> and <code>encoding/gob</code> (see <a href="../snapshot_serialization_test.go">snapshot serialization tests</a>) — no more “FSM has no exported fields” pain (<a href="https://github.com/looplab/fsm/issues/40">looplab/fsm #40</a>).</li>
 <li><strong>Clean recovery from errors</strong> — service errors route via <code>OnError</code>; the interpreter accepts events again immediately, no stuck <code>InTransitionError</code> (<a href="https://github.com/looplab/fsm/issues/115">looplab/fsm #115</a>).</li>
-<li><strong>Runaway prevention</strong> — <code>aiplugin.TransitionBudget</code> halts a misbehaving machine after N transitions.</li>
 <li><strong>Test determinism</strong> — <code>WithClock(NewFakeClock(...))</code> removes timer flake.</li>
 </ul>
 <h2 id="step-by-step-migration-plan">Step-by-step migration plan</h2>

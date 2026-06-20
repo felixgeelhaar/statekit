@@ -182,7 +182,6 @@ Done().
 - **Lint** — catch structural bugs at build time.
 - **Visualization formats** — Mermaid, HTML, TUI, ASCII (not just DOT).
 - **MCP integration** — drive a running machine from a Claude / agent via tools.
-- **Runaway prevention out of the box** — `aiplugin.TransitionBudget` halts a misbehaving machine after N transitions; addresses the pattern in [qmuntal/stateless #77](https://github.com/qmuntal/stateless/issues/77) directly.
 
 ## Migration plan
 
