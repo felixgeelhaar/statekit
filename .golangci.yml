@@ -1,9 +1,16 @@
+# Reference .golangci.yml for klarlabs-studio Go repos (golangci-lint v2).
+# Copy to a repo's root as `.golangci.yml`. gocritic is part of the bar —
+# keep it enabled. Add repo-specific exclusions under `exclusions.rules`.
 version: "2"
 
 run:
   timeout: 5m
 
 linters:
+  # Mandatory org bar. gocritic is non-negotiable. Code-level security is
+  # owned by nox (taint-analysis plugin + core ruleset), not gosec.
+  # gocyclo/dupl are intentionally NOT here — noisy and repo-specific; opt
+  # in per repo if a codebase wants them, not part of the shared gate.
   default: standard
   enable:
     - errcheck
@@ -14,6 +21,7 @@ linters:
     - misspell
     - unconvert
     - unparam
+    - gocritic     # org engineering bar — do not drop
 
 formatters:
   enable:
