@@ -1,4 +1,12 @@
-package statekit
+// Package distributed provides distributed execution of statekit machines:
+// a StreamLock interface (backed by Redis, etcd, PostgreSQL advisory locks,
+// etc.), a DistributedInterpreter that ensures only one node processes a
+// stream at a time, and consistent-hash stream routing for load distribution.
+//
+// It lives in its own sub-package so that its eventual backing-store
+// dependencies never reach the statekit core module. Consumers that import
+// only go.klarlabs.de/statekit pay nothing for this package.
+package distributed
 
 import (
 	"context"
@@ -7,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"go.klarlabs.de/statekit/internal/ir"
+	"go.klarlabs.de/statekit"
 )
 
 // --- Distributed Locking Interfaces ---
@@ -49,16 +57,16 @@ var ErrLockLost = errors.New("lock lost")
 // It ensures only one node processes events for a stream at a time.
 type DistributedInterpreter[C any] struct {
 	streamID      string
-	machine       *ir.MachineConfig[C]
-	eventStore    EventStore
-	snapshotStore SnapshotStore[C]
-	snapshotCfg   SnapshotConfig
+	machine       *statekit.MachineConfig[C]
+	eventStore    statekit.EventStore
+	snapshotStore statekit.SnapshotStore[C]
+	snapshotCfg   statekit.SnapshotConfig
 	streamLock    StreamLock
 	lockTTL       time.Duration
 	renewInterval time.Duration
 
 	// Runtime state
-	persistent *PersistentInterpreter[C]
+	persistent *statekit.PersistentInterpreter[C]
 	lock       Lock
 	renewCtx   context.Context
 	renewStop  context.CancelFunc
@@ -71,14 +79,14 @@ type DistributedInterpreter[C any] struct {
 type DistributedInterpreterOption[C any] func(*DistributedInterpreter[C])
 
 // WithDistributedSnapshotStore sets the snapshot store.
-func WithDistributedSnapshotStore[C any](store SnapshotStore[C]) DistributedInterpreterOption[C] {
+func WithDistributedSnapshotStore[C any](store statekit.SnapshotStore[C]) DistributedInterpreterOption[C] {
 	return func(di *DistributedInterpreter[C]) {
 		di.snapshotStore = store
 	}
 }
 
 // WithDistributedSnapshotConfig sets the snapshot configuration.
-func WithDistributedSnapshotConfig[C any](config SnapshotConfig) DistributedInterpreterOption[C] {
+func WithDistributedSnapshotConfig[C any](config statekit.SnapshotConfig) DistributedInterpreterOption[C] {
 	return func(di *DistributedInterpreter[C]) {
 		di.snapshotCfg = config
 	}
@@ -98,8 +106,8 @@ func WithLockTTL[C any](ttl time.Duration) DistributedInterpreterOption[C] {
 func NewDistributedInterpreter[C any](
 	ctx context.Context,
 	streamID string,
-	machine *ir.MachineConfig[C],
-	eventStore EventStore,
+	machine *statekit.MachineConfig[C],
+	eventStore statekit.EventStore,
 	streamLock StreamLock,
 	opts ...DistributedInterpreterOption[C],
 ) (*DistributedInterpreter[C], error) {
@@ -108,7 +116,7 @@ func NewDistributedInterpreter[C any](
 		machine:       machine,
 		eventStore:    eventStore,
 		streamLock:    streamLock,
-		snapshotCfg:   SnapshotConfig{Strategy: SnapshotNever},
+		snapshotCfg:   statekit.SnapshotConfig{Strategy: statekit.SnapshotNever},
 		lockTTL:       30 * time.Second,
 		renewInterval: 10 * time.Second,
 	}
@@ -130,13 +138,13 @@ func NewDistributedInterpreter[C any](
 	go di.renewLoop()
 
 	// Create persistent interpreter (hydrates from store)
-	piOpts := []PersistentInterpreterOption[C]{}
+	piOpts := []statekit.PersistentInterpreterOption[C]{}
 	if di.snapshotStore != nil {
-		piOpts = append(piOpts, WithSnapshotStore[C](di.snapshotStore))
+		piOpts = append(piOpts, statekit.WithSnapshotStore[C](di.snapshotStore))
 	}
-	piOpts = append(piOpts, WithSnapshotConfig[C](di.snapshotCfg))
+	piOpts = append(piOpts, statekit.WithSnapshotConfig[C](di.snapshotCfg))
 
-	di.persistent, err = NewPersistentInterpreter(ctx, streamID, machine, eventStore, piOpts...)
+	di.persistent, err = statekit.NewPersistentInterpreter(ctx, streamID, machine, eventStore, piOpts...)
 	if err != nil {
 		_ = lock.Release(ctx)
 		di.renewStop()
@@ -169,7 +177,7 @@ func (di *DistributedInterpreter[C]) renewLoop() {
 }
 
 // Send processes an event if the lock is still held.
-func (di *DistributedInterpreter[C]) Send(event Event) error {
+func (di *DistributedInterpreter[C]) Send(event statekit.Event) error {
 	di.mu.Lock()
 	defer di.mu.Unlock()
 
@@ -189,7 +197,7 @@ func (di *DistributedInterpreter[C]) Send(event Event) error {
 }
 
 // SendAll processes multiple events.
-func (di *DistributedInterpreter[C]) SendAll(events []Event) error {
+func (di *DistributedInterpreter[C]) SendAll(events []statekit.Event) error {
 	for _, event := range events {
 		if err := di.Send(event); err != nil {
 			return err
@@ -218,7 +226,7 @@ func (di *DistributedInterpreter[C]) Commit(ctx context.Context) (int, error) {
 }
 
 // State returns the current state.
-func (di *DistributedInterpreter[C]) State() State[C] {
+func (di *DistributedInterpreter[C]) State() statekit.State[C] {
 	di.mu.Lock()
 	defer di.mu.Unlock()
 	return di.persistent.State()
@@ -239,7 +247,7 @@ func (di *DistributedInterpreter[C]) Done() bool {
 }
 
 // Matches checks if current state matches or is descendant of given state.
-func (di *DistributedInterpreter[C]) Matches(stateID StateID) bool {
+func (di *DistributedInterpreter[C]) Matches(stateID statekit.StateID) bool {
 	di.mu.Lock()
 	defer di.mu.Unlock()
 	return di.persistent.Matches(stateID)
