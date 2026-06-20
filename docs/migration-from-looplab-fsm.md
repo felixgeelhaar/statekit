@@ -181,7 +181,6 @@ When you exit `loading` (e.g., user cancels), the service's `context.Context` is
 - **Lint** — `lint.Lint(machine)` reports unreachable states, dead ends, non-determinism, missing OnError on Invoke, etc.
 - **Snapshots** — pause/resume long-running workflows, persist them to a database. `Snapshot[C]` round-trips through `encoding/json` and `encoding/gob` (see [snapshot serialization tests](../snapshot_serialization_test.go)) — no more "FSM has no exported fields" pain ([looplab/fsm #40](https://github.com/looplab/fsm/issues/40)).
 - **Clean recovery from errors** — service errors route via `OnError`; the interpreter accepts events again immediately, no stuck `InTransitionError` ([looplab/fsm #115](https://github.com/looplab/fsm/issues/115)).
-- **Runaway prevention** — `aiplugin.TransitionBudget` halts a misbehaving machine after N transitions.
 - **Test determinism** — `WithClock(NewFakeClock(...))` removes timer flake.
 
 ## Step-by-step migration plan

@@ -23,8 +23,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <p class="hero-lede">
           Statekit is a typed statechart library for Go: hierarchical states, guards,
           actions, delayed and parallel transitions, with built-in visualization
-          and lint. Same primitives serve backend domain workflows and deterministic
-          AI agent runtimes.
+          and lint. The same primitives serve backend domain workflows of every shape.
         </p>
 
         <div class="hero-cta">
@@ -74,8 +73,8 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
             <p>Inject a <code>FakeClock</code> to make timer-driven behavior reproducible. No <code>time.Sleep</code> flakes.</p>
           </div>
           <div class="why-card">
-            <h3>Two jobs, one library</h3>
-            <p>Backend domain workflows (Stripe webhook saga template included) and deterministic AI agent runtimes (RAG, HITL, tool-call workflows) share the same primitives.</p>
+            <h3>Built for backend workflows</h3>
+            <p>Order lifecycles, payment sagas, incident management, KYC (Stripe webhook saga template included) all share the same typed primitives.</p>
           </div>
         </div>
       </section>
@@ -120,7 +119,7 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
               <th scope="row">Runaway prevention</th>
               <td>—</td>
               <td><a href="https://github.com/qmuntal/stateless/issues/77" target="_blank" rel="noopener">#77 manual</a></td>
-              <td>aiplugin.TransitionBudget</td>
+              <td>Guard + attempt counter</td>
             </tr>
             <tr>
               <th scope="row">Visualization</th>
@@ -144,7 +143,7 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
       </section>
 
       <section class="jobs" aria-labelledby="jobs-heading">
-        <h2 id="jobs-heading" class="section-title">Two jobs, one library</h2>
+        <h2 id="jobs-heading" class="section-title">Built for backend workflows</h2>
         <div class="jobs-grid">
           <article class="job-card">
             <h3>Backend domain workflows</h3>
@@ -152,9 +151,9 @@ interp.<span class="tok-fn">Send</span>(statekit.Event&#123;Type: <span class="t
             <a href="https://github.com/klarlabs-studio/statekit/tree/main/examples/stripe_webhook" target="_blank" rel="noopener">See the Stripe webhook saga →</a>
           </article>
           <article class="job-card">
-            <h3>Deterministic AI agent runtime</h3>
-            <p>RAG pipelines, tool-call workflows, multi-step agents with human-in-the-loop. Statecharts give you reproducibility, bounded blast radius, and audit-grade observability for LLM-backed systems.</p>
-            <a href="https://github.com/klarlabs-studio/statekit/tree/main/examples/llm_agent" target="_blank" rel="noopener">See the RAG agent example →</a>
+            <h3>Reproducible by construction</h3>
+            <p>Event sourcing replays a run deterministically, OnError routing bounds the blast radius, and snapshots give you audit-grade observability — the same typed primitives across every workflow.</p>
+            <a href="https://github.com/klarlabs-studio/statekit/tree/main/examples/incident_lifecycle" target="_blank" rel="noopener">See the incident lifecycle example →</a>
           </article>
         </div>
       </section>

@@ -34,13 +34,12 @@ GitHub
 <li><strong>Distributed execution</strong> — <code>DistributedInterpreter</code>, <code>StreamLock</code>, <code>ClusterMembership</code>, <code>StreamRouter</code>, <code>MemoryStreamLock</code>, <code>ConsistentHashRouter</code></li>
 <li><strong>Machine composition</strong> — <code>InvokeMachine</code>, <code>MachineInvokeBuilder</code>, <code>WithChildMachine</code></li>
 <li><strong>MCP integration</strong> — <code>mcp.NewServer</code>, <code>mcp.ExposeInterpreter</code>, registry, tools/resources</li>
-<li><strong>AI plugins</strong> — <code>aiplugin.TokenCounter</code>, <code>aiplugin.PromptRecorder</code></li>
 </ul>
 <h3 id="why-experimental">Why experimental</h3>
 <ul>
 <li><strong>Actor model</strong> overlaps with the <code>InvokeMachine</code> builder helper for child machine composition. The right shape (one mechanism vs two) is an open question.</li>
 <li><strong>Distributed + Persistent</strong> features compete with mature workflow engines (Temporal, Cadence). Real-world use will tell us whether to deepen these or position statekit as in-process-only.</li>
-<li><strong>MCP / aiplugin</strong> are recent additions tracking a fast-moving ecosystem (MCP spec, agent runtimes). API may evolve as norms settle.</li>
+<li><strong>MCP</strong> is a recent addition tracking a fast-moving ecosystem (MCP spec, agent runtimes). API may evolve as norms settle.</li>
 </ul>
 <h3 id="what-experimental-means-concretely">What “experimental” means concretely</h3>
 <ul>

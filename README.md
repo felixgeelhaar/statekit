@@ -26,12 +26,9 @@ A working machine in 10 lines. Hierarchy and parallel states scale from there. `
 
 ## Two jobs
 
-Statekit fits two adjacent shapes that look similar from outside:
+Statekit targets **backend domain workflows** — order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across `switch event.Type { ... }` and accumulate bugs around partial failure, retry, and idempotency. See [`examples/stripe_webhook`](./examples/stripe_webhook) for a webhook-saga template with idempotency, retry budget, and the outbox pattern.
 
-- **Backend domain workflows** — order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across `switch event.Type { ... }` and accumulate bugs around partial failure, retry, and idempotency. See [`examples/stripe_webhook`](./examples/stripe_webhook) for a webhook-saga template with idempotency, retry budget, and the outbox pattern.
-- **Deterministic AI agent runtime** — RAG pipelines, tool-call workflows, multi-step agents with human-in-the-loop. Statecharts give you reproducibility (event sourcing replays the run without re-calling the model), bounded blast radius (OnError routing), and audit-grade observability (prompt + token snapshots). See [`examples/llm_agent`](./examples/llm_agent) and the [`ai`](./ai) + [`aiplugin`](./aiplugin) packages.
-
-Both jobs benefit from the same primitives — typed context, hierarchy, lint, visualization, snapshots — so one library, one mental model.
+These workflows benefit from a consistent set of primitives — typed context, hierarchy, lint, visualization, snapshots — so one library, one mental model.
 
 ## Coming from another FSM library?
 
@@ -84,7 +81,6 @@ These ship in v1.0 but reserve room to iterate within v1.x:
 - **Distributed execution** — `StreamLock` interface (Redis / etcd / PostgreSQL) + `DistributedInterpreter`
 - **Machine composition** — `InvokeMachine` for typed child-machine composition
 - **MCP integration** — `mcp.NewServer` for AI-assisted authoring; `mcp.ExposeInterpreter` to drive a running machine from an agent
-- **AI plugins** — `aiplugin.TokenCounter`, `aiplugin.PromptRecorder` for LLM observability and replay-based debugging
 
 ## Installation
 
@@ -408,8 +404,6 @@ The `visualize_machine` tool includes an interactive Vue.js + Cytoscape.js visua
 
 | Package | Description |
 |---------|-------------|
-| [`ai`](./ai) | LLM-driven transitions — `Drive` + `Tool` schema (Tier 2) |
-| [`aiplugin`](./aiplugin) | AI plugins — `TokenCounter`, `PromptRecorder`, `TransitionBudget` (Tier 2) |
 | [`mcp`](./mcp) | MCP server + `ExposeInterpreter` for agent-driven workflows (Tier 2) |
 | [`statetest`](./statetest) | Testing utilities: assertions, recorders, helpers |
 | [`debug`](./debug) | Runtime inspection and state graph analysis |
@@ -431,7 +425,6 @@ See the [examples](./examples) directory:
 | [pedestrian_light](./examples/pedestrian_light) | Hierarchical states with event bubbling |
 | [order_workflow](./examples/order_workflow) | Reflection DSL for business workflows |
 | [incident_lifecycle](./examples/incident_lifecycle) | Complex IT incident management |
-| [llm_agent](./examples/llm_agent) | Deterministic RAG pipeline with HITL approval |
 
 ## API Reference
 

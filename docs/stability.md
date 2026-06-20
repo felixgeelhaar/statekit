@@ -32,13 +32,12 @@ These features ship in v1.0 but explore problem spaces where the right shape isn
 - **Distributed execution** — `DistributedInterpreter`, `StreamLock`, `ClusterMembership`, `StreamRouter`, `MemoryStreamLock`, `ConsistentHashRouter`
 - **Machine composition** — `InvokeMachine`, `MachineInvokeBuilder`, `WithChildMachine`
 - **MCP integration** — `mcp.NewServer`, `mcp.ExposeInterpreter`, registry, tools/resources
-- **AI plugins** — `aiplugin.TokenCounter`, `aiplugin.PromptRecorder`
 
 ### Why experimental
 
 - **Actor model** overlaps with the `InvokeMachine` builder helper for child machine composition. The right shape (one mechanism vs two) is an open question.
 - **Distributed + Persistent** features compete with mature workflow engines (Temporal, Cadence). Real-world use will tell us whether to deepen these or position statekit as in-process-only.
-- **MCP / aiplugin** are recent additions tracking a fast-moving ecosystem (MCP spec, agent runtimes). API may evolve as norms settle.
+- **MCP** is a recent addition tracking a fast-moving ecosystem (MCP spec, agent runtimes). API may evolve as norms settle.
 
 ### What "experimental" means concretely
 
