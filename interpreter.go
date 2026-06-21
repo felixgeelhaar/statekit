@@ -430,13 +430,30 @@ func (i *Interpreter[C]) Done() bool {
 	return stateConfig.Type == ir.StateTypeFinal
 }
 
-// Send processes an event and potentially transitions to a new state
+// Send processes an event and potentially transitions to a new state.
 func (i *Interpreter[C]) Send(event Event) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
+	i.sendLocked(event)
+}
 
+// SendResult processes an event like [Interpreter.Send] and reports whether it
+// was handled — i.e. a matching, guard-passing transition fired. It returns
+// false when no transition matched the event from the current state, or when
+// every candidate transition was blocked by its guard. This lets callers
+// distinguish an applied transition from one that was silently rejected (a
+// blocked guard), instead of having to infer it from the resulting state.
+func (i *Interpreter[C]) SendResult(event Event) bool {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	return i.sendLocked(event)
+}
+
+// sendLocked performs the event processing with i.mu already held and reports
+// whether a transition (or parallel-region delivery) occurred.
+func (i *Interpreter[C]) sendLocked(event Event) bool {
 	if !i.started {
-		return
+		return false
 	}
 
 	// Call OnEvent hooks (may modify event)
@@ -448,19 +465,21 @@ func (i *Interpreter[C]) Send(event Event) {
 	// Handle parallel states: broadcast event to all regions (v2.0)
 	if i.currentParallel != "" {
 		i.sendToParallelRegions(event)
-		return
+		return true
 	}
 
 	// Get current state config
 	currentState := i.machine.GetState(i.state.Value)
 	if currentState == nil {
-		return
+		return false
 	}
 
-	// Find matching transition, bubbling up through ancestors
+	// Find matching transition, bubbling up through ancestors. A nil source
+	// means either no transition matched the event or every candidate's guard
+	// returned false — the event is not handled.
 	source := i.findMatchingTransitionHierarchical(currentState, event)
 	if source == nil {
-		return // No matching transition in hierarchy
+		return false
 	}
 
 	// Execute the transition
@@ -468,6 +487,7 @@ func (i *Interpreter[C]) Send(event Event) {
 
 	// Settle eventless transitions and drain any raised events
 	i.macrostep()
+	return true
 }
 
 // UpdateContext allows updating the context with a function
