@@ -27,6 +27,13 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          # The default GITHUB_TOKEN cannot push changes to .github/workflows/*
+          # (GitHub blocks it without the `workflows` scope), and remediating
+          # action pins edits workflow files. Provide a PAT with contents +
+          # pull-requests + workflows write as the NOX_TOKEN secret; falls back
+          # to GITHUB_TOKEN (fine for dependency-only remediation).
+          token: ${{ secrets.NOX_TOKEN || github.token }}
+          persist-credentials: true
 
       # Toolchains for the dependency-tidy step (only used when a manifest is
       # present). Go via the repo's go.mod; node fixed at 22.
@@ -57,7 +64,7 @@ jobs:
 
       - name: Open remediation PR if anything changed
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.NOX_TOKEN || github.token }}
         run: |
           if git diff --quiet && git diff --cached --quiet; then
             echo "nox: nothing to remediate."
