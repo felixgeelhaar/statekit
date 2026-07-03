@@ -12,8 +12,8 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@astrojs/vue": "^6.0.1",
-    "astro": "^6.3.1",
+    "@astrojs/vue": "^7.0.1",
+    "astro": "^7.0.6",
     "vue": "^3.5.0"
   },
   "devDependencies": {
