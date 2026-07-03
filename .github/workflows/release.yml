@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests
+        run: go test -race ./...
+
+      - name: Install nox
+        run: |
+          go install github.com/nox-hq/nox/cli@v0.8.1
+          mv "$(go env GOPATH)/bin/cli" "$(go env GOPATH)/bin/nox"
+
+      - name: Generate release SBOM
+        # nox scan exits non-zero when findings exist (even baselined ones in a
+        # source-built binary). SBOM generation should not gate on findings —
+        # the security CI job already enforces that — so tolerate the exit code
+        # and verify the artifacts were written.
+        run: |
+          mkdir -p release-artifacts
+          nox -format cdx,spdx -output release-artifacts scan . || true
+          test -s release-artifacts/sbom.cdx.json
+          test -s release-artifacts/sbom.spdx.json
+
+      - name: Create Release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
+        with:
+          generate_release_notes: true
+          files: |
+            release-artifacts/sbom.cdx.json
+            release-artifacts/sbom.spdx.json
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
