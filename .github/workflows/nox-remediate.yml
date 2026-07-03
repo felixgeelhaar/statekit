@@ -76,7 +76,9 @@ jobs:
           git switch -c "$branch"
           git commit -am "chore(security): nox remediation (deps + actions)"
           git push -u origin "$branch"
-          gh pr create \
+          url="$(gh pr create \
             --title "chore(security): nox remediation" \
             --body "Automated remediation by \`nox fix --actions\`: OSV-vulnerable dependency upgrades and outdated GitHub Actions pins bumped to their latest SHA-pinned release. Replaces dependabot." \
-            --label dependencies || true
+            --label dependencies)"
+          # Auto-merge once CI is green (same flow dependabot PRs used).
+          gh pr merge --auto --squash "$url" || true
