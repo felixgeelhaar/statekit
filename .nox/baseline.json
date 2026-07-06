@@ -2,47 +2,7 @@
   "schema_version": "1.0.0",
   "entries": [
     {
-      "fingerprint": "9d0089bfdc5701be25b676b48dd9770428fa0c2490dc576fe1daebcd556bd1b5",
-      "rule_id": "IAC-351",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "critical",
-      "reason": "False positive: id-token: write is standard GitHub OIDC permission, not a hardcoded secret",
-      "created_at": "2026-03-25T06:38:57.127066Z"
-    },
-    {
-      "fingerprint": "892754ab5606f038cfad9bdaa32d4097c93c8ac82620844d78919767dcbf99c9",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: Go function name findMatchingTransitionHierarchical, not an API key",
-      "created_at": "2026-03-25T06:38:57.99013Z"
-    },
-    {
-      "fingerprint": "d783d02a7388494a6bd97b72223860d775ebd8ef29e5a5eb45b3bd72278f0d9e",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: Go function name in interpreter.go, not an API key",
-      "created_at": "2026-03-25T06:39:00.635594Z"
-    },
-    {
-      "fingerprint": "1d19d4066b6c852565be70445892886c9d60587170f66d7218bb48566ae0ac11",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: Go function name in interpreter.go, not an API key",
-      "created_at": "2026-03-25T06:39:03.324286Z"
-    },
-    {
-      "fingerprint": "406a144312a197c9e9a6ede5611addee7d2af138f9fac1909e47efa2cea8f05a",
-      "rule_id": "SEC-085",
-      "file_path": "docs/src/components/Layout.astro",
-      "severity": "high",
-      "reason": "False positive: Google Fonts URL in Layout.astro, not an embedded password",
-      "created_at": "2026-03-25T06:39:05.940481Z"
-    },
-    {
-      "fingerprint": "8350b50e1c155a355f6aad272c7fbc887bba3c9ab6cf5b2f5aa2d42bf8eb36f4",
+      "fingerprint": "6e0b4010f001855e353cec079d9ed971c8a4733797e5691ee8e7607e19205bfd",
       "rule_id": "DATA-001",
       "file_path": "examples/form_wizard/main.go",
       "severity": "medium",
@@ -50,7 +10,7 @@
       "created_at": "2026-03-25T06:39:23.020218Z"
     },
     {
-      "fingerprint": "fdbff9ae219374de021b4b26478adc3865b3df57b335fcc1d2e487c4ae186d53",
+      "fingerprint": "af16bac9211419c767e99f2eec848cd7974222db6c284f6f32582b288b993e3b",
       "rule_id": "DATA-001",
       "file_path": "examples/form_wizard/main_test.go",
       "severity": "medium",
@@ -58,23 +18,7 @@
       "created_at": "2026-03-25T06:39:26.068251Z"
     },
     {
-      "fingerprint": "bad9361eeb8f840577f51a78a2710eb703ec7aef98ee347180e7139f791f51a5",
-      "rule_id": "DATA-001",
-      "file_path": "examples/form_wizard/main_test.go",
-      "severity": "medium",
-      "reason": "False positive: Example email in form_wizard test",
-      "created_at": "2026-03-25T06:39:27.898684Z"
-    },
-    {
-      "fingerprint": "4494d39766fa56754252b832e3631e680af7427d77934140d5698ca3874a4b3c",
-      "rule_id": "DATA-001",
-      "file_path": "examples/incident_lifecycle/README.md",
-      "severity": "medium",
-      "reason": "False positive: Example email in incident_lifecycle README",
-      "created_at": "2026-03-25T06:39:30.453859Z"
-    },
-    {
-      "fingerprint": "b4ab0b02b05a7bd4d6392b67ca43ae73d3c632880892ee224815baaf2cbb7fc8",
+      "fingerprint": "dc45d25482380cc1fb81931598cc9eb041de0bd2d5867290ce8b415c2415ff81",
       "rule_id": "DATA-001",
       "file_path": "examples/incident_lifecycle/main.go",
       "severity": "medium",
@@ -82,7 +26,7 @@
       "created_at": "2026-03-25T06:39:32.867304Z"
     },
     {
-      "fingerprint": "4af846f226f11f4e5985868cf25cbd7b1396cd4309b2021d897172a4699e2182",
+      "fingerprint": "18f98136e2310934aa82cf9053639e75d4bbdfc44983136ff0cea81b5d422808",
       "rule_id": "DATA-001",
       "file_path": "examples/incident_lifecycle/main_test.go",
       "severity": "medium",
@@ -90,15 +34,7 @@
       "created_at": "2026-03-25T06:39:45.865869Z"
     },
     {
-      "fingerprint": "71d669e56a2d75ec0556ce6e8f14f9c11a0d1f43a64317d013a3bc7c6b20af4f",
-      "rule_id": "DATA-001",
-      "file_path": "examples/incident_lifecycle/main_test.go",
-      "severity": "medium",
-      "reason": "False positive: Example email in incident_lifecycle test",
-      "created_at": "2026-03-25T06:39:48.84891Z"
-    },
-    {
-      "fingerprint": "298e02648e8b41d1e2a84bf46c4a34978017a824229f405c79a25fd2f793936d",
+      "fingerprint": "cc94d1fdd513f61d7fdd535b3af64e62287d57f9fa32b935d876c24f2aa39066",
       "rule_id": "SEC-161",
       "file_path": "performance_bench_test.go",
       "severity": "medium",
@@ -106,580 +42,88 @@
       "created_at": "2026-03-25T06:39:49.789535Z"
     },
     {
-      "fingerprint": "a71534eb8575fbdddb2341ecb7f8cb9eface72dcc8938e617c908c0068dbbe47",
-      "rule_id": "IAC-306",
-      "file_path": ".github/workflows/deploy.yml",
+      "fingerprint": "86d98e85041472dd36966858cb710e14e8e674816fbfe8c199df32808f9ab720",
+      "rule_id": "SEC-163",
+      "file_path": "docs/dist/_astro/runtime-dom.esm-bundler.WwE3ir1L.js",
       "severity": "medium",
-      "reason": "Accepted: OIDC token write is required for GitHub Pages deployment",
-      "created_at": "2026-03-25T06:40:04.214042Z"
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "2d99c42b5637e1deb4d3b100fa949faac2626a75c53da8a2ae774d7eeb3e0b3a",
-      "rule_id": "IAC-310",
-      "file_path": ".github/workflows/ci.yml",
+      "fingerprint": "ecd4809780d58d7fd3dbfc04272730a314cd7c56ca01005892a65decac197f90",
+      "rule_id": "SEC-163",
+      "file_path": "docs/dist/_astro/runtime-dom.esm-bundler.WwE3ir1L.js",
       "severity": "medium",
-      "reason": "Accepted: continue-on-error on security scan is intentional - scan is non-blocking",
-      "created_at": "2026-03-25T06:40:07.529Z"
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "db6ba4f77d34472dcdbf40eab97860e652f53c06a5486044c6a60c952d33838e",
-      "rule_id": "IAC-018",
-      "file_path": ".github/workflows/ci.yml",
+      "fingerprint": "b887e883ca06af47a8e3adb4bf3e145b3734f7d21efa0f0c8af5c75ca61a269e",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "069118dd204d2f94557552765fec67b6746be0002109897392184cdf170ab4fb",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "2f6c05198b92da02f042e04e1e3c40685f4c4721995b7674c4652fd757f631f1",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "6f08532422b579402de48b6414faf6d013988c2ee83cb971abf1969581cb0d34",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "4ce386260c83b16c5979bff39eeebb3a42ea56b2cbb65ee6a15e913ba7b42931",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "11fd06f0fd53084c7f45ddd9c52a8a72452fb839c6f9a901a4a5b94ced4924b0",
+      "rule_id": "SLOP-001",
+      "file_path": "mcp/ui/vendor/cytoscape-dagre.min.js",
       "severity": "low",
-      "reason": "Accepted: continue-on-error on security scan is intentional - scan is non-blocking",
-      "created_at": "2026-03-25T06:40:09.94049Z"
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "be85f18ea6f2212d4e4e9f66bcabc9651dbb3d8d94b2ee9d7c6fee73257f6b20",
-      "rule_id": "IAC-308",
-      "file_path": ".github/workflows/deploy.yml",
+      "fingerprint": "3d2a14ef900a1644910828e7fb61b869332a7520974a87850b1d0ab6dbfb13ff",
+      "rule_id": "SLOP-001",
+      "file_path": "mcp/ui/vendor/dagre.min.js",
       "severity": "low",
-      "reason": "Accepted: workflow_dispatch is intentional for manual deploy triggers",
-      "created_at": "2026-03-25T06:40:10.992288Z"
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "98e4aa7666099d7ec6bed5d3a6b5dbb9e151248b87e6a392b03b79a7a0da3365",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: actions/checkout@v4 is a first-party GitHub action, tag pinning is standard practice",
-      "created_at": "2026-03-25T06:40:18.313684Z"
+      "fingerprint": "6cc7abd97eec6c3b4b843ced6df1aae83d738c652df43d8b1e4edcff7f4cbe74",
+      "rule_id": "SLOP-001",
+      "file_path": "mcp/ui/vendor/dagre.min.js",
+      "severity": "low",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "f96b474605ca31dfc0fcfe3ecff3fad866f257e6d27326fe3abad4efe48b1fb4",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: actions/setup-go@v5 is a first-party GitHub action",
-      "created_at": "2026-03-25T06:40:21.14889Z"
-    },
-    {
-      "fingerprint": "38c948dce18363869a0a23c43300cc763a91b4829eb0c542bb53f4cfb67e57c7",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:40:23.764017Z"
-    },
-    {
-      "fingerprint": "617a3814ea260412b24e583254b990357c105712bbe5ea5c4ed2014f7f7b65b0",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:40:26.63394Z"
-    },
-    {
-      "fingerprint": "e7393cb52f0e257c90b35ce9d3be036ee28a8945734296add7dc68bc53fa6c72",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:40:28.916925Z"
-    },
-    {
-      "fingerprint": "d1a7684157a4461c1a83a6f5441169d439ea3992a7d4affaa964a4eca04547c7",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:41:03.759943Z"
-    },
-    {
-      "fingerprint": "6edc196fba212dcb0fc302717f28e1cd35d52ece417422696895aa4ad0157201",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: golangci-lint action pinned to major version tag",
-      "created_at": "2026-03-25T06:41:03.797439Z"
-    },
-    {
-      "fingerprint": "6443eafb87035bb6f236008e8576ad6f7b14842cd7f41c568b8a9c62dfe16b44",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:41:03.818953Z"
-    },
-    {
-      "fingerprint": "f85045b61e158faafd522fd4672ca5008d01ba69410e36fb858a122609031b27",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:41:03.842197Z"
-    },
-    {
-      "fingerprint": "0db431cfc5f3ebc8b1eb4ea7f2c7689432b10812fec82dd11327f6dcf91c3abc",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/ci.yml",
-      "severity": "high",
-      "reason": "Accepted: nox GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:41:03.861384Z"
-    },
-    {
-      "fingerprint": "35d6decc391cbb0d2f1ce954839e697044091da11c0bb617242e6a0d79a8d1f5",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "Accepted: first-party GitHub action pinned to major version tag",
-      "created_at": "2026-03-25T06:41:11.168341Z"
-    },
-    {
-      "fingerprint": "1e1d9f9fdb17a829419b37a3e02d90c0a726d1dd1c8d08cbde155008fdf5ae5c",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "Accepted: actions/setup-node pinned to major version tag",
-      "created_at": "2026-03-25T06:41:15.066738Z"
-    },
-    {
-      "fingerprint": "f974f882a03bcf61d8c63e263ce727119dbcea17b7565c57ca1c2146a5ecf578",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "Accepted: peaceiris/actions-gh-pages pinned to major version tag",
-      "created_at": "2026-03-25T06:41:17.03027Z"
-    },
-    {
-      "fingerprint": "eae4be6d435f0b5f66d57ab8359ec06f88e0191c75e34827c7dc7d584bae84ce",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "Accepted: actions/deploy-pages pinned to major version tag",
-      "created_at": "2026-03-25T06:41:19.761001Z"
-    },
-    {
-      "fingerprint": "ce40a00c8094a6ac1e9f19ad032325f8d94dd59d2e218cd9d7093ddc9cb381ee",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "Accepted: actions/upload-pages-artifact pinned to major version tag",
-      "created_at": "2026-03-25T06:41:22.483607Z"
-    },
-    {
-      "fingerprint": "2a3ab7172ebe030a112c310d0247440f3a88c75b626a0988f6d70bf938e6e4ac",
-      "rule_id": "SEC-384",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Braintree API key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "c3d7b9b8dc3a0bc4eb39fb4bf16ca6dc322d60364953037c5010baeba6d0b709",
-      "rule_id": "SEC-384",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Braintree API key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "948fe75536707f1ace05d7c3384fe2d9841d370c667bfe7c66256dae0dadf6eb",
-      "rule_id": "SEC-505",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Maven Repository Token - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "bce1473b326122e83122d0330e7856c0aac111ef7a09cd563656d9d8d6b751f7",
-      "rule_id": "SEC-505",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Maven Repository Token - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "e0825094082a7155918ad19bbb24aca685d6c55fa5587180398f0de4834228b3",
-      "rule_id": "SEC-506",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected NuGet API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "3bd277ce6ca443c45873e6c0ccdb5cd3f981085198b1a09bec778cb57cf5fb82",
-      "rule_id": "SEC-506",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected NuGet API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "b17b4b1fb7af0096f54276652348d8dee5857d26ece6b6c9d4628ebb61453fa1",
-      "rule_id": "SEC-525",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected DigitalOcean API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "d3834eea16439c92d9aee0ffbd107e97f52318d75e71fecc74a41b8f093268bb",
-      "rule_id": "SEC-525",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected DigitalOcean API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "c5f91b36f1789d2833471736e6ea0e7f3e96b624042bfab4f6cb003523c24540",
-      "rule_id": "SEC-543",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Datadog API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "fc005400cd891de323c978d38257c5032ca6651d472bdb14124c8b6f5ee14b74",
-      "rule_id": "SEC-543",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Datadog API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "cbaa3bf96328fb78680bcf26807d2ebbca82253914de49a2a2c7caa82891089f",
-      "rule_id": "SEC-545",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "68dc02f272a1ba2e4c269927c76cf7072cb3c60f6fb45cabbb22d2be09a7ff97",
-      "rule_id": "SEC-545",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "d20747b21528f1b434b440bec3fe9fb0e115709bf142ad199b214563f3d713c2",
-      "rule_id": "SEC-545",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "000530dfc799318c6af6214bf5126d4121451c024c7c0f4b067f1f56acb73973",
-      "rule_id": "SEC-545",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected PagerDuty API Key (alternate) - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "6ae1c57dc169276fb595513565d6882af59c93a6f5dc20e39925c328ecce602b",
-      "rule_id": "SEC-621",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected SendGrid API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "d261970621795da102d2e924ac11884c1cb597768b4cc3e4369c3ff275fa9347",
-      "rule_id": "SEC-621",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected SendGrid API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "de038222685b1d2dbb47654d3150d1ca0f5665360aa0c1b1fbbea1967c24eb7a",
-      "rule_id": "SEC-629",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected LOB API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "8a33f9b3000f23300c3c0d6cd5d47403d23c248d57804bf4907a4c3ec49bc12a",
-      "rule_id": "SEC-629",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected LOB API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "51a930745a04c6b742811d86326e33f56aaa08542bdce70680cfbf828542f587",
-      "rule_id": "SEC-678",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Datadog API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "c9b1393763efc33895571e79ce24ff487dc4d6eca1fd564fd084b0c11f75aa51",
-      "rule_id": "SEC-678",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Datadog API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "b71c1c0978c7d21d63f69e11770928d6cf18285171f686889e7652e9f277f708",
-      "rule_id": "SEC-679",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Grafana API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "77843c19bd6352147e272122d02cff74c8283bec79533187a6ba9d11ba90efe3",
-      "rule_id": "SEC-679",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: Detected Grafana API Key - example code/documentation in README.md",
-      "created_at": "2026-03-25T08:30:00Z"
-    },
-    {
-      "fingerprint": "298e486e28eb85310c171d94ecd195f1e4ee3602037b7c64f94313765195dd7b",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
+      "fingerprint": "f7577b93acc677b98c052d2000ab5e42cd83fa3c009daa7d6c9ad6c188c25142",
+      "rule_id": "VULN-001",
+      "file_path": "docs/package-lock.json",
       "severity": "medium",
-      "reason": "False positive: viz/fuzz_test.go is a JSON parser fuzz, no LLM seed needed",
-      "created_at": "2026-05-10T07:06:20.506997Z"
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "6d283573ea0dfa4b2f403b131da6f8d52cb46dc492be716df3e9d043aae39675",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
+      "fingerprint": "ae70366bfebc8b6cdcbd748666b5a9eabc853c7c13478cea81c18dcfe805ed15",
+      "rule_id": "VULN-002",
+      "file_path": "docs/package-lock.json",
       "severity": "medium",
-      "reason": "False positive: viz/fuzz_test.go fuzz seed line, not LLM",
-      "created_at": "2026-05-10T07:06:28.505991Z"
-    },
-    {
-      "fingerprint": "146262a4300305254cddebfce1d2f8e08473c74452aa673119550bbf436d8d39",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
-      "severity": "medium",
-      "reason": "False positive: viz/fuzz_test.go fuzz seed line, not LLM",
-      "created_at": "2026-05-10T07:06:36.781078Z"
-    },
-    {
-      "fingerprint": "13fcced20490c6f44108511cd6b8c8ec24fdc845045864ccdd4ce55214cde374",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
-      "severity": "medium",
-      "reason": "False positive: viz/fuzz_test.go fuzz seed line, not LLM",
-      "created_at": "2026-05-10T07:06:43.182859Z"
-    },
-    {
-      "fingerprint": "db2c0ab8be7fd3900b2e2381f725f5558b7f1743e01de20665da35d57e3f5f57",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "First-party actions/setup-node: trusted GitHub-published action, dependabot-managed",
-      "created_at": "2026-05-10T07:06:57.956878Z"
-    },
-    {
-      "fingerprint": "58fc8537d4f7e93d97a662f846e774c7a761b26001946694e93d3baaa9451480",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "First-party actions/upload-pages-artifact: trusted, dependabot-managed",
-      "created_at": "2026-05-10T07:07:05.190358Z"
-    },
-    {
-      "fingerprint": "fc3d5d3deb17459a6080c7d77ac99fbe3c7dc147f37afcd8764ef72e6bf45883",
-      "rule_id": "IAC-013",
-      "file_path": ".github/workflows/deploy.yml",
-      "severity": "high",
-      "reason": "First-party actions/deploy-pages: trusted, dependabot-managed",
-      "created_at": "2026-05-10T07:07:12.301121Z"
-    },
-    {
-      "fingerprint": "03abb243a80fbe96c0f007aa57e08372c169a47d9c1ba7271828ca8600191180",
-      "rule_id": "SEC-085",
-      "file_path": "docs/src/components/Layout.astro",
-      "severity": "high",
-      "reason": "False positive: JSON-LD license URL in Layout.astro, not embedded credential",
-      "created_at": "2026-05-10T07:07:22.787149Z"
-    },
-    {
-      "fingerprint": "723239771a6e085cd1f8120c0331bf0fefbc9b7861f5d2d697dfbc3059804508",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go, not an API key",
-      "created_at": "2026-05-10T07:07:38.304833Z"
-    },
-    {
-      "fingerprint": "cf23c57cd0c97a2fe36fcbb36e60bb2cf708b5774817ec8b3c5a3e4d1dfa1bb4",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: Go function name in interpreter.go, not an API key",
-      "created_at": "2026-05-10T07:07:45.375217Z"
-    },
-    {
-      "fingerprint": "7a3d3ba1db2930d95717e5ce5376b7543c6f7f7d0f2b224034f636bfe2196fc4",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: Go function name in interpreter.go, not an API key",
-      "created_at": "2026-05-10T07:07:52.364383Z"
-    },
-    {
-      "fingerprint": "77c01119a5aea9cea8391f244ba1cfe3eeba2d3241c9c6d99b3e28b3137d8ab6",
-      "rule_id": "SEC-384",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "018633364b3bc45ef2ddf4a5aa27add5084a619d8ce22d693d40799504dcefb5",
-      "rule_id": "SEC-384",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "ca36f09481b134ae20837f084cb7ed37156861f226d272fe875614be2249ae82",
-      "rule_id": "SEC-505",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "e69c52b213c9670e1c52c6b8339a34af58cfb706923860d2808b082fba598e99",
-      "rule_id": "SEC-505",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "4c8baaff89ae00b86df2d644d5b159d04a8941a6c7706aba9599d1fb7bba450c",
-      "rule_id": "SEC-506",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "5e6a61f1aadefe93cdffa7b8a511c5e4bd5c43f1da4f95dae902dabced68ac66",
-      "rule_id": "SEC-506",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "00c1fcbf2591102aa594f0b97bb55edcb2340551b4c48ccd22dd8b790c4dc2e3",
-      "rule_id": "SEC-525",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "21a6ebde33b941f34e06da0ea9dd7ad8bcfeb63ea2e3b93d59eb0b2a74c5f6d5",
-      "rule_id": "SEC-525",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "882ec550e40a361609ae71255cdb2bec6af2c6c4456e069a631c5a19e67e5f8b",
-      "rule_id": "SEC-543",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "1392092d0636e4f8466b158d220b64eac363dd0548c6648da606560267041944",
-      "rule_id": "SEC-543",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "7dc7b974c28424a7962a9874bcab1ba7e939018ad38472087076260fb857f7e2",
-      "rule_id": "SEC-621",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "5d055486c6c243c8c23e510195e43c155b8baeeea30b80be1c450ee2e27b20a9",
-      "rule_id": "SEC-621",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "fa4025f31391e64f0dd315c8b540580bf92f85d3cbc8acadb669d9d7d9e29e75",
-      "rule_id": "SEC-678",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "25f5526254227a33beafbb5e85559ac9c731a50754ed0d164739339346a24aec",
-      "rule_id": "SEC-678",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "8b2f3d1550146a4ed65fc08b590de2197612bb2c2360d5bef6cae2456edba5a8",
-      "rule_id": "SEC-679",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "28d23dff5b896c6414d39be8047d408a21a2053b5a830858881ffa7a0b03e5b8",
-      "rule_id": "SEC-679",
-      "file_path": "README.md",
-      "severity": "high",
-      "reason": "False positive: README code samples (statekit.Event{...} patterns) match generic secret regexes; no real key.",
-      "created_at": "2026-05-10T09:30:00Z"
-    },
-    {
-      "fingerprint": "c69d1f1cfd0b43f7d6da2796fbe826a0612ec1b043a49dd2166ac762562878bc",
-      "rule_id": "",
-      "file_path": "",
-      "severity": "",
-      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
-      "created_at": "2026-06-06T20:13:11.564822Z"
-    },
-    {
-      "fingerprint": "f392c48f170286d771065afff0c60499fff68aa409a898f828b2500010c1b44b",
-      "rule_id": "",
-      "file_path": "",
-      "severity": "",
-      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
-      "created_at": "2026-06-06T20:13:11.564822Z"
-    },
-    {
-      "fingerprint": "ce4b20d3258d136b6bfda1c4c62ad3ddeb946fca0ef28406d8cf287e90091f20",
-      "rule_id": "",
-      "file_path": "",
-      "severity": "",
-      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
-      "created_at": "2026-06-06T20:13:11.564822Z"
-    },
-    {
-      "fingerprint": "142896d21f3d1f1f23e426cad78577c83863163d9156fbcc04bb924cef20866a",
-      "rule_id": "",
-      "file_path": "",
-      "severity": "",
-      "reason": "False positive: Go function name findMatchingTransitionHierarchical in interpreter.go matching Wise API key regex, not an API key; fingerprints re-computed by CI nox 0.8.1 after import path migration to go.klarlabs.de/statekit",
-      "created_at": "2026-06-06T20:13:11.564822Z"
+      "created_at": "2026-07-06T11:04:41.52895Z"
     }
   ]
 }
