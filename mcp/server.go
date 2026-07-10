@@ -3,6 +3,7 @@ package mcp
 import (
 	mcpgo "go.klarlabs.de/mcp"
 	"go.klarlabs.de/mcp/server"
+	"go.klarlabs.de/statekit/viz"
 )
 
 // NewServer creates a new MCP server with all statekit tools and resources registered.
@@ -31,11 +32,13 @@ func registerTools(srv *server.Server, reg *Registry) {
 	srv.Tool("list_machines").
 		Description("List all running state machine instances").
 		ReadOnly().
+		OutputSchema(MachineListOutput{}).
 		Handler(handleListMachines(reg))
 
 	srv.Tool("get_state").
 		Description("Get the current state of a machine instance").
 		ReadOnly().
+		OutputSchema(StateOutput{}).
 		Handler(handleGetState(reg))
 
 	srv.Tool("send_event").
@@ -45,17 +48,20 @@ func registerTools(srv *server.Server, reg *Registry) {
 	srv.Tool("get_context").
 		Description("Get the current context data of a machine instance").
 		ReadOnly().
+		OutputSchema(Ctx{}).
 		Handler(handleGetContext(reg))
 
 	srv.Tool("get_machine_data").
 		Description("Get the full machine definition data as JSON for a running instance").
 		ReadOnly().
 		UIResource("ui://statekit/visualizer").
+		OutputSchema(viz.VizMachine{}).
 		Handler(handleGetMachineData(reg))
 
 	srv.Tool("validate_machine").
 		Description("Validate a Statekit Native JSON machine definition for structural issues").
 		ReadOnly().
+		OutputSchema(ValidateOutput{}).
 		Handler(handleValidateMachine(reg))
 
 	srv.Tool("export_machine").

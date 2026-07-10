@@ -48,6 +48,13 @@ type ListMachinesInput struct{}
 
 // Tool output types
 
+// MachineListOutput envelopes the machine list so the result is a JSON
+// object (required for structuredContent) rather than a bare array.
+type MachineListOutput struct {
+	Items []MachineInfo `json:"items"`
+	Total int           `json:"total"`
+}
+
 // CreateMachineOutput is returned after creating a machine.
 type CreateMachineOutput struct {
 	ID           string `json:"id"`
@@ -120,9 +127,10 @@ func generateUUID() string {
 	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }
 
-func handleListMachines(reg *Registry) func(ListMachinesInput) ([]MachineInfo, error) {
-	return func(_ ListMachinesInput) ([]MachineInfo, error) {
-		return reg.List(), nil
+func handleListMachines(reg *Registry) func(ListMachinesInput) (MachineListOutput, error) {
+	return func(_ ListMachinesInput) (MachineListOutput, error) {
+		machines := reg.List()
+		return MachineListOutput{Items: machines, Total: len(machines)}, nil
 	}
 }
 
@@ -183,22 +191,19 @@ func handleGetContext(reg *Registry) func(MachineIDInput) (Ctx, error) {
 	}
 }
 
-func handleGetMachineData(reg *Registry) func(MachineIDInput) (json.RawMessage, error) {
-	return func(input MachineIDInput) (json.RawMessage, error) {
+func handleGetMachineData(reg *Registry) func(MachineIDInput) (*viz.VizMachine, error) {
+	return func(input MachineIDInput) (*viz.VizMachine, error) {
 		inst, ok := reg.Get(input.MachineID)
 		if !ok {
 			return nil, fmt.Errorf("machine %q not found", input.MachineID)
 		}
 
-		// Re-export from the running machine to get current state overlay
+		// Re-export from the running machine to get current state overlay.
+		// Returning the typed VizMachine lets the tool advertise an
+		// output schema and emit structuredContent; it marshals to the
+		// same JSON object as before.
 		exporter := export.NewNativeExporter(inst.machine)
-		vm := exporter.Export()
-
-		data, err := json.Marshal(vm)
-		if err != nil {
-			return nil, fmt.Errorf("marshal viz data: %w", err)
-		}
-		return data, nil
+		return exporter.Export(), nil
 	}
 }
 

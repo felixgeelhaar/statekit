@@ -105,6 +105,7 @@ func ExposeInterpreter[C any](srv *server.Server, prefix string, interp *stateki
 	srv.Tool(prefix + ".get_state").
 		Description(fmt.Sprintf("Get the current state of the %q machine", prefix)).
 		ReadOnly().
+		OutputSchema(ExposeStateOutput{}).
 		Handler(func(_ struct{}) (ExposeStateOutput, error) {
 			return ExposeGetState(interp), nil
 		})
@@ -112,6 +113,7 @@ func ExposeInterpreter[C any](srv *server.Server, prefix string, interp *stateki
 	srv.Tool(prefix + ".get_context").
 		Description(fmt.Sprintf("Get the typed machine context of the %q machine as JSON", prefix)).
 		ReadOnly().
+		OutputSchema(ExposeContextOutput[C]{}).
 		Handler(func(_ struct{}) (ExposeContextOutput[C], error) {
 			return ExposeGetContext(interp), nil
 		})

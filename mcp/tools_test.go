@@ -56,8 +56,11 @@ func TestHandleListMachines(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(out) != 1 {
-		t.Fatalf("expected 1 machine, got %d", len(out))
+	if out.Total != 1 {
+		t.Fatalf("expected total 1, got %d", out.Total)
+	}
+	if len(out.Items) != 1 {
+		t.Fatalf("expected 1 machine, got %d", len(out.Items))
 	}
 }
 
@@ -142,8 +145,14 @@ func TestHandleGetMachineData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(data) == 0 {
-		t.Error("expected non-empty viz data")
+	if data == nil {
+		t.Fatal("expected non-nil viz data")
+	}
+	if data.ID != "traffic-light" {
+		t.Errorf("ID = %q, want traffic-light", data.ID)
+	}
+	if len(data.States) == 0 {
+		t.Error("expected non-empty states")
 	}
 }
 
