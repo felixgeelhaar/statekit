@@ -7,7 +7,7 @@ require (
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/cobra v1.10.2
-	go.klarlabs.de/mcp v1.21.0
+	go.klarlabs.de/mcp v1.22.0
 	go.opentelemetry.io/otel v1.44.0
 	go.opentelemetry.io/otel/sdk v1.44.0
 	go.opentelemetry.io/otel/trace v1.44.0
