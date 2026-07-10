@@ -59,12 +59,6 @@ OTel + event-sourcing replay + property-tested transitions = unique "reproducibl
 
 ---
 
-## Invert MCP — expose running machines as MCP tools/resources
-
-Current MCP server lets Claude author/run statekit machines (dev UX). Inverse missing: mcp.ExposeMachine(interp) so any running statekit instance becomes callable MCP tool surface — events become tools, state becomes a resource. Closes loop for agent-driven workflows. Generates tool defs from machine schema. High-leverage AI move. Source: AI review.
-
----
-
 ## Stately.ai bidirectional sync + lightweight VSCode preview
 
 XState refugees + visualization moat compounder. Round-trip: import Stately JSON → Go scaffold (codegen exists), export Go machines → Stately for editing. VSCode extension: live diagram on save (not full editor). Higher leverage than formal verification post-1.0 priority. Source: Product + UX reviews.

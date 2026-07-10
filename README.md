@@ -80,7 +80,6 @@ These ship in v1.0 but reserve room to iterate within v1.x:
 - **Persistent interpreter** — event-sourced state, snapshot-on-final, configurable strategies
 - **Distributed execution** — `StreamLock` interface (Redis / etcd / PostgreSQL) + `DistributedInterpreter`
 - **Machine composition** — `InvokeMachine` for typed child-machine composition
-- **MCP integration** — `mcp.NewServer` for AI-assisted authoring; `mcp.ExposeInterpreter` to drive a running machine from an agent
 
 ## Installation
 
@@ -364,47 +363,10 @@ jsonStr, _ := exporter.ExportJSONIndent("", "  ")
 fmt.Println(jsonStr)
 ```
 
-## MCP Server
-
-Statekit includes a built-in [Model Context Protocol](https://modelcontextprotocol.io/) server for AI-assisted state machine development. Create, manage, and visualize machines directly from Claude Code or any MCP host.
-
-```bash
-# Add to your MCP configuration
-go install go.klarlabs.de/statekit/cmd/statekit-mcp@latest
-```
-
-```json
-{
-  "mcpServers": {
-    "statekit": {
-      "command": "statekit-mcp"
-    }
-  }
-}
-```
-
-**Available tools:**
-
-| Tool | Description |
-|------|-------------|
-| `create_machine` | Create a machine from a Native JSON definition |
-| `list_machines` | List all running machine instances |
-| `get_state` | Get current state, done status, and state path |
-| `send_event` | Send an event to trigger a transition |
-| `get_context` | Get the machine's context data |
-| `visualize_machine` | Get visualization data with interactive MCP App |
-| `validate_machine` | Validate a definition using lint rules |
-| `export_machine` | Export as JSON, Mermaid, or ASCII |
-
-**Inverting the loop:** if you already have a typed `*statekit.Interpreter[C]` running in your service, `mcp.ExposeInterpreter` registers `<prefix>.send_event`, `<prefix>.get_state`, `<prefix>.get_context`, and `<prefix>.matches` so an MCP-speaking agent can drive your machine from outside.
-
-The `visualize_machine` tool includes an interactive Vue.js + Cytoscape.js visualizer that MCP Apps hosts render inline — with dark mode, transition animations, and a full state history log. All JS dependencies are bundled inline for CSP-compatible rendering in any MCP host.
-
 ## Additional Packages
 
 | Package | Description |
 |---------|-------------|
-| [`mcp`](./mcp) | MCP server + `ExposeInterpreter` for agent-driven workflows (Tier 2) |
 | [`statetest`](./statetest) | Testing utilities: assertions, recorders, helpers |
 | [`debug`](./debug) | Runtime inspection and state graph analysis |
 | [`metrics`](./metrics) | Prometheus metrics for monitoring |
@@ -453,7 +415,7 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 - **Statecharts over FSMs** — Hierarchy, parallel, history enable complex behavior without manual bookkeeping
 - **Visualization as a Feature** — Multiple renderers + XState v5 export for Stately Studio round-trip
 - **Determinism for tests** — Inject `FakeClock` to remove timer flakes
-- **Stable core, experimental edge** — Tier-1 surface follows semver; Tier-2 features (actor, persistent, distributed, MCP, AI) reserve room to iterate
+- **Stable core, experimental edge** — Tier-1 surface follows semver; Tier-2 features (actor, persistent, distributed, AI) reserve room to iterate
 
 ## Documentation
 
