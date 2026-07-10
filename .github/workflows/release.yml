@@ -27,6 +27,11 @@ jobs:
         run: go test -race ./...
 
       - name: Install nox
+        # nox/cli@v0.8.1 requires a newer Go toolchain than go.mod pins; allow
+        # `go install` to fetch the matching toolchain instead of failing under
+        # GOTOOLCHAIN=local.
+        env:
+          GOTOOLCHAIN: auto
         run: |
           go install github.com/nox-hq/nox/cli@v0.8.1
           mv "$(go env GOPATH)/bin/cli" "$(go env GOPATH)/bin/nox"
