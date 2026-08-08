@@ -54,6 +54,53 @@ statekit viz machine.json --format tui
 
 ## Input Sources
 
+### From a Compiled Machine (Programmatic)
+
+`viz.FromMachine` builds the visualization model straight from the machine you
+just built — no JSON file, no source parsing. Every renderer takes it from
+there.
+
+```go
+machine, err := statekit.NewMachine[Ctx]("lifecycle"). /* ... */ .Build()
+if err != nil {
+    return err
+}
+
+diagram := mermaid.NewRenderer().Render(viz.FromMachine(machine))
+```
+
+This is the route for a machine assembled at runtime — from a transition table,
+a config file, a database — where there is no literal machine definition in the
+source for the Go parser to read.
+
+Pair it with a golden-file test and a published diagram can no longer drift away
+from the machine the runtime executes:
+
+```go
+func TestLifecycleDiagramIsCurrent(t *testing.T) {
+    got := mermaid.NewRenderer().Render(viz.FromMachine(BuildLifecycle()))
+
+    want, err := os.ReadFile("testdata/lifecycle.mmd")
+    if err != nil {
+        t.Fatal(err)
+    }
+    if got != string(want) {
+        t.Errorf("lifecycle.mmd is stale; regenerate it.\ngot:\n%s", got)
+    }
+}
+```
+
+The other renderers accept the same model:
+
+```go
+diagram := ascii.NewRenderer().Render(viz.FromMachine(machine))  // terminal diagram
+page, err := html.NewRenderer().Render(viz.FromMachine(machine)) // interactive simulator
+err = tui.Run(viz.FromMachine(machine))                          // terminal UI
+```
+
+The returned model is a snapshot: mutating it does not affect the machine, and
+later changes to the machine are not reflected in it.
+
 ### From Go Source Code
 
 You can visualize machines directly from your Go source code without exporting JSON first. The tool parses your Go code to extract machine definitions.
