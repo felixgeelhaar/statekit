@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-08-08
+
 ### Added
 
 - **`statetest.InterpreterAt`** — returns a started interpreter positioned at any state of a machine, including a final one, so a property that belongs to one state can be asserted against the machine that ships rather than a variant rebuilt for the test. Built on `Interpreter.Restore`; entry actions do not run and the context is the machine's configured initial context.
