@@ -214,6 +214,76 @@ interp.Send(statekit.Event{Type: "TOGGLE_BOLD"})
 // bold: on, italic: off (independent regions)
 ```
 
+## Closing the Builder
+
+Every state you open with `State()` must be closed again, and which terminator
+closes it depends on where the state sits. Three destinations:
+
+| Terminator | Returns to | Use for |
+|------------|------------|---------|
+| `Done()` | `MachineBuilder` | a top-level state |
+| `End()` | the enclosing state | a child of a compound state |
+| `EndState()` | the enclosing region | a state inside a parallel region |
+
+Plus `EndRegion()`, which closes a region and returns to the parallel state
+that owns it. `EndMachine()` is a deprecated second spelling of `Done()`.
+
+The three shapes side by side — **flat**, every state closed with `Done()`:
+
+```go
+State("cart").On("CHECKOUT").Target("paid").Done().
+State("paid").Final().Done().
+```
+
+**Nested** — children closed with `End()`, one call per level, the top-level
+parent with `Done()`:
+
+```go
+State("editing").
+    WithInitial("idle").
+    State("idle").On("TYPE").Target("dirty").End().End().
+    //                                       │      └─ back to "editing"
+    //                                       └─ back to "idle"
+    State("dirty").On("CLEAR").Target("idle").End().End().
+Done().
+```
+
+**Parallel** — region states closed with `EndState()`, the region with
+`EndRegion()`, the parallel state with `Done()`:
+
+```go
+State("active").Parallel().
+    Region("bold").WithInitial("off").
+        State("off").On("TOGGLE_BOLD").Target("on").EndState().
+        State("on").On("TOGGLE_BOLD").Target("off").EndState().
+    EndRegion().
+Done().
+```
+
+Building states in a loop hides the shape, which is where the sequence is
+easiest to get wrong. A flat machine assembled from a transition table:
+
+```go
+builder := statekit.NewMachine[Ctx]("lifecycle").WithInitial(states[0])
+for _, s := range states {
+    sb := builder.State(s)
+    if isFinal(s) {
+        sb = sb.Final()
+    }
+    for _, tr := range transitionsFrom(s) {
+        sb = sb.On(tr.Event).Target(tr.Target).End() // close the transition
+    }
+    builder = sb.Done()                              // close the state
+}
+machine, err := builder.Build()
+```
+
+Picking the wrong terminator often still compiles, since several of them return
+chainable types. Two cases have no valid destination at all and now fail
+immediately with a message naming the terminator to use instead, rather than
+returning a nil builder that panics somewhere later: `End()` on a top-level
+state, and `EndState()` on a state that is not inside a region.
+
 ## Eventless Transitions, Raise & Tags
 
 **`Always`** transitions fire automatically on state entry (and after every

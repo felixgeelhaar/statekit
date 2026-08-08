@@ -1,6 +1,7 @@
 package statekit
 
 import (
+	"fmt"
 	"time"
 
 	"go.klarlabs.de/statekit/internal/ir"
@@ -387,37 +388,81 @@ func (b *StateBuilder[C]) Tags(tags ...string) *StateBuilder[C] {
 	return b
 }
 
-// Done completes the state definition and returns the root MachineBuilder.
+// Done closes this state and returns to the MachineBuilder — the canonical
+// terminator for a top-level state.
 //
-// Watch out: when called from a nested StateBuilder, Done() teleports the
-// chain all the way back to the machine root, skipping any intermediate
-// parent states. This is rarely what you want for nested states. Prefer
-// End() for "back one level" or EndMachine() for "back to the root" — both
-// are clearer at a glance.
+// It is the right choice whenever the next thing you write is another
+// top-level State() or Build(). Every example in the README and the docs uses
+// it.
+//
+//	machine, _ := statekit.NewMachine[Ctx]("order").
+//		WithInitial("cart").
+//		State("cart").On("CHECKOUT").Target("paid").Done().
+//		State("paid").Final().Done().
+//		Build()
+//
+// Called from a nested state it still returns the machine root, skipping every
+// intermediate parent. That is occasionally what you want and usually not — see
+// the terminator table in the package documentation, and prefer End to step up
+// one level.
 func (b *StateBuilder[C]) Done() *MachineBuilder[C] {
 	return b.machine
 }
 
-// EndMachine completes the state definition and returns the root
-// MachineBuilder. Equivalent to Done() but its name makes the intent
-// unambiguous when reading nested-state-builder chains.
+// EndMachine closes this state and returns to the MachineBuilder.
+//
+// Deprecated: use Done, which is identical in signature, behaviour, and
+// return value. Two spellings of one terminator is the confusion this
+// deprecation removes; nothing at a call site distinguished them. EndMachine
+// keeps working and is not scheduled for removal — replacing it is a
+// find-and-replace whenever convenient.
 func (b *StateBuilder[C]) EndMachine() *MachineBuilder[C] {
 	return b.machine
 }
 
-// End completes a nested state and returns to the parent StateBuilder
-// Use this instead of Done() when building nested states
+// End closes this nested state and returns to the enclosing StateBuilder —
+// one level up, not to the machine root.
+//
+// This is the terminator for a child of a compound state. Chain it once per
+// level to unwind:
+//
+//	State("editing").
+//		WithInitial("idle").
+//		State("idle").On("TYPE").Target("dirty").End().End().
+//		//                                       ^      ^ back to "editing"
+//		//                                       back to "idle"
+//		Done()
+//
+// It panics when called on a top-level state, which has no enclosing state to
+// return to. Use Done there instead.
 func (b *StateBuilder[C]) End() *StateBuilder[C] {
-	if b.parent != nil {
-		return b.parent
+	if b.parent == nil {
+		panic(fmt.Sprintf("statekit: End called on top-level state %q, "+
+			"which has no enclosing state; use Done to return to the machine builder", b.id))
 	}
-	// If no parent, this is a programming error, but we'll return nil
-	return nil
+	return b.parent
 }
 
-// EndState completes a state within a region and returns to the RegionBuilder (v2.0)
-// Use this instead of End() when building states inside parallel regions
+// EndState closes this state and returns to the enclosing RegionBuilder (v2.0)
+// — the terminator for a state inside a parallel region.
+//
+// Close the region itself with EndRegion, and the parallel state with Done:
+//
+//	State("editor").
+//		Parallel().
+//		Region("bold").WithInitial("off").
+//			State("off").On("TOGGLE").Target("on").EndState().
+//			State("on").On("TOGGLE").Target("off").EndState().
+//		EndRegion().
+//		Done()
+//
+// It panics when called on a state that is not inside a region. Use End for a
+// child of a compound state, or Done for a top-level state.
 func (b *StateBuilder[C]) EndState() *RegionBuilder[C] {
+	if b.region == nil {
+		panic(fmt.Sprintf("statekit: EndState called on state %q, which is not inside a parallel region; "+
+			"use End for a nested state or Done for a top-level state", b.id))
+	}
 	return b.region
 }
 
@@ -697,26 +742,50 @@ func (b *TransitionBuilder[C]) After(d time.Duration) *TransitionBuilder[C] {
 	return b.state.After(d)
 }
 
-// Done completes the state definition and returns to the machine builder
+// Done closes this transition and its owning state, returning to the
+// MachineBuilder — the canonical terminator for a transition on a top-level
+// state.
+//
+//	State("cart").On("CHECKOUT").Target("paid").Done().
+//
+// Consecutive On calls chain without a terminator between them, so one Done
+// closes the whole group:
+//
+//	State("review").
+//		On("APPROVE").Target("published").
+//		On("REJECT").Target("rejected").
+//		Done().
 func (b *TransitionBuilder[C]) Done() *MachineBuilder[C] {
 	return b.state.Done()
 }
 
-// EndMachine completes the state definition and returns to the
-// MachineBuilder. Equivalent to Done() but its name makes the intent
-// unambiguous in nested-state-builder chains.
+// EndMachine closes this transition and its owning state, returning to the
+// MachineBuilder.
+//
+// Deprecated: use Done, which is identical in signature, behaviour, and
+// return value. See StateBuilder.EndMachine.
 func (b *TransitionBuilder[C]) EndMachine() *MachineBuilder[C] {
 	return b.state.Done()
 }
 
-// End completes the transition and returns to the parent StateBuilder
-// Use this instead of Done() when building transitions in nested states
+// End closes this transition and returns to the StateBuilder that owns it —
+// the terminator to use when the state needs more definition afterwards, or
+// when it is nested and you intend to unwind one level at a time.
+//
+//	State("idle").On("TYPE").Target("dirty").End().End()
+//	//                                       ^ back to "idle"
 func (b *TransitionBuilder[C]) End() *StateBuilder[C] {
 	return b.state
 }
 
-// EndState completes the transition and returns to the RegionBuilder (v2.0)
-// Use this when building transitions in states inside parallel regions
+// EndState closes this transition and its owning state, returning to the
+// enclosing RegionBuilder (v2.0) — the terminator for a transition on a state
+// inside a parallel region.
+//
+//	State("off").On("TOGGLE").Target("on").EndState().
+//
+// It panics when the owning state is not inside a region. Use End to return
+// to the state, or Done for a top-level state.
 func (b *TransitionBuilder[C]) EndState() *RegionBuilder[C] {
-	return b.state.region
+	return b.state.EndState()
 }
