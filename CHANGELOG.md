@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-08-08
+
 ### Fixed
 
 - **`viz.ParseNativeJSON` now reads every transition shape `export.NewXStateExporter` writes.** The two are halves of one round-trip and disagreed about the shape of a transition group: `export.collapseTransitionGroup` writes an object when a group holds exactly one transition and an array otherwise, while the parser read exactly one of those shapes per field.
@@ -40,9 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **`viz.ParseNativeJSON` dropped hierarchy, `always` transitions, and tags from flat native JSON.** The `parent` field was ignored for top-level entries, so every state in a machine exported by `export.NewNativeExporter` came back as a root — compound, parallel, and history machines rendered flattened. `always` and `tags` had no parser fields at all. Round-tripping a machine through native JSON is now lossless.
-
-## [Unreleased]
+- **`viz.ParseNativeJSON` dropped hierarchy, `always` transitions, and tags from flat native JSON.** The `parent` field was ignored for top-level entries, so every state in a machine exported by `export.NewNativeExporter` came back as a root — compound, parallel, and history machines rendered flattened. `always` and `tags` had no parser fields at all. Round-tripping a machine through native JSON is now lossless. (Only for the array form of `always`; the object form regressed and is fixed in 1.13.1 above.)
 
 ### Documentation
 
