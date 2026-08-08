@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`viz.FromMachine`** — builds a visualization model directly from a compiled `*statekit.MachineConfig[C]`, with no JSON serialization and no Go source parsing in between. Machines assembled at runtime (from a transition table, a config file, a database) can now be rendered to Mermaid, ASCII, HTML, or the TUI, which makes a published diagram testable against the machine the runtime executes. `export.NewNativeExporter(...).Export()` now delegates to it and is unchanged for callers.
+
+### Fixed
+
+- **`viz.ParseNativeJSON` dropped hierarchy, `always` transitions, and tags from flat native JSON.** The `parent` field was ignored for top-level entries, so every state in a machine exported by `export.NewNativeExporter` came back as a root — compound, parallel, and history machines rendered flattened. `always` and `tags` had no parser fields at all. Round-tripping a machine through native JSON is now lossless.
+
 ## [1.9.0] - 2026-06-20
 
 ### Removed
