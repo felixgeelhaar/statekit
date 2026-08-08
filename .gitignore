@@ -5,6 +5,14 @@
 *.so
 *.dylib
 
+# `go build ./cmd/statekit` from the repo root writes ./statekit, which is
+# extensionless and so matched none of the patterns above. It was committed on
+# 2026-06-21 and shipped in every release since: a 12 MB darwin/arm64 Mach-O
+# executable inside a library module, downloaded by every consumer on every
+# platform and copied into the tree of every consumer that vendors.
+/statekit
+/cmd/statekit/statekit
+
 # Test binary
 *.test
 

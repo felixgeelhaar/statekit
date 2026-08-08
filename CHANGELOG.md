@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-08-08
+
+### Fixed
+
+- **A 12 MB compiled binary is no longer shipped inside the module.** `go build ./cmd/statekit` run from the repo root writes `./statekit`, which is extensionless and so matched none of `.gitignore`'s binary patterns (`*.exe`, `*.dll`, `*.so`, `*.dylib`). It was committed on 2026-06-21 and has ridden along in every release since — a darwin/arm64 Mach-O executable, useless on any other platform, downloaded by every consumer through the module proxy and copied into the working tree of every consumer that vendors. It accounted for very nearly the whole repository size. Removed, and `.gitignore` now covers the paths `go build` actually writes.
+
+  The published v1.9.0–v1.13.1 zips still contain it; module versions are immutable. Upgrading to v1.13.2 is what removes it from a consumer's tree.
+
 ## [1.13.1] - 2026-08-08
 
 ### Fixed
