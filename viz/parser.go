@@ -13,6 +13,8 @@ type rawState struct {
 	Parent         string               `json:"parent,omitempty"`
 	Children       []string             `json:"children,omitempty"`
 	Transitions    []VizTransition      `json:"transitions,omitempty"`
+	Always         []VizTransition      `json:"always,omitempty"`
+	Tags           []string             `json:"tags,omitempty"`
 	Entry          []string             `json:"entry,omitempty"`
 	Exit           []string             `json:"exit,omitempty"`
 	HistoryType    string               `json:"historyType,omitempty"`
@@ -71,9 +73,11 @@ func flattenState(vm *VizMachine, id string, rs *rawState, parentID string) {
 		ID:             id,
 		Type:           rs.Type,
 		Initial:        rs.Initial,
-		Parent:         parentID,
+		Parent:         rs.Parent,
 		Children:       rs.Children,
 		Transitions:    transitions,
+		Always:         rs.Always,
+		Tags:           rs.Tags,
 		Entry:          rs.Entry,
 		Exit:           rs.Exit,
 		HistoryType:    rs.HistoryType,

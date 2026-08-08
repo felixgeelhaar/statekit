@@ -423,6 +423,20 @@ It supports multiple output formats:
 - **ASCII**: Terminal box diagrams.
 - **TUI**: Interactive terminal UI.
 
+To render a compiled machine programmatically, hand it to `viz.FromMachine` —
+no JSON file and no source parsing in between. This is the route for a machine
+assembled at runtime from a transition table, and it makes a diagram in your
+documentation testable against the machine the runtime actually executes:
+
+```go
+import (
+    "go.klarlabs.de/statekit/viz"
+    "go.klarlabs.de/statekit/viz/mermaid"
+)
+
+diagram := mermaid.NewRenderer().Render(viz.FromMachine(machine))
+```
+
 To export JSON programmatically:
 
 ```go
