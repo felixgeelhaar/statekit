@@ -1,0 +1,155 @@
+package viz
+
+import (
+	"encoding/json"
+	"testing"
+)
+
+// The exporter and the parser are two halves of one round-trip, and they
+// disagreed about the shape of a transition group. export.transitionEntry
+// builds a map per transition and collapseTransitionGroup then writes an
+// object when the group has exactly one entry and an array otherwise — while
+// the parser read exactly one of those shapes per field and silently produced
+// nothing for the other.
+//
+// Nothing errored. `always` as an object failed the whole unmarshal (v1.13.0
+// only, since it was v1.13.0 that started reading `always` at all); an `on`
+// array or an actions list carrying a raise descriptor just yielded zero
+// transitions and a state that looked genuinely terminal. A diagram missing an
+// edge reads exactly like a machine that has no such edge.
+func TestParseNativeJSONAcceptsEveryShapeTheExporterEmits(t *testing.T) {
+	tests := []struct {
+		name  string
+		json  string
+		state string
+		want  []VizTransition
+		// always reports on VizState.Always instead of .Transitions.
+		always bool
+	}{
+		{
+			name:  "on: bare target string",
+			json:  `{"id":"m","initial":"a","states":{"a":{"on":{"GO":"b"}},"b":{}}}`,
+			state: "a",
+			want:  []VizTransition{{Event: "GO", Target: "b"}},
+		},
+		{
+			name:  "on: single object",
+			json:  `{"id":"m","initial":"a","states":{"a":{"on":{"GO":{"target":"b","guard":"ok"}}},"b":{}}}`,
+			state: "a",
+			want:  []VizTransition{{Event: "GO", Target: "b", Guard: "ok"}},
+		},
+		{
+			// collapseTransitionGroup emits an array once a second guarded
+			// transition shares the event. This parsed to zero transitions.
+			name:  "on: array of guarded alternatives",
+			json:  `{"id":"m","initial":"a","states":{"a":{"on":{"GO":[{"target":"b","guard":"g1"},{"target":"c"}]}},"b":{},"c":{}}}`,
+			state: "a",
+			want: []VizTransition{
+				{Event: "GO", Target: "b", Guard: "g1"},
+				{Event: "GO", Target: "c"},
+			},
+		},
+		{
+			// transitionEntry widens actions from []string to []any to embed
+			// raised events as xstate.raise descriptors. []string could not
+			// hold that, so the unmarshal failed and the transition vanished.
+			name:  "on: actions carrying an xstate.raise descriptor",
+			json:  `{"id":"m","initial":"a","states":{"a":{"on":{"GO":{"target":"b","actions":["log",{"type":"xstate.raise","event":{"type":"DONE"}}]}}},"b":{}}}`,
+			state: "a",
+			want:  []VizTransition{{Event: "GO", Target: "b", Actions: []string{"log"}, Raise: []string{"DONE"}}},
+		},
+		{
+			// An internal transition legitimately has no target. Dropping it
+			// loses the actions it exists to run.
+			name:  "on: internal transition with no target",
+			json:  `{"id":"m","initial":"a","states":{"a":{"on":{"PING":{"internal":true,"actions":["count"]}}}}}`,
+			state: "a",
+			want:  []VizTransition{{Event: "PING", Actions: []string{"count"}}},
+		},
+		{
+			// The regression lexora hit: one eventless transition collapses to
+			// an object, and []VizTransition rejected it — failing the entire
+			// ParseNativeJSON call, not just this field.
+			name:   "always: single eventless transition collapses to an object",
+			json:   `{"id":"m","initial":"a","states":{"a":{"always":{"target":"b"}},"b":{}}}`,
+			state:  "a",
+			always: true,
+			want:   []VizTransition{{Target: "b"}},
+		},
+		{
+			name:   "always: two or more stay an array",
+			json:   `{"id":"m","initial":"a","states":{"a":{"always":[{"target":"b","guard":"g"},{"target":"c"}]},"b":{},"c":{}}}`,
+			state:  "a",
+			always: true,
+			want: []VizTransition{
+				{Target: "b", Guard: "g"},
+				{Target: "c"},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			vm, err := ParseNativeJSON([]byte(tc.json))
+			if err != nil {
+				t.Fatalf("ParseNativeJSON: %v", err)
+			}
+			st := vm.States[tc.state]
+			if st == nil {
+				t.Fatalf("state %q missing from %v", tc.state, keys(vm.States))
+			}
+			got := st.Transitions
+			if tc.always {
+				got = st.Always
+			}
+			assertTransitions(t, got, tc.want)
+		})
+	}
+}
+
+// A group whose entries are all unusable must not be reported as a successful
+// parse of nothing — but a single bad entry must not discard its siblings
+// either.
+func TestParseNativeJSONSkipsOnlyTheUnusableEntry(t *testing.T) {
+	const in = `{"id":"m","initial":"a","states":{"a":{"on":{"GO":[{"target":"b"},42]}},"b":{}}}`
+	vm, err := ParseNativeJSON([]byte(in))
+	if err != nil {
+		t.Fatalf("ParseNativeJSON: %v", err)
+	}
+	assertTransitions(t, vm.States["a"].Transitions, []VizTransition{{Event: "GO", Target: "b"}})
+}
+
+func assertTransitions(t *testing.T, got, want []VizTransition) {
+	t.Helper()
+	if len(got) != len(want) {
+		t.Fatalf("got %d transitions, want %d\ngot:  %s\nwant: %s", len(got), len(want), dump(got), dump(want))
+	}
+	// Map iteration over "on" makes sibling order unstable; compare as a set.
+	remaining := append([]VizTransition(nil), want...)
+	for _, g := range got {
+		idx := -1
+		for i, w := range remaining {
+			if dump(g) == dump(w) {
+				idx = i
+				break
+			}
+		}
+		if idx < 0 {
+			t.Fatalf("unexpected transition %s\nwant one of: %s", dump(g), dump(remaining))
+		}
+		remaining = append(remaining[:idx], remaining[idx+1:]...)
+	}
+}
+
+func dump(v any) string {
+	b, _ := json.Marshal(v)
+	return string(b)
+}
+
+func keys(m map[string]*VizState) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	return out
+}
