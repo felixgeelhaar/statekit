@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Deprecated
+
+- **`StateBuilder.EndMachine` and `TransitionBuilder.EndMachine`** — use `Done`, which is identical in signature, behaviour, and return value. Two spellings of one terminator was the confusion; nothing at a call site distinguished them. `EndMachine` keeps working and is not scheduled for removal.
+
+### Changed
+
+- **`StateBuilder.End` on a top-level state and `StateBuilder.EndState` outside a parallel region now panic with a message naming the terminator to use instead.** Both previously returned nil, so the mistake surfaced as an unexplained nil-pointer dereference at whatever call came next. No working program is affected: a nil builder could only ever panic.
+- Doc comments on all builder terminators (`Done`, `End`, `EndState`, `EndRegion`, `EndMachine`) rewritten to name the level each returns to, with an example of the shape it belongs to.
+
+### Documentation
+
+- A "Closing the builder" section in the package documentation and the README, showing the flat, nested, and parallel shapes side by side plus the build-in-a-loop case, with a table of which terminator returns where.
+
 ## [1.9.0] - 2026-06-20
 
 ### Removed
