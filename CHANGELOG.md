@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`viz.ParseNativeJSON` now reads every transition shape `export.NewXStateExporter` writes.** The two are halves of one round-trip and disagreed about the shape of a transition group: `export.collapseTransitionGroup` writes an object when a group holds exactly one transition and an array otherwise, while the parser read exactly one of those shapes per field.
+
+  Three consequences, none of which reported an error:
+
+  - **A single eventless transition broke the whole parse.** `rawState.Always` was `[]VizTransition`, so `"always": {"target": "b"}` — what the exporter emits for a group of one — failed `ParseNativeJSON` outright with `cannot unmarshal object into Go struct field rawState.states.always`. This is a **regression introduced in 1.13.0**: 1.12.0 and earlier accepted the same input because they silently dropped `always` altogether, which is the bug 1.13.0 set out to fix. Any machine with exactly one eventless transition exported JSON that statekit's own parser, and therefore `statekit viz`, could not read.
+  - **Guarded alternatives on one event vanished.** A second transition on the same event makes the exporter emit an array; the parser tried a string, then a single object, and returned nothing. Zero transitions, no error — a diagram missing an edge reads exactly like a machine that has no such edge.
+  - **A transition raising an internal event vanished.** `transitionEntry` widens `actions` from `[]string` to `[]any` to embed `xstate.raise` descriptors; the parser's `Actions []string` could not hold that, so the unmarshal failed and took the entire transition with it. Raised events now populate `VizTransition.Raise`.
+
+  Internal transitions (`{"internal": true}`, no target) are also kept now rather than discarded, since the actions they run are the only reason they exist.
+
+  Covered by a round-trip test in `export` that marshals a machine and parses it straight back — the seam neither package's suite was testing. Both packages were well covered on their own sides of it.
+
 ## [1.13.0] - 2026-08-08
 
 ### Added
