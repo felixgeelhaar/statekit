@@ -98,6 +98,7 @@ Available assertions:
 | `AssertMatches` | Assert current state matches (including ancestors) |
 | `AssertDone` | Assert machine is in a final state |
 | `AssertNotDone` | Assert machine is not in a final state |
+| `AssertTerminal` | Assert machine is in a final state and the given events do not move it |
 | `AssertTransitioned` | Assert recorder captured a specific transition |
 | `AssertNoTransition` | Assert event did not cause a transition |
 | `AssertEventSequence` | Assert recorder captured events in order |
@@ -146,6 +147,86 @@ statetest.SendEvents(interp,
 // Send events by type only (no payload)
 statetest.SendEventTypes(interp, "START", "PAUSE", "RESUME")
 ```
+
+### Starting a Test at a Specific State
+
+Some properties belong to one state and have nothing to do with the path taken
+to reach it — "this state ignores `CANCEL`", or the negative property every
+statechart user eventually wants to assert: **a final state accepts nothing**.
+
+Driving the machine event by event to get there makes such a test long and
+couples it to unrelated transitions. `statetest.InterpreterAt` positions a
+started interpreter at any state of the machine you actually ship, including a
+final one:
+
+```go
+func TestArchivedIsTerminal(t *testing.T) {
+    interp := statetest.InterpreterAt(BuildLifecycle(), "archived")
+    defer interp.Close()
+
+    statetest.AssertTerminal(t, interp, "SUBMIT", "APPROVE", "PUBLISH", "ARCHIVE")
+}
+```
+
+`AssertTerminal` asserts the interpreter is done and that none of the listed
+events move it. Pass every event the machine defines anywhere, not just the
+ones plausible for this state — the point is that none of them apply.
+
+Sweep every final state in a table:
+
+```go
+func TestFinalStatesAreTerminal(t *testing.T) {
+    machine := BuildLifecycle()
+    allEvents := []statekit.EventType{"SUBMIT", "APPROVE", "PUBLISH", "ARCHIVE"}
+
+    for _, final := range []statekit.StateID{"archived", "rejected"} {
+        t.Run(string(final), func(t *testing.T) {
+            interp := statetest.InterpreterAt(machine, final)
+            defer interp.Close()
+
+            statetest.AssertTerminal(t, interp, allEvents...)
+        })
+    }
+}
+```
+
+Two caveats, both from the fact that the interpreter is *placed* at the state
+rather than moved into it:
+
+- **Entry actions do not run**, and no transition into the state is recorded.
+  When the path matters, use `RunMachine` or the recorder instead.
+- **The context is the machine's configured initial context**, not what a real
+  run would have accumulated. Set up anything the assertion needs with
+  `interp.UpdateContext`.
+
+Compound states resolve to their initial leaf, matching `Start`. Parallel
+states are not supported — restoring one needs per-region leaves that a single
+state ID cannot express; use `Interpreter.Restore` with an explicit
+`ActiveInParallel` map.
+
+#### Under the hood, and when to reach past it
+
+`InterpreterAt` is a thin wrapper over `Interpreter.Restore`. The snapshot API
+is documented as a persistence and recovery mechanism, but it is equally the
+answer to "start this test at state X" — it is the only way to position an
+interpreter somewhere other than the initial state. Use `Restore` directly when
+you need more than a state ID: history maps, pending timers, parallel regions,
+or a specific context.
+
+```go
+interp := statekit.NewInterpreter(machine)
+err := interp.Restore(statekit.Snapshot[Ctx]{
+    MachineID:    machine.ID,
+    CurrentState: "archived",
+    Context:      Ctx{OrderID: "A-1"},
+})
+```
+
+One thing that is *not* required: rebuilding the machine without the `Final()`
+marker. Starting in a final state is legal — point `WithInitial` at one and
+`Start` lands there with `Done()` reporting true. But changing the machine
+defeats the purpose of a test whose job is to prove the machine and its
+specification agree, which is exactly why `InterpreterAt` exists.
 
 ### Quick Machine Builders
 

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`statetest.InterpreterAt`** — returns a started interpreter positioned at any state of a machine, including a final one, so a property that belongs to one state can be asserted against the machine that ships rather than a variant rebuilt for the test. Built on `Interpreter.Restore`; entry actions do not run and the context is the machine's configured initial context.
+- **`statetest.AssertTerminal`** — asserts an interpreter is in a final state and that none of the given events move it: the "a final state accepts nothing" property.
 - **`viz.FromMachine`** — builds a visualization model directly from a compiled `*statekit.MachineConfig[C]`, with no JSON serialization and no Go source parsing in between. Machines assembled at runtime (from a transition table, a config file, a database) can now be rendered to Mermaid, ASCII, HTML, or the TUI, which makes a published diagram testable against the machine the runtime executes. `export.NewNativeExporter(...).Export()` now delegates to it and is unchanged for callers.
 
 ### Changed
@@ -24,9 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`viz.ParseNativeJSON` dropped hierarchy, `always` transitions, and tags from flat native JSON.** The `parent` field was ignored for top-level entries, so every state in a machine exported by `export.NewNativeExporter` came back as a root — compound, parallel, and history machines rendered flattened. `always` and `tags` had no parser fields at all. Round-tripping a machine through native JSON is now lossless.
 
+## [Unreleased]
+
 ### Documentation
 
 - A "Closing the builder" section in the package documentation and the README, showing the flat, nested, and parallel shapes side by side plus the build-in-a-loop case, with a table of which terminator returns where.
+- `docs/testing.md` gains a "Starting a Test at a Specific State" section covering `InterpreterAt`, `AssertTerminal`, and restoring a snapshot as the general route to an arbitrary starting state — previously documented only as persistence and recovery.
 
 ## [1.9.0] - 2026-06-20
 
