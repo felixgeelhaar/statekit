@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`statetest.InterpreterAt`** — returns a started interpreter positioned at any state of a machine, including a final one, so a property that belongs to one state can be asserted against the machine that ships rather than a variant rebuilt for the test. Built on `Interpreter.Restore`; entry actions do not run and the context is the machine's configured initial context.
+- **`statetest.AssertTerminal`** — asserts an interpreter is in a final state and that none of the given events move it: the "a final state accepts nothing" property.
+
+### Documentation
+
+- `docs/testing.md` gains a "Starting a Test at a Specific State" section covering `InterpreterAt`, `AssertTerminal`, and restoring a snapshot as the general route to an arbitrary starting state — previously documented only as persistence and recovery.
+
 ## [1.9.0] - 2026-06-20
 
 ### Removed
