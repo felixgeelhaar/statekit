@@ -153,3 +153,61 @@ func keys(m map[string]*VizState) []string {
 	}
 	return out
 }
+
+// `after` is the last field the exporter writes and the parser did not read.
+//
+// It is the same defect as `always` before v1.13.0 and it survived that fix:
+// rawState simply had no After field, so every delayed transition parsed to
+// nothing with no error. A machine whose only edge is a timeout rendered as
+// two disconnected states, which reads as a modelling mistake rather than a
+// parser gap. VizTransition has carried IsDelayed and DelayMs the whole time
+// — nothing ever set them.
+func TestParseNativeJSONReadsAfter(t *testing.T) {
+	tests := []struct {
+		name string
+		json string
+		want []VizTransition
+	}{
+		{
+			// One transition per delay collapses to an object, exactly as
+			// `always` and `on` do.
+			name: "single delayed transition",
+			json: `{"id":"m","initial":"a","states":{"a":{"after":{"5000":{"target":"b"}}},"b":{}}}`,
+			want: []VizTransition{{Target: "b", IsDelayed: true, DelayMs: 5000}},
+		},
+		{
+			name: "guarded alternatives on one delay",
+			json: `{"id":"m","initial":"a","states":{"a":{"after":{"1000":[{"target":"b","guard":"g"},{"target":"c"}]}},"b":{},"c":{}}}`,
+			want: []VizTransition{
+				{Target: "b", Guard: "g", IsDelayed: true, DelayMs: 1000},
+				{Target: "c", IsDelayed: true, DelayMs: 1000},
+			},
+		},
+		{
+			name: "several delays on one state",
+			json: `{"id":"m","initial":"a","states":{"a":{"after":{"1000":{"target":"b"},"9000":{"target":"c"}}},"b":{},"c":{}}}`,
+			want: []VizTransition{
+				{Target: "b", IsDelayed: true, DelayMs: 1000},
+				{Target: "c", IsDelayed: true, DelayMs: 9000},
+			},
+		},
+		{
+			// A non-numeric key is an XState delay *reference*. It cannot be
+			// rendered as a duration, but dropping the edge loses the fact
+			// that the state is not terminal.
+			name: "named delay keeps the edge",
+			json: `{"id":"m","initial":"a","states":{"a":{"after":{"TIMEOUT":{"target":"b"}}},"b":{}}}`,
+			want: []VizTransition{{Event: "TIMEOUT", Target: "b", IsDelayed: true}},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			vm, err := ParseNativeJSON([]byte(tc.json))
+			if err != nil {
+				t.Fatalf("ParseNativeJSON: %v", err)
+			}
+			assertTransitions(t, vm.States["a"].Transitions, tc.want)
+		})
+	}
+}

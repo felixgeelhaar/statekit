@@ -3,6 +3,7 @@ package viz
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 // rawState mirrors VizState but adds fields for nested and XState shorthand input.
@@ -29,6 +30,10 @@ type rawState struct {
 	States         map[string]*rawState `json:"states,omitempty"`
 	// XState shorthand: "on": {"EVENT": "target"} or "on": {"EVENT": {"target": "..."}}
 	On map[string]json.RawMessage `json:"on,omitempty"`
+	// Delayed transitions, keyed by delay: {"after": {"5000": {...}}}. Raw for
+	// the same reason On and Always are — the value collapses to an object for
+	// a group of one and an array otherwise.
+	After map[string]json.RawMessage `json:"after,omitempty"`
 }
 
 type rawMachine struct {
@@ -69,6 +74,24 @@ func flattenState(vm *VizMachine, id string, rs *rawState, parentID string) {
 	transitions := rs.Transitions
 	for event, raw := range rs.On {
 		transitions = append(transitions, parseTransitionGroup(event, raw)...)
+	}
+	// Delayed transitions. The exporter writes these under "after" keyed by
+	// milliseconds; nothing read them, so a state whose only edge was a
+	// timeout parsed as terminal.
+	for delay, raw := range rs.After {
+		for _, t := range parseTransitionGroup("", raw) {
+			t.IsDelayed = true
+			if ms, err := strconv.ParseInt(delay, 10, 64); err == nil {
+				t.DelayMs = ms
+			} else {
+				// A non-numeric key is an XState delay reference, not a
+				// duration. Keep the edge and carry the name — dropping it
+				// would misreport the state as terminal, which is the bug
+				// this fixes.
+				t.Event = delay
+			}
+			transitions = append(transitions, t)
+		}
 	}
 
 	vs := &VizState{

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`viz.ParseNativeJSON` dropped every delayed (`after`) transition.**
+  `rawState` had no `After` field, so a state whose only edge is a timeout
+  parsed as terminal — zero transitions, no error. A machine rendered from it
+  showed two disconnected states, which reads as a modelling mistake rather
+  than a parser gap. `VizTransition` has carried `IsDelayed` and `DelayMs`
+  since 0.2.0; nothing ever set them.
+
+  This is the same defect as `always` before 1.13.0, in the same file, and it
+  survived that fix: 1.13.1 taught the parser every *shape* the exporter
+  writes (object, array, raise descriptors) without noticing there was a
+  *field* it never read at all.
+
+  A non-numeric delay key — an XState delay reference such as
+  `{"after": {"TIMEOUT": …}}` — keeps its edge and carries the name, rather
+  than being discarded. It cannot be drawn as a duration, but dropping it
+  would misreport the state as terminal, which is the bug being fixed.
+
+  The `export` round-trip test now covers a delayed transition, so the seam is
+  checked rather than each half in isolation.
+
 ## [1.13.2] - 2026-08-08
 
 ### Fixed
