@@ -3,6 +3,7 @@ package export_test
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
 	"go.klarlabs.de/statekit"
 	"go.klarlabs.de/statekit/export"
@@ -32,6 +33,10 @@ func TestXStateExportParsesBack(t *testing.T) {
 		State("review").
 		On("DECIDE").Target("approved").Guard("isClean").End().
 		On("DECIDE").Target("rejected").End().
+		Done().
+		// A delayed transition: the exporter writes it under "after".
+		State("stale").
+		After(30 * time.Second).Target("rejected").End().
 		Done().
 		State("approved").Final().Done().
 		State("rejected").Final().Done().
@@ -81,6 +86,17 @@ func TestXStateExportParsesBack(t *testing.T) {
 	if guard, ok := targets["approved"]; !ok || guard != "isClean" {
 		t.Errorf("approved guard = %q (present=%v), want isClean", guard, ok)
 	}
+	stale := vm.States["stale"]
+	if stale == nil {
+		t.Fatal("state stale missing after round-trip")
+	}
+	if len(stale.Transitions) != 1 {
+		t.Fatalf("stale.Transitions = %d, want 1 (the delayed edge)\n%s", len(stale.Transitions), raw)
+	}
+	if d := stale.Transitions[0]; !d.IsDelayed || d.DelayMs != 30000 || d.Target != "rejected" {
+		t.Errorf("delayed transition = %+v, want target=rejected isDelayed=true delayMs=30000", d)
+	}
+
 	if _, ok := targets["rejected"]; !ok {
 		t.Errorf("the unguarded fallback to rejected was dropped; got %v", targets)
 	}
