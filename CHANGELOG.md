@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.3] - 2026-08-10
+
 ### Fixed
 
 - **`viz.ParseNativeJSON` dropped every delayed (`after`) transition.**
