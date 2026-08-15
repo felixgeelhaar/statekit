@@ -11,7 +11,7 @@ import (
 
 // Actor model APIs (Spawn, ActorRef, supervision) are Tier 2 — experimental.
 // The API may change in a future v1.x minor. Prefer InvokeMachine for typed
-// child-machine composition when that is enough. See docs/stability.md.
+// child-machine composition when that is enough. See docs/reference/stability.md.
 
 // ErrActorNotFound is returned when an actor ID doesn't exist in the registry
 var ErrActorNotFound = errors.New("actor not found")

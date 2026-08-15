@@ -519,7 +519,7 @@ func (b *StateBuilder[C]) Invoke(src ServiceType) *InvokeBuilder[C] {
 // The machineRef must match a name registered with WithChildMachine.
 //
 // Tier 2 — experimental: the composition API may change in a future v1.x minor.
-// See docs/stability.md.
+// See docs/reference/stability.md.
 func (b *StateBuilder[C]) InvokeMachine(machineRef string) *MachineInvokeBuilder[C] {
 	mib := &MachineInvokeBuilder[C]{
 		state:      b,

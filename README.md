@@ -26,7 +26,7 @@ A working machine in 10 lines. Hierarchy and parallel states scale from there. `
 
 ## Two jobs
 
-Statekit targets **backend domain workflows** — order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across `switch event.Type { ... }` and accumulate bugs around partial failure, retry, and idempotency. See [`examples/stripe_webhook`](./examples/stripe_webhook) for a webhook-saga template with idempotency, retry budget, and the outbox pattern.
+Statekit targets **backend domain workflows** — order lifecycles, payment sagas, incident management, KYC. The kind of state most teams scatter across `switch event.Type { ... }` and accumulate bugs around partial failure, retry, and idempotency. Start with the [Stripe webhook saga tutorial](./docs/tutorials/stripe-webhook-saga.md) or the [`examples/stripe_webhook`](./examples/stripe_webhook) package for a webhook-saga template with idempotency, retry budget, and the outbox pattern.
 
 These workflows benefit from a consistent set of primitives — typed context, hierarchy, lint, visualization, snapshots — so one library, one mental model.
 
@@ -42,9 +42,9 @@ If you're using one of the incumbent Go FSM libraries and have hit a ceiling, th
 
 Step-by-step migration guides:
 
-- [From looplab/fsm](./docs/migration-from-looplab-fsm.md)
-- [From qmuntal/stateless](./docs/migration-from-qmuntal-stateless.md)
-- [From XState (JS)](./docs/xstate-migration.md)
+- [From looplab/fsm](./docs/tutorials/migration-from-looplab-fsm.md)
+- [From qmuntal/stateless](./docs/tutorials/migration-from-qmuntal-stateless.md)
+- [From XState (JS)](./docs/tutorials/xstate-migration.md)
 
 ## Why
 
@@ -72,7 +72,7 @@ Step-by-step migration guides:
 - HTTP integration, OpenTelemetry tracing, Prometheus metrics, Kubernetes health probes
 - Code generation from Native JSON
 
-## Advanced (Tier 2 — see [stability tiers](./docs/stability.md))
+## Advanced (Tier 2 — see [stability tiers](./docs/reference/stability.md))
 
 **Experimental:** these ship in v1.x but may change in a future minor. Prefer core (Tier 1) primitives when they are enough; pin an exact minor if you depend on these in production.
 
@@ -505,19 +505,20 @@ statekit.NewInterpreter[C](machine) *Interpreter[C]
 
 The [docs index](./docs/README.md) organizes everything by Diataxis category (tutorials, how-to, reference, explanation). Quick links:
 
-- [Getting Started](./docs/getting-started.md)
-- [Choosing an API](./docs/choosing-an-api.md) — builder vs reflection DSL vs codegen
-- [Hierarchical States](./docs/hierarchical-states.md)
-- [Guards & Actions](./docs/guards-actions.md)
-- [XState Migration](./docs/xstate-migration.md)
-- [Migration from looplab/fsm](./docs/migration-from-looplab-fsm.md)
-- [Migration from qmuntal/stateless](./docs/migration-from-qmuntal-stateless.md)
-- [API Stability Tiers](./docs/stability.md)
-- [Reflection DSL](./docs/reflection-dsl.md)
-- [Testing](./docs/testing.md)
-- [Observability](./docs/observability.md)
-- [Static Analysis (Lint)](./docs/lint.md)
-- [API Reference](./docs/api-reference.md)
+- [Getting Started](./docs/tutorials/getting-started.md)
+- [Stripe webhook saga](./docs/tutorials/stripe-webhook-saga.md) — flagship workflow tutorial
+- [Choosing an API](./docs/how-to/choosing-an-api.md) — builder vs reflection DSL vs codegen
+- [Hierarchical States](./docs/how-to/hierarchical-states.md)
+- [Guards & Actions](./docs/how-to/guards-actions.md)
+- [XState Migration](./docs/tutorials/xstate-migration.md)
+- [Migration from looplab/fsm](./docs/tutorials/migration-from-looplab-fsm.md)
+- [Migration from qmuntal/stateless](./docs/tutorials/migration-from-qmuntal-stateless.md)
+- [API Stability Tiers](./docs/reference/stability.md)
+- [Reflection DSL](./docs/how-to/reflection-dsl.md)
+- [Testing](./docs/how-to/testing.md)
+- [Observability](./docs/how-to/observability.md)
+- [Static Analysis (Lint)](./docs/how-to/lint.md)
+- [API Reference](./docs/reference/api-reference.md)
 
 ## Contributing
 

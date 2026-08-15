@@ -470,6 +470,6 @@ for _, item := range items {
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Patterns & Recipes](patterns-recipes.md)
-- [API Reference](api-reference.md)
+- [Getting Started](../tutorials/getting-started.md)
+- [Patterns & Recipes](../explanation/patterns-recipes.md)
+- [API Reference](../reference/api-reference.md)

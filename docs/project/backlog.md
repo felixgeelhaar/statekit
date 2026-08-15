@@ -19,6 +19,8 @@ Four terminators with subtle semantics. README hierarchical example shows .End()
 
 ## Restructure docs/ to Diataxis (tutorials, how-to, reference, explanation)
 
+**Done** (layout live under `docs/{tutorials,how-to,reference,explanation,project}/`; Astro glob updated; site slugs unchanged).
+
 20 .md files mixed paradigms. getting-started.md is part-tutorial part-reference. patterns-recipes.md (685 lines) mixes how-to + explanation. tdd.md 896 lines unclear category. Restructure to docs/tutorials/, docs/how-to/, docs/reference/, docs/explanation/. Move api-reference.md to godoc-only (single source). Delete prd.md and v1.0-roadmap.md from user-facing docs (project-meta). Add docs/choosing-an-api.md decision tree (builder vs reflection vs codegen). Fix broken xstate-export.md link in README.md:331. Source: UX review.
 
 ---
@@ -42,6 +44,8 @@ Current 7 rules solid but miss production bugs: (1) missing-OnError-on-Invoke (s
 ---
 
 ## Ship one flagship tutorial — Stripe webhook saga with outbox
+
+**Done** — see `docs/tutorials/stripe-webhook-saga.md` + `examples/stripe_webhook`.
 
 11 thin examples = 0 examples for marketing. Promote ONE killer real-world scenario as flagship. Recommended: Stripe webhook saga with DB outbox pattern (touches event sourcing, guards, OnError, durable transitions, real domain). 2000-word tutorial + companion blog post + viz GIF. Distribute aggressively (HN, /r/golang, Go Weekly). Alt candidates: K8s operator state, OAuth flow, multi-step form. Source: GTM + Product reviews.
 

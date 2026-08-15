@@ -359,6 +359,6 @@ Both approaches produce identical `MachineConfig` and can be used interchangeabl
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Guards and Actions](guards-actions.md)
-- [Hierarchical States](hierarchical-states.md)
+- [Getting Started](../tutorials/getting-started.md)
+- [Guards and Actions](./guards-actions.md)
+- [Hierarchical States](./hierarchical-states.md)

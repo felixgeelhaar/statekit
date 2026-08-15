@@ -1,42 +1,37 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Xstate Migration · Statekit</title><meta name="description" content="Xstate Migration — Statekit documentation"><link rel="canonical" href="https://klarlabs-studio.github.io/statekit/docs/xstate-migration"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://klarlabs-studio.github.io/statekit/docs/xstate-migration"><meta property="og:title" content="Xstate Migration · Statekit"><meta property="og:description" content="Xstate Migration — Statekit documentation"><meta property="og:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Xstate Migration · Statekit"><meta name="twitter:description" content="Xstate Migration — Statekit documentation"><meta name="twitter:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Xstate Migration — Statekit documentation","codeRepository":"https://github.com/klarlabs-studio/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://klarlabs-studio.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
-<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
-</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/go.klarlabs.de/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/klarlabs-studio/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
-MCP
-</a> <a href="https://github.com/klarlabs-studio/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
-GitHub
-</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link is-active" aria-current="page"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Xstate Migration</h1> </header> <div class="markdown-body"> <h1 id="migrating-from-xstate-to-statekit">Migrating from XState to Statekit</h1>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Xstate Migration · Statekit</title><meta name="description" content="Xstate Migration — Statekit documentation"><link rel="canonical" href="https://klarlabs-studio.github.io/statekit/docs/xstate-migration"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://klarlabs-studio.github.io/statekit/docs/xstate-migration"><meta property="og:title" content="Xstate Migration · Statekit"><meta property="og:description" content="Xstate Migration — Statekit documentation"><meta property="og:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Xstate Migration · Statekit"><meta name="twitter:description" content="Xstate Migration — Statekit documentation"><meta name="twitter:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Xstate Migration — Statekit documentation","codeRepository":"https://github.com/klarlabs-studio/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://klarlabs-studio.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.5tfqMtrl.css"><style>.docs-shell{background:var(--bg);min-height:100vh}.docs-layout{grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem;display:grid}.docs-sidebar{align-self:start;max-height:calc(100vh - 3rem);padding-right:.5rem;position:sticky;top:1.5rem;overflow-y:auto}.docs-sidebar-title{text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem;font-size:.75rem;font-weight:600}.docs-nav{gap:.15rem;margin:0;padding:0;list-style:none;display:grid}.docs-nav-link{color:var(--text-secondary);border-radius:6px;padding:.4rem .6rem;font-size:.9rem;text-decoration:none;display:block}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{margin:0 0 1.5rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem)}.markdown-body{color:var(--text);font-size:1rem;line-height:1.7}.markdown-body h2{border-bottom:1px solid var(--border);margin:2.5rem 0 1rem;padding-bottom:.4rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:1.4rem}.markdown-body h3{margin:1.75rem 0 .75rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);border-bottom:1px solid #0000;text-decoration:none}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{background:var(--bg-secondary);color:var(--text);border-radius:4px;padding:.1rem .35rem;font-family:JetBrains Mono,monospace;font-size:.88em}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;margin:1rem 0;padding:1rem 1.2rem;overflow-x:auto}.markdown-body pre code{background:0 0;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);text-align:left;padding:.5rem .75rem}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);color:var(--text-secondary);background:#00d4ff0a;margin:1rem 0;padding:.4rem 1rem}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media (width<=768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{border-bottom:1px solid var(--border);max-height:none;margin-bottom:1rem;padding-bottom:1rem;position:static}}
+</style></head><body><div class="docs-shell"><header class="header"><a href="/statekit/" class="logo" aria-label="Statekit home"><div class="logo-icon"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"><rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect><circle cx="12" cy="12" r="4" fill="#00d4ff"></circle><circle cx="24" cy="12" r="4" fill="#a855f7"></circle><circle cx="18" cy="24" r="4" fill="#00ff88"></circle><path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path><path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path><path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path></svg></div><span class="logo-text">State<span>kit</span></span></a><nav class="header-nav" aria-label="Primary"><a href="/statekit/" class="header-nav-link">Home</a><a href="/statekit/play" class="header-nav-link">Play</a><a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a><a href="https://pkg.go.dev/go.klarlabs.de/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a></nav><div class="header-actions"><a href="https://github.com/klarlabs-studio/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>MCP</a><a href="https://github.com/klarlabs-studio/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>GitHub</a></div></header><script type="module">document.getElementById(`shortcuts-btn`)?.addEventListener(`click`,()=>{document.getElementById(`shortcuts-overlay`)?.classList.toggle(`active`)});</script><div class="docs-layout"><aside class="docs-sidebar" aria-label="Documentation navigation"><h2 class="docs-sidebar-title">Documentation</h2><ul class="docs-nav"><li><a href="/statekit/docs/actor-persistence" class="docs-nav-link">Actor Persistence</a></li><li><a href="/statekit/docs/api-reference" class="docs-nav-link">Api Reference</a></li><li><a href="/statekit/docs/builder-terminators" class="docs-nav-link">Builder Terminators</a></li><li><a href="/statekit/docs/choosing-an-api" class="docs-nav-link">Choosing An Api</a></li><li><a href="/statekit/docs/code-generation" class="docs-nav-link">Code Generation</a></li><li><a href="/statekit/docs/getting-started" class="docs-nav-link">Getting Started</a></li><li><a href="/statekit/docs/guards-actions" class="docs-nav-link">Guards Actions</a></li><li><a href="/statekit/docs/hierarchical-states" class="docs-nav-link">Hierarchical States</a></li><li><a href="/statekit/docs/http-integration" class="docs-nav-link">Http Integration</a></li><li><a href="/statekit/docs/lint" class="docs-nav-link">Lint</a></li><li><a href="/statekit/docs/machine-composition" class="docs-nav-link">Machine Composition</a></li><li><a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link">Migration From Looplab Fsm</a></li><li><a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link">Migration From Qmuntal Stateless</a></li><li><a href="/statekit/docs/observability" class="docs-nav-link">Observability</a></li><li><a href="/statekit/docs/opentelemetry" class="docs-nav-link">Opentelemetry</a></li><li><a href="/statekit/docs/patterns-recipes" class="docs-nav-link">Patterns Recipes</a></li><li><a href="/statekit/docs/performance-tuning" class="docs-nav-link">Performance Tuning</a></li><li><a href="/statekit/docs/plugin-system" class="docs-nav-link">Plugin System</a></li><li><a href="/statekit/docs/reflection-dsl" class="docs-nav-link">Reflection Dsl</a></li><li><a href="/statekit/docs/stability" class="docs-nav-link">Stability</a></li><li><a href="/statekit/docs/stripe-webhook-saga" class="docs-nav-link">Stripe Webhook Saga</a></li><li><a href="/statekit/docs/tdd" class="docs-nav-link">Tdd</a></li><li><a href="/statekit/docs/testing" class="docs-nav-link">Testing</a></li><li><a href="/statekit/docs/visualization" class="docs-nav-link">Visualization</a></li><li><a href="/statekit/docs/xstate-migration" class="docs-nav-link is-active" aria-current="page">Xstate Migration</a></li></ul></aside><article class="docs-article"><header class="docs-article-header"><h1>Xstate Migration</h1></header><div class="markdown-body"><h1 id="migrating-from-xstate-to-statekit">Migrating from XState to Statekit</h1>
 <p>This guide helps developers familiar with <a href="https://stately.ai/docs/xstate">XState</a> transition to Statekit. Both libraries implement the statechart specification, but Statekit is designed specifically for Go backends.</p>
 <h2 id="why-migrate">Why Migrate?</h2>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>XState</th><th>Statekit</th></tr></thead><tbody><tr><td>TypeScript/JavaScript</td><td>Go</td></tr><tr><td>Frontend/Node.js focused</td><td>Backend focused</td></tr><tr><td>Runtime-heavy</td><td>Compile-time validation</td></tr><tr><td>Actor model built-in</td><td>Explicit actor spawning</td></tr><tr><td>Dynamic interpretation</td><td>Static machine definition</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>XState</th>
+<th>Statekit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TypeScript/JavaScript</td>
+<td>Go</td>
+</tr>
+<tr>
+<td>Frontend/Node.js focused</td>
+<td>Backend focused</td>
+</tr>
+<tr>
+<td>Runtime-heavy</td>
+<td>Compile-time validation</td>
+</tr>
+<tr>
+<td>Actor model built-in</td>
+<td>Explicit actor spawning</td>
+</tr>
+<tr>
+<td>Dynamic interpretation</td>
+<td>Static machine definition</td>
+</tr>
+</tbody>
+</table>
 <p>Statekit provides built-in visualization tools (<code>statekit viz</code>), removing the dependency on external services.</p>
 <h2 id="quick-reference">Quick Reference</h2>
 <h3 id="basic-machine-definition">Basic Machine Definition</h3>
@@ -79,48 +74,48 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Send</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">{Type: </span><span style="color:#9ECBFF">"TOGGLE"</span><span style="color:#E1E4E8">})</span></span>
 <span class="line"><span style="color:#E1E4E8">fmt.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(interp.</span><span style="color:#B392F0">State</span><span style="color:#E1E4E8">().Value) </span><span style="color:#6A737D">// "active"</span></span></code></pre>
 <h3 id="concept-mapping">Concept Mapping</h3>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>XState Concept</th><th>Statekit Equivalent</th></tr></thead><tbody><tr><td><code>createMachine()</code></td><td><code>statekit.NewMachine[C]()</code></td></tr><tr><td><code>interpret()</code></td><td><code>statekit.NewInterpreter()</code></td></tr><tr><td><code>service.start()</code></td><td><code>interp.Start()</code></td></tr><tr><td><code>service.send()</code></td><td><code>interp.Send()</code></td></tr><tr><td><code>service.getSnapshot()</code></td><td><code>interp.State()</code></td></tr><tr><td><code>service.stop()</code></td><td><code>interp.Stop()</code></td></tr><tr><td><code>state.matches()</code></td><td><code>interp.Matches()</code></td></tr><tr><td><code>state.done</code></td><td><code>interp.Done()</code></td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>XState Concept</th>
+<th>Statekit Equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>createMachine()</code></td>
+<td><code>statekit.NewMachine[C]()</code></td>
+</tr>
+<tr>
+<td><code>interpret()</code></td>
+<td><code>statekit.NewInterpreter()</code></td>
+</tr>
+<tr>
+<td><code>service.start()</code></td>
+<td><code>interp.Start()</code></td>
+</tr>
+<tr>
+<td><code>service.send()</code></td>
+<td><code>interp.Send()</code></td>
+</tr>
+<tr>
+<td><code>service.getSnapshot()</code></td>
+<td><code>interp.State()</code></td>
+</tr>
+<tr>
+<td><code>service.stop()</code></td>
+<td><code>interp.Stop()</code></td>
+</tr>
+<tr>
+<td><code>state.matches()</code></td>
+<td><code>interp.Matches()</code></td>
+</tr>
+<tr>
+<td><code>state.done</code></td>
+<td><code>interp.Done()</code></td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2 id="context">Context</h2>
 <h3 id="xstate-context">XState Context</h3>
@@ -135,7 +130,7 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">    active: {</span></span>
 <span class="line"><span style="color:#E1E4E8">      on: {</span></span>
 <span class="line"><span style="color:#E1E4E8">        INCREMENT: {</span></span>
-<span class="line"><span style="color:#E1E4E8">          actions: </span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">({ </span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> ctx.count </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8"> })</span></span>
+<span class="line"><span style="color:#E1E4E8">          actions: </span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">({ </span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> ctx.count </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8"> })</span></span>
 <span class="line"><span style="color:#E1E4E8">        }</span></span>
 <span class="line"><span style="color:#E1E4E8">      }</span></span>
 <span class="line"><span style="color:#E1E4E8">    }</span></span>
@@ -165,7 +160,7 @@ GitHub
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Update context directly</span></span>
 <span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">UpdateContext</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#F97583"> *</span><span style="color:#B392F0">CounterContext</span><span style="color:#E1E4E8">) {</span></span>
-<span class="line"><span style="color:#E1E4E8">    ctx.User </span><span style="color:#F97583">=</span><span style="color:#F97583"> &#x26;</span><span style="color:#B392F0">User</span><span style="color:#E1E4E8">{Name: </span><span style="color:#9ECBFF">"Alice"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">    ctx.User </span><span style="color:#F97583">=</span><span style="color:#F97583"> &amp;</span><span style="color:#B392F0">User</span><span style="color:#E1E4E8">{Name: </span><span style="color:#9ECBFF">"Alice"</span><span style="color:#E1E4E8">}</span></span>
 <span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
 <p><strong>Key difference:</strong> Statekit passes <code>*Context</code> to actions (mutable pointer), not a copy.</p>
 <hr>
@@ -190,10 +185,10 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">  }</span></span>
 <span class="line"><span style="color:#E1E4E8">}, {</span></span>
 <span class="line"><span style="color:#E1E4E8">  actions: {</span></span>
-<span class="line"><span style="color:#B392F0">    logEntry</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Entered pending'</span><span style="color:#E1E4E8">),</span></span>
-<span class="line"><span style="color:#B392F0">    logExit</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Exited pending'</span><span style="color:#E1E4E8">),</span></span>
-<span class="line"><span style="color:#B392F0">    validateOrder</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> },</span></span>
-<span class="line"><span style="color:#B392F0">    notifyUser</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#B392F0">    logEntry</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Entered pending'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#B392F0">    logExit</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Exited pending'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#B392F0">    validateOrder</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#B392F0">    notifyUser</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> }</span></span>
 <span class="line"><span style="color:#E1E4E8">  }</span></span>
 <span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
 <h3 id="statekit-actions">Statekit Actions</h3>
@@ -248,14 +243,14 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">  }</span></span>
 <span class="line"><span style="color:#E1E4E8">}, {</span></span>
 <span class="line"><span style="color:#E1E4E8">  guards: {</span></span>
-<span class="line"><span style="color:#B392F0">    hasEnoughBalance</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> ctx.balance </span><span style="color:#F97583">>=</span><span style="color:#E1E4E8"> ctx.amount</span></span>
+<span class="line"><span style="color:#B392F0">    hasEnoughBalance</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> ctx.balance </span><span style="color:#F97583">&gt;=</span><span style="color:#E1E4E8"> ctx.amount</span></span>
 <span class="line"><span style="color:#E1E4E8">  }</span></span>
 <span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
 <h3 id="statekit-guards">Statekit Guards</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">PaymentContext</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"payment"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">    WithGuard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasEnoughBalance"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">ctx</span><span style="color:#B392F0"> PaymentContext</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">e</span><span style="color:#B392F0"> statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> {</span></span>
-<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> ctx.Balance </span><span style="color:#F97583">>=</span><span style="color:#E1E4E8"> ctx.Amount</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> ctx.Balance </span><span style="color:#F97583">&gt;=</span><span style="color:#E1E4E8"> ctx.Amount</span></span>
 <span class="line"><span style="color:#E1E4E8">    }).</span></span>
 <span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">        On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"PAY"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"success"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Guard</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"hasEnoughBalance"</span><span style="color:#E1E4E8">).</span></span>
@@ -511,7 +506,7 @@ GitHub
 <span class="line"><span style="color:#6A737D">  // ...</span></span>
 <span class="line"><span style="color:#E1E4E8">}, {</span></span>
 <span class="line"><span style="color:#E1E4E8">  actions: {</span></span>
-<span class="line"><span style="color:#B392F0">    updateUser</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    updateUser</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">ctx</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">event</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#E1E4E8">      ctx.user </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event.data;</span></span>
 <span class="line"><span style="color:#E1E4E8">    }</span></span>
 <span class="line"><span style="color:#E1E4E8">  }</span></span>
@@ -544,7 +539,7 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">    loading: {</span></span>
 <span class="line"><span style="color:#E1E4E8">      invoke: {</span></span>
 <span class="line"><span style="color:#E1E4E8">        id: </span><span style="color:#9ECBFF">'fetchData'</span><span style="color:#E1E4E8">,</span></span>
-<span class="line"><span style="color:#B392F0">        src</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">        src</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#F97583">          const</span><span style="color:#79B8FF"> response</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'/api/data'</span><span style="color:#E1E4E8">);</span></span>
 <span class="line"><span style="color:#F97583">          return</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">();</span></span>
 <span class="line"><span style="color:#E1E4E8">        },</span></span>
@@ -614,7 +609,7 @@ GitHub
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Restore state</span></span>
 <span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> snapshot </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">]</span></span>
-<span class="line"><span style="color:#E1E4E8">json.</span><span style="color:#B392F0">Unmarshal</span><span style="color:#E1E4E8">(data, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">snapshot)</span></span>
+<span class="line"><span style="color:#E1E4E8">json.</span><span style="color:#B392F0">Unmarshal</span><span style="color:#E1E4E8">(data, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">snapshot)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#E1E4E8">newInterp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
 <span class="line"><span style="color:#E1E4E8">newInterp.</span><span style="color:#B392F0">Restore</span><span style="color:#E1E4E8">(snapshot)</span></span>
@@ -639,7 +634,7 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Register plugin</span></span>
-<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#B392F0">LoggingPlugin</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">]{})</span></span></code></pre>
+<span class="line"><span style="color:#E1E4E8">interp.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&amp;</span><span style="color:#B392F0">LoggingPlugin</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">MyContext</span><span style="color:#E1E4E8">]{})</span></span></code></pre>
 <p>XState has similar extensibility through the <code>inspect</code> API.</p>
 <hr>
 <h2 id="declarative-definition-reflection-dsl">Declarative Definition (Reflection DSL)</h2>
@@ -647,8 +642,8 @@ GitHub
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderMachine</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#B392F0">    statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MachineDef</span><span style="color:#9ECBFF"> `id:"order" initial:"pending"`</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    Pending    </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateNode</span><span style="color:#9ECBFF"> `on:"SUBMIT->processing"`</span></span>
-<span class="line"><span style="color:#E1E4E8">    Processing </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateNode</span><span style="color:#9ECBFF"> `on:"APPROVE->approved,REJECT->rejected"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Pending    </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateNode</span><span style="color:#9ECBFF"> `on:"SUBMIT-&gt;processing"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Processing </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateNode</span><span style="color:#9ECBFF"> `on:"APPROVE-&gt;approved,REJECT-&gt;rejected"`</span></span>
 <span class="line"><span style="color:#E1E4E8">    Approved   </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">FinalNode</span></span>
 <span class="line"><span style="color:#E1E4E8">    Rejected   </span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">FinalNode</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span>
@@ -657,62 +652,62 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">FromStruct</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">OrderMachine</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">OrderContext</span><span style="color:#E1E4E8">](registry)</span></span></code></pre>
 <hr>
 <h2 id="summary-key-differences">Summary: Key Differences</h2>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Aspect</th><th>XState</th><th>Statekit</th></tr></thead><tbody><tr><td><strong>Language</strong></td><td>TypeScript/JavaScript</td><td>Go</td></tr><tr><td><strong>Type safety</strong></td><td>Runtime (with TS)</td><td>Compile-time (generics)</td></tr><tr><td><strong>Machine creation</strong></td><td>Object literal</td><td>Fluent builder</td></tr><tr><td><strong>Context mutation</strong></td><td><code>assign()</code> action</td><td>Pointer in action</td></tr><tr><td><strong>Guards</strong></td><td><code>guard: fn</code></td><td><code>.Guard("name")</code></td></tr><tr><td><strong>Async</strong></td><td>Promises/async-await</td><td>Goroutines</td></tr><tr><td><strong>Event payload</strong></td><td><code>event.data</code></td><td><code>event.Payload</code></td></tr><tr><td><strong>Plugins</strong></td><td><code>inspect</code>, middleware</td><td>Plugin interfaces</td></tr><tr><td><strong>Visualization</strong></td><td>Native</td><td>Native (HTML, Mermaid, TUI)</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>XState</th>
+<th>Statekit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Language</strong></td>
+<td>TypeScript/JavaScript</td>
+<td>Go</td>
+</tr>
+<tr>
+<td><strong>Type safety</strong></td>
+<td>Runtime (with TS)</td>
+<td>Compile-time (generics)</td>
+</tr>
+<tr>
+<td><strong>Machine creation</strong></td>
+<td>Object literal</td>
+<td>Fluent builder</td>
+</tr>
+<tr>
+<td><strong>Context mutation</strong></td>
+<td><code>assign()</code> action</td>
+<td>Pointer in action</td>
+</tr>
+<tr>
+<td><strong>Guards</strong></td>
+<td><code>guard: fn</code></td>
+<td><code>.Guard("name")</code></td>
+</tr>
+<tr>
+<td><strong>Async</strong></td>
+<td>Promises/async-await</td>
+<td>Goroutines</td>
+</tr>
+<tr>
+<td><strong>Event payload</strong></td>
+<td><code>event.data</code></td>
+<td><code>event.Payload</code></td>
+</tr>
+<tr>
+<td><strong>Plugins</strong></td>
+<td><code>inspect</code>, middleware</td>
+<td>Plugin interfaces</td>
+</tr>
+<tr>
+<td><strong>Visualization</strong></td>
+<td>Native</td>
+<td>Native (HTML, Mermaid, TUI)</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2 id="migration-checklist">Migration Checklist</h2>
 <ul class="contains-task-list">
@@ -729,9 +724,10 @@ GitHub
 <hr>
 <h2 id="see-also">See Also</h2>
 <ul>
-<li><a href="getting-started.md">Getting Started</a></li>
-<li><a href="visualization.md">Visualization</a></li>
-<li><a href="reflection-dsl.md">Reflection DSL</a></li>
-<li><a href="plugin-system.md">Plugin System</a></li>
-<li><a href="api-reference.md">API Reference</a></li>
-</ul> </div> </article> </div> </div> </body></html>
+<li><a href="./getting-started.md">Getting Started</a></li>
+<li><a href="../how-to/visualization.md">Visualization</a></li>
+<li><a href="../how-to/reflection-dsl.md">Reflection DSL</a></li>
+<li><a href="../how-to/plugin-system.md">Plugin System</a></li>
+<li><a href="../reference/api-reference.md">API Reference</a></li>
+</ul>
+</div></article></div></div></body></html>

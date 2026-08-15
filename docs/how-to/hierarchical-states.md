@@ -218,6 +218,6 @@ func main() {
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Guards and Actions](guards-actions.md)
-- [Visualization](visualization.md) - Visualize hierarchical machines
+- [Getting Started](../tutorials/getting-started.md)
+- [Guards and Actions](./guards-actions.md)
+- [Visualization](./visualization.md) - Visualize hierarchical machines

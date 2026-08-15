@@ -5,7 +5,7 @@
 //
 // Stability: Tier 2 — experimental. The API may change in a future v1.x
 // minor. Pin a specific minor if you depend on this package in production.
-// See docs/stability.md.
+// See docs/reference/stability.md.
 //
 // It lives in its own sub-package so that its eventual backing-store
 // dependencies never reach the statekit core module. Consumers that import

@@ -204,5 +204,5 @@ Done().
 
 - [Migration from looplab/fsm](./migration-from-looplab-fsm.md)
 - [XState Migration](./xstate-migration.md)
-- [Hierarchical States](./hierarchical-states.md)
-- [Static Analysis (Lint)](./lint.md)
+- [Hierarchical States](../how-to/hierarchical-states.md)
+- [Static Analysis (Lint)](../how-to/lint.md)

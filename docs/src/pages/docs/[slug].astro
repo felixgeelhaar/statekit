@@ -10,9 +10,10 @@ interface MarkdownModule {
   file: string;
 }
 
-const docFiles = import.meta.glob<MarkdownModule>('../../../*.md', {
-  eager: true,
-});
+const docFiles = import.meta.glob<MarkdownModule>(
+  ['../../../**/*.md', '!../../../node_modules/**', '!../../../dist/**', '!../../../src/**'],
+  { eager: true },
+);
 
 // Hide repo-internal files. backlog is plan tracking, not user docs.
 const HIDDEN = new Set(['README', 'backlog']);
@@ -24,7 +25,10 @@ const slugs = Object.keys(docFiles).map((path) =>
 const visibleSlugs = slugs.filter((s) => !HIDDEN.has(s)).sort();
 
 export async function getStaticPaths() {
-  const files = import.meta.glob<MarkdownModule>('../../../*.md', { eager: true });
+  const files = import.meta.glob<MarkdownModule>(
+    ['../../../**/*.md', '!../../../node_modules/**', '!../../../dist/**', '!../../../src/**'],
+    { eager: true },
+  );
   const hidden = new Set(['README', 'backlog']);
   return Object.keys(files)
     .map((path) => path.split('/').pop()!.replace(/\.md$/, ''))

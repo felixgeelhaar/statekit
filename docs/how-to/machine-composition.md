@@ -1,6 +1,6 @@
 # Machine Composition (InvokeMachine)
 
-> **Tier 2 — experimental.** `InvokeMachine` / `WithChildMachine` may change in a future v1.x minor. Pin a specific minor for production use. See [API Stability Tiers](./stability.md). Overlaps with the actor `Spawn` API; prefer this builder when typed child composition is enough.
+> **Tier 2 — experimental.** `InvokeMachine` / `WithChildMachine` may change in a future v1.x minor. Pin a specific minor for production use. See [API Stability Tiers](../reference/stability.md). Overlaps with the actor `Spawn` API; prefer this builder when typed child composition is enough.
 
 Machine composition allows you to invoke child state machines within a state, with automatic lifecycle management.
 
