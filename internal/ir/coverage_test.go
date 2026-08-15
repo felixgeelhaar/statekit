@@ -2,6 +2,7 @@ package ir
 
 import (
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -328,4 +329,223 @@ func TestValidationError_Is_NotValidationError(t *testing.T) {
 	if errors.Is(e, other) {
 		t.Error("expected Is to return false for unrelated error type")
 	}
+}
+
+func TestStateConfig_HasTag(t *testing.T) {
+	t.Parallel()
+	s := NewStateConfig("s", StateTypeAtomic)
+	s.Tags = []string{"transient", "auto"}
+
+	if !s.HasTag("transient") {
+		t.Error("expected HasTag(transient) true")
+	}
+	if !s.HasTag("auto") {
+		t.Error("expected HasTag(auto) true")
+	}
+	if s.HasTag("missing") {
+		t.Error("expected HasTag(missing) false")
+	}
+	if NewStateConfig("empty", StateTypeAtomic).HasTag("x") {
+		t.Error("expected HasTag on untagged state false")
+	}
+}
+
+func TestMachineConfig_GetInitialLeaf_UnknownState(t *testing.T) {
+	t.Parallel()
+	m := NewMachineConfig[struct{}]("m", "s", struct{}{})
+	m.States["s"] = NewStateConfig("s", StateTypeAtomic)
+
+	if got := m.GetInitialLeaf("ghost"); got != "ghost" {
+		t.Errorf("GetInitialLeaf(unknown) = %q, want ghost", got)
+	}
+}
+
+func TestValidationError_Error_EmptyAndMultiple(t *testing.T) {
+	t.Parallel()
+
+	empty := &ValidationError{}
+	if got := empty.Error(); got != "validation failed" {
+		t.Errorf("empty Error() = %q, want validation failed", got)
+	}
+
+	multi := &ValidationError{}
+	multi.AddIssue("A", "first")
+	multi.AddIssue("B", "second", "states", "x")
+	msg := multi.Error()
+	if !containsAll(msg, "validation failed with 2 issues", "1. [A] first", "2. [B] second (at states.x)") {
+		t.Errorf("multi Error() = %q, missing expected fragments", msg)
+	}
+}
+
+func TestValidate_ParallelRegionNotFound(t *testing.T) {
+	t.Parallel()
+	m := NewMachineConfig[struct{}]("p", "p", struct{}{})
+	p := NewStateConfig("p", StateTypeParallel)
+	p.Children = []StateID{"ghost"}
+	m.States["p"] = p
+
+	err := Validate(m)
+	if err == nil || !containsCode(err, ErrCodeInvalidChild) {
+		t.Errorf("expected INVALID_CHILD for missing region, got: %v", err)
+	}
+}
+
+func TestValidate_ParallelRegionWrongParent(t *testing.T) {
+	t.Parallel()
+	m := NewMachineConfig[struct{}]("p", "p", struct{}{})
+	p := NewStateConfig("p", StateTypeParallel)
+	p.Children = []StateID{"r"}
+	m.States["p"] = p
+	r := NewStateConfig("r", StateTypeCompound)
+	r.Parent = "other" // wrong parent
+	r.Initial = "leaf"
+	m.States["r"] = r
+	leaf := NewStateConfig("leaf", StateTypeAtomic)
+	leaf.Parent = "r"
+	m.States["leaf"] = leaf
+
+	err := Validate(m)
+	if err == nil || !containsCode(err, ErrCodeInvalidChild) {
+		t.Errorf("expected INVALID_CHILD for wrong region parent, got: %v", err)
+	}
+}
+
+func TestValidate_HistoryMissingDefault(t *testing.T) {
+	t.Parallel()
+	m := NewMachineConfig[struct{}]("h", "root", struct{}{})
+	root := NewStateConfig("root", StateTypeCompound)
+	root.Initial = "a"
+	root.Children = []StateID{"a", "h"}
+	m.States["root"] = root
+	a := NewStateConfig("a", StateTypeAtomic)
+	a.Parent = "root"
+	m.States["a"] = a
+	h := NewStateConfig("h", StateTypeHistory)
+	h.Parent = "root"
+	m.States["h"] = h
+
+	err := Validate(m)
+	if err == nil || !containsCode(err, ErrCodeHistoryMissingDefault) {
+		t.Errorf("expected HISTORY_MISSING_DEFAULT, got: %v", err)
+	}
+}
+
+func TestValidate_InternalTransitionTarget(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty target ok", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("i", "s", struct{}{})
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Transitions = []*TransitionConfig{{Event: "PING", Internal: true}}
+		m.States["s"] = s
+		if err := Validate(m); err != nil {
+			t.Errorf("expected valid internal with empty target, got: %v", err)
+		}
+	})
+
+	t.Run("self target ok", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("i", "s", struct{}{})
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Transitions = []*TransitionConfig{{Event: "PING", Target: "s", Internal: true}}
+		m.States["s"] = s
+		if err := Validate(m); err != nil {
+			t.Errorf("expected valid internal with self target, got: %v", err)
+		}
+	})
+
+	t.Run("foreign target rejected", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("i", "s", struct{}{})
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Transitions = []*TransitionConfig{{Event: "PING", Target: "other", Internal: true}}
+		m.States["s"] = s
+		m.States["other"] = NewStateConfig("other", StateTypeAtomic)
+		err := Validate(m)
+		if err == nil || !containsCode(err, ErrCodeInvalidTarget) {
+			t.Errorf("expected INVALID_TARGET for foreign internal target, got: %v", err)
+		}
+	})
+}
+
+func TestValidate_AlwaysTransitions(t *testing.T) {
+	t.Parallel()
+
+	t.Run("missing target", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("a", "s", struct{}{})
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Always = []*TransitionConfig{{}}
+		m.States["s"] = s
+		err := Validate(m)
+		if err == nil || !containsCode(err, ErrCodeAlwaysMissingTarget) {
+			t.Errorf("expected ALWAYS_MISSING_TARGET, got: %v", err)
+		}
+	})
+
+	t.Run("invalid target", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("a", "s", struct{}{})
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Always = []*TransitionConfig{{Target: "ghost"}}
+		m.States["s"] = s
+		err := Validate(m)
+		if err == nil || !containsCode(err, ErrCodeInvalidTarget) {
+			t.Errorf("expected INVALID_TARGET, got: %v", err)
+		}
+	})
+
+	t.Run("missing guard", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("a", "s", struct{}{})
+		m.States["done"] = NewStateConfig("done", StateTypeFinal)
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Always = []*TransitionConfig{{Target: "done", Guard: "nope"}}
+		m.States["s"] = s
+		err := Validate(m)
+		if err == nil || !containsCode(err, ErrCodeMissingGuard) {
+			t.Errorf("expected MISSING_GUARD, got: %v", err)
+		}
+	})
+
+	t.Run("missing action", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("a", "s", struct{}{})
+		m.States["done"] = NewStateConfig("done", StateTypeFinal)
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Always = []*TransitionConfig{{Target: "done", Actions: []ActionType{"nope"}}}
+		m.States["s"] = s
+		err := Validate(m)
+		if err == nil || !containsCode(err, ErrCodeMissingAction) {
+			t.Errorf("expected MISSING_ACTION, got: %v", err)
+		}
+	})
+
+	t.Run("valid always", func(t *testing.T) {
+		t.Parallel()
+		m := NewMachineConfig[struct{}]("a", "s", struct{}{})
+		m.Actions["log"] = func(_ *struct{}, _ Event) {}
+		m.Guards["ok"] = func(_ struct{}, _ Event) bool { return true }
+		m.States["done"] = NewStateConfig("done", StateTypeFinal)
+		s := NewStateConfig("s", StateTypeAtomic)
+		s.Always = []*TransitionConfig{{
+			Target:  "done",
+			Guard:   "ok",
+			Actions: []ActionType{"log"},
+		}}
+		m.States["s"] = s
+		if err := Validate(m); err != nil {
+			t.Errorf("expected valid always, got: %v", err)
+		}
+	})
+}
+
+func containsAll(s string, parts ...string) bool {
+	for _, p := range parts {
+		if !strings.Contains(s, p) {
+			return false
+		}
+	}
+	return true
 }

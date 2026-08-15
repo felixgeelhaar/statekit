@@ -64,7 +64,17 @@ func TestParseNativeJSONAcceptsEveryShapeTheExporterEmits(t *testing.T) {
 			name:  "on: internal transition with no target",
 			json:  `{"id":"m","initial":"a","states":{"a":{"on":{"PING":{"internal":true,"actions":["count"]}}}}}`,
 			state: "a",
-			want:  []VizTransition{{Event: "PING", Actions: []string{"count"}}},
+			want:  []VizTransition{{Event: "PING", Actions: []string{"count"}, Internal: true}},
+		},
+		{
+			// Native Always objects carry raise as a first-class field, not as
+			// an xstate.raise action descriptor. Parsing only the XState shape
+			// dropped the raise while keeping the transition.
+			name:   "always: native raise field",
+			json:   `{"id":"m","initial":"a","states":{"a":{"always":{"target":"b","raise":["OPENED"]}},"b":{}}}`,
+			state:  "a",
+			always: true,
+			want:   []VizTransition{{Target: "b", Raise: []string{"OPENED"}}},
 		},
 		{
 			// The regression lexora hit: one eventless transition collapses to

@@ -31,6 +31,8 @@ machine, _ := statekit.NewMachine[Order]("checkout").
 - You want compile-time errors on typos in state IDs and event types (use named constants for these).
 - You're embedding a small or medium-sized machine in a service.
 
+Terminator cheat sheet (`Done` / `End` / `EndState`): [Builder Terminators](./builder-terminators.md).
+
 ### 2. Reflection DSL
 
 Define the machine as a Go struct with field tags. The shape reads as data; the registry binds named actions and guards at runtime.

@@ -189,17 +189,26 @@ func parseTransitionEntry(event string, raw json.RawMessage) *VizTransition {
 	// raised events as xstate.raise descriptors alongside named actions.
 	// Typing it []string here did not drop the raise — it failed the
 	// unmarshal, and took the whole transition with it.
+	//
+	// Native JSON also carries raise/internal/isDelayed as first-class
+	// fields on VizTransition. Those must be read here too: Always and On
+	// go through this path as RawMessage, so a missing field silently
+	// drops the edge metadata while still returning a transition.
 	var obj struct {
-		Target   string `json:"target"`
-		Guard    string `json:"guard,omitempty"`
-		Actions  []json.RawMessage
-		Internal bool `json:"internal,omitempty"`
+		Target    string            `json:"target"`
+		Guard     string            `json:"guard,omitempty"`
+		Actions   []json.RawMessage `json:"actions,omitempty"`
+		Raise     []string          `json:"raise,omitempty"`
+		Internal  bool              `json:"internal,omitempty"`
+		IsDelayed bool              `json:"isDelayed,omitempty"`
+		DelayMs   int64             `json:"delayMs,omitempty"`
 	}
 	if err := json.Unmarshal(raw, &obj); err != nil {
 		return nil
 	}
 
-	actions, raise := splitActions(obj.Actions)
+	actions, raiseFromActions := splitActions(obj.Actions)
+	raise := append(append([]string(nil), obj.Raise...), raiseFromActions...)
 
 	// A transition with no target is internal — it runs actions and stays put.
 	// Dropping it loses the only thing it exists to do. Require some content,
@@ -209,11 +218,14 @@ func parseTransitionEntry(event string, raw json.RawMessage) *VizTransition {
 	}
 
 	return &VizTransition{
-		Event:   event,
-		Target:  obj.Target,
-		Guard:   obj.Guard,
-		Actions: actions,
-		Raise:   raise,
+		Event:     event,
+		Target:    obj.Target,
+		Guard:     obj.Guard,
+		Actions:   actions,
+		Raise:     raise,
+		Internal:  obj.Internal,
+		IsDelayed: obj.IsDelayed,
+		DelayMs:   obj.DelayMs,
 	}
 }
 

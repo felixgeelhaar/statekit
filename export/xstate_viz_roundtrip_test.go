@@ -101,3 +101,92 @@ func TestXStateExportParsesBack(t *testing.T) {
 		t.Errorf("the unguarded fallback to rejected was dropped; got %v", targets)
 	}
 }
+
+// Native JSON is what `statekit viz` consumes from ExportJSON. Cover every
+// transition shape the builder can emit so a future parser/exporter drift
+// fails here instead of drawing a silently incomplete diagram.
+func TestNativeExportParsesBack_AllTransitionShapes(t *testing.T) {
+	m, err := statekit.NewMachine[struct{}]("shapes").
+		WithInitial("gate").
+		WithAction("bump", func(_ *struct{}, _ statekit.Event) {}).
+		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
+		State("gate").
+		Tags("transient", "entry").
+		Always().Target("ready").Guard("ok").Raise("OPENED").End().
+		Done().
+		State("ready").
+		On("KNOWN").Target("done").Do("bump").End().
+		On("*").Target("done").End().
+		On("TICK").Internal().Do("bump").End().
+		After(5 * time.Second).Target("done").End().
+		Done().
+		State("done").Final().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	raw, err := export.NewNativeExporter(m).ExportJSON()
+	if err != nil {
+		t.Fatalf("ExportJSON: %v", err)
+	}
+
+	vm, err := viz.ParseNativeJSON([]byte(raw))
+	if err != nil {
+		t.Fatalf("ParseNativeJSON on native export: %v\n%s", err, raw)
+	}
+
+	gate := vm.States["gate"]
+	if gate == nil {
+		t.Fatal("gate missing")
+	}
+	if len(gate.Tags) != 2 || gate.Tags[0] != "transient" || gate.Tags[1] != "entry" {
+		t.Errorf("gate.Tags = %v, want [transient entry]", gate.Tags)
+	}
+	if len(gate.Always) != 1 {
+		t.Fatalf("gate.Always = %d, want 1", len(gate.Always))
+	}
+	if a := gate.Always[0]; a.Target != "ready" || a.Guard != "ok" ||
+		len(a.Raise) != 1 || a.Raise[0] != "OPENED" {
+		t.Errorf("always = %+v, want ready/ok/[OPENED]", a)
+	}
+
+	ready := vm.States["ready"]
+	if ready == nil {
+		t.Fatal("ready missing")
+	}
+
+	var (
+		sawKnown, sawWild, sawInternal, sawDelayed bool
+	)
+	for _, tr := range ready.Transitions {
+		switch {
+		case tr.Event == "KNOWN" && tr.Target == "done":
+			sawKnown = true
+			if len(tr.Actions) != 1 || tr.Actions[0] != "bump" {
+				t.Errorf("KNOWN actions = %v, want [bump]", tr.Actions)
+			}
+		case tr.Event == "*" && tr.Target == "done":
+			sawWild = true
+		case tr.Event == "TICK" && tr.Internal:
+			sawInternal = true
+			if tr.Target != "" {
+				t.Errorf("internal TICK should have empty target, got %q", tr.Target)
+			}
+		case tr.IsDelayed && tr.DelayMs == 5000 && tr.Target == "done":
+			sawDelayed = true
+		}
+	}
+	if !sawKnown {
+		t.Error("KNOWN transition missing after native round-trip")
+	}
+	if !sawWild {
+		t.Error("wildcard * transition missing after native round-trip")
+	}
+	if !sawInternal {
+		t.Error("internal TICK transition missing after native round-trip")
+	}
+	if !sawDelayed {
+		t.Error("delayed after transition missing after native round-trip")
+	}
+}

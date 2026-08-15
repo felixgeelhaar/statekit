@@ -17,6 +17,7 @@ Step-by-step paths from zero to a working machine.
 When you know what you want, here's how.
 
 - [Choosing an API](./choosing-an-api.md) — builder vs reflection DSL vs codegen
+- [Builder Terminators](./builder-terminators.md) — Done vs End vs EndState vs EndRegion
 - [Hierarchical States](./hierarchical-states.md) — nesting, event bubbling, exit/entry order
 - [Guards & Actions](./guards-actions.md) — conditional transitions and side effects
 - [Reflection DSL](./reflection-dsl.md) — define machines with struct tags
