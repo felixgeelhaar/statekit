@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-08-15
+
+### Added
+
+- **`TransitionBuilder.Up()` and `EndTo(parent)`** for nested builder unwind without
+  chaining `End().End()` — see `docs/how-to/builder-terminators.md`.
+- **Lint rules:** `actor-id-collision`, `guarded-event-without-fallback`, plus earlier
+  follow-ups already on main (`guarded-only-entry`, `auto-forward-loop`, and related).
+  Heuristic coverage for “guard fails → silent drop / unreachable” without full
+  expression analysis.
+- **Stripe webhook saga tutorial** and companion `examples/stripe_webhook` template
+  (idempotency, retry budget, outbox pattern).
+- **Fuzz tests** for Native JSON export and builder/interpreter Start/Send/Snapshot.
+- **README viz demo GIF** (`docs/public/viz-demo.gif`) above the fold.
+- **Visualizer JSON validator** checks for cyclic `initial` chains and
+  children↔parent consistency.
+
+### Changed
+
+- Docs reorganized toward Diataxis (`tutorials` / `how-to` / `explanation` /
+  `reference` / `project`).
+- README hero and feature list trimmed; Tier 2 called out as experimental with a
+  pointer to `docs/reference/stability.md`.
+- Examples prefer `defer interp.Close()` where the closer is available.
+
+### Fixed
+
+- Nox CI baseline refreshed for pinned scanner 1.27.0 (fingerprint drift / false
+  positives cleared).
+- Visualizer robustness already on main: initial-chain cycle guard, `roundRect`
+  Safari fallback, error boundary toasts, clipboard fallback.
+
 ## [1.13.3] - 2026-08-10
 
 ### Fixed
@@ -128,6 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Final states support
 - Traffic light example
 
+[1.14.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v1.14.0
 [1.9.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v1.9.0
 [0.2.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v0.2.0
 [0.1.0]: https://github.com/klarlabs-studio/statekit/releases/tag/v0.1.0
