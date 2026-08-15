@@ -20,6 +20,9 @@ scan:
     # SEC-163 high-entropy hex detectors whenever content hashes change.
     - "docs/dist/"
     - "docs/dist/**"
+    # Vendored minified UI assets (same SEC-163 class as docs/dist).
+    - "mcp/ui/vendor/"
+    - "mcp/ui/vendor/**"
     # Generated coverage badge.
     - "assets/coverage-badge.svg"
     # Grafana dashboard JSON contains Prometheus query expressions that
