@@ -138,7 +138,7 @@ func TestInvoke_OnDoneTransition(t *testing.T) {
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
 
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "success" })
+	waitUntil(t, func() bool { return interp.State().Value == "success" })
 
 	state := interp.State()
 	if state.Value != "success" {
@@ -174,7 +174,7 @@ func TestInvoke_OnErrorTransition(t *testing.T) {
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
 
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "failure" })
+	waitUntil(t, func() bool { return interp.State().Value == "failure" })
 
 	state := interp.State()
 	if state.Value != "failure" {
@@ -212,7 +212,7 @@ func TestInvoke_OnDoneAction(t *testing.T) {
 	interp.Start()
 
 	// Wait for service to complete
-	waitUntil(t, time.Second, func() bool { return interp.State().Context.ActionExecuted })
+	waitUntil(t, func() bool { return interp.State().Context.ActionExecuted })
 
 	state := interp.State()
 	if !state.Context.ActionExecuted {
@@ -255,7 +255,7 @@ func TestInvoke_ServiceSendsEvents(t *testing.T) {
 	interp.Start()
 
 	// Wait for event to be processed
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "processing" })
+	waitUntil(t, func() bool { return interp.State().Value == "processing" })
 
 	state := interp.State()
 	if state.Value != "processing" {
@@ -349,7 +349,7 @@ func TestInvoke_StopCancelsAllServices(t *testing.T) {
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
 
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		return len(started) == 2
 	})
 

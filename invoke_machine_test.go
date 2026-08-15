@@ -8,8 +8,9 @@ import (
 	"go.klarlabs.de/statekit/internal/ir"
 )
 
-func waitUntil(t *testing.T, timeout time.Duration, cond func() bool) {
+func waitUntil(t *testing.T, cond func() bool) {
 	t.Helper()
+	const timeout = time.Second
 	deadline := time.Now().Add(timeout)
 	for time.Now().Before(deadline) {
 		if cond() {
@@ -133,7 +134,7 @@ func TestInvokeMachine_OnDone(t *testing.T) {
 	interp.Start()
 
 	// Should start in processing and child should be running
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		return childInterp != nil && string(childInterp.State().Value) == "working"
 	})
 
@@ -147,7 +148,7 @@ func TestInvokeMachine_OnDone(t *testing.T) {
 	}
 
 	// Wait for OnDone transition
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "completed" })
+	waitUntil(t, func() bool { return interp.State().Value == "completed" })
 
 	// Parent should have transitioned to completed
 	if interp.State().Value != "completed" {
@@ -196,12 +197,12 @@ func TestInvokeMachine_StopOnParentExit(t *testing.T) {
 	interp.Start()
 
 	// Give child time to start
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "processing" })
+	waitUntil(t, func() bool { return interp.State().Value == "processing" })
 
 	// Exit the processing state - this should stop the child
 	interp.Send(statekit.Event{Type: "CANCEL"})
 
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "cancelled" })
+	waitUntil(t, func() bool { return interp.State().Value == "cancelled" })
 
 	// Child should have been stopped (exit action called)
 	// Note: We can't directly verify the child was stopped, but we verify
@@ -308,7 +309,7 @@ func TestInvokeMachine_MultipleInvocations(t *testing.T) {
 	// Stop should clean up both children
 	interp.Send(statekit.Event{Type: "STOP"})
 
-	waitUntil(t, time.Second, func() bool { return interp.State().Value == "stopped" })
+	waitUntil(t, func() bool { return interp.State().Value == "stopped" })
 
 	if interp.State().Value != "stopped" {
 		t.Errorf("expected stopped, got %s", interp.State().Value)

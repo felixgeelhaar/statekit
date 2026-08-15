@@ -241,14 +241,14 @@ func TestStateScopedLifecycle(t *testing.T) {
 	parentInterp = NewInterpreter(machine)
 	parentInterp.Start()
 
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		return parentInterp.GetActor(spawnedActorID) != nil
 	})
 
 	// Transition to other state - actor should be stopped
 	parentInterp.Send(Event{Type: "NEXT"})
 
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		return parentInterp.GetActor(spawnedActorID) == nil
 	})
 
@@ -288,7 +288,7 @@ func TestAutoForward(t *testing.T) {
 	parent.Send(Event{Type: "FORWARD_ME"})
 	parent.Send(Event{Type: "DONT_FORWARD"})
 
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		mu.Lock()
 		defer mu.Unlock()
 		for _, et := range receivedEvents {
@@ -434,7 +434,7 @@ func TestActorDone_NotifiesParent(t *testing.T) {
 	// Complete the child
 	_ = ref.Send(Event{Type: "COMPLETE"})
 
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		return parent.State().Value == "completed"
 	})
 

@@ -621,7 +621,7 @@ func TestSnapshotByTime(t *testing.T) {
 	_, _ = pi.Commit(ctx)
 
 	// Poll until the time-based strategy will snapshot on the next commit
-	waitUntil(t, time.Second, func() bool {
+	waitUntil(t, func() bool {
 		pi.Send(Event{Type: "TICK"})
 		_, _ = pi.Commit(ctx)
 		snap, _, _ := snapshotStore.LoadSnapshot(ctx, "stream-1", 100)
