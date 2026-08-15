@@ -24,6 +24,8 @@ interp.Send(statekit.Event{Type: "CHECKOUT"})
 
 A working machine in 10 lines. Hierarchy and parallel states scale from there. `statekit viz` renders any machine to ASCII, Mermaid, an interactive HTML simulator, or a TUI:
 
+![statekit viz — checkout machine stepping cart → processing → shipped](./docs/public/viz-demo.gif)
+
 ```text
 ┌─────────┐  CHECKOUT   ┌────────────┐  PAID   ┌─────────┐
 │  cart   │ ──────────► │ processing │ ──────► │ shipped │

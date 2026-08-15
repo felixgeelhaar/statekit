@@ -1,7 +1,7 @@
 
 ## Reposition README — kill "execution engine," lead with concrete pain
 
-**Done (v1-safe):** README hero rewritten around concrete workflow pain; Why/feature list trimmed; Tier 2 demoted; XState framed as optional export. Viz GIF still outstanding (needs a real asset).
+**Done (v1-safe):** README hero rewritten around concrete workflow pain; Why/feature list trimmed; Tier 2 demoted; XState framed as optional export. Viz GIF added (`docs/public/viz-demo.gif`).
 
 Rewrite README hero. Drop "Go-native statechart execution engine" abstract framing. Lead with concrete pain: stop modeling order/payment/incident lifecycles with switch statements + bug-prone enum FSMs. Add 30-sec viz GIF above the fold. Trim 16-bullet feature list (Fitts/Miller violation) — lead with "type-safe statecharts in 10 lines." Demote distributed/event-sourcing/actor sections to "advanced." Source: GTM + Product + UX reviews — top consensus action.
 
@@ -49,7 +49,7 @@ internal/ir at 66.9% — foundation package (validation, hierarchy LCA, transiti
 
 ## Extend lint package with production-hazard rules
 
-**Done:** invoke-missing-onerror, invoke-id-collision, auto-forward-redundancy, deep-nesting, history-without-siblings, guarded-only-entry, auto-forward-loop, actor-id-collision.
+**Done:** invoke-missing-onerror, invoke-id-collision, auto-forward-redundancy, deep-nesting, history-without-siblings, guarded-only-entry, guarded-event-without-fallback, auto-forward-loop, actor-id-collision. Full always-false guard expression analysis deferred (heuristic coverage via guarded-only-entry + guarded-event-without-fallback).
 
 Current 7 rules solid but miss production bugs: (1) missing-OnError-on-Invoke (silent failure path), (2) history-without-children (no-op), (3) actor-id-collision, (4) auto-forward-loop (parent-child event ping-pong), (5) unreachable-via-guard (always-false guard combos), (6) delayed-transition-shorter-than-action-duration warning. Lint is user-facing quality multiplier — biggest leverage. Source: Quality review.
 
@@ -103,7 +103,7 @@ Direct rivals = incumbent Go FSM libs. Migration guide = direct conversion path 
 
 ## DX polish — defer interp.Stop() pattern, fuzz tests, naming fixes
 
-**Done (partial):** `Interpreter.Close()` + README/`defer interp.Close()` in examples; InvokeMachine/InvokeService aliases; export Native JSON fuzz. Breaking Done→EndMachine rename deferred (v1).
+**Done (partial):** `Interpreter.Close()` + README/`defer interp.Close()` in examples; InvokeMachine/InvokeService aliases; export Native JSON fuzz; builder/interpreter fuzz (`fuzz_test.go`). Breaking Done→EndMachine rename deferred (v1).
 
 Misc DX/quality cleanups: (1) Make interpreter implement io.Closer; document defer interp.Stop() in every example for muscle memory (timer cleanup buried in README:132 today). (2) Rename Done() returning *MachineBuilder from nested state to EndMachine() — silently teleports caller out of nested context (builder.go:329-333). (3) Rename InvokeBuilder/MachineInvokeBuilder to InvokeService/InvokeMachine for self-documenting (builder.go:46,57). (4) Add fuzz tests for builder, event payload, JSON exporter (only 1 fuzz file today in internal/parser). Source: UX + Quality reviews.
 
@@ -125,7 +125,7 @@ Followup to goleak task. Add Clock interface (jonboulle/clockwork or own) inject
 
 ## Lint rules followup — auto-forward-loop, actor-id-collision, unreachable-via-guard
 
-**Done (partial):** `auto-forward-loop`, `actor-id-collision` (MachineInvocation IDs reused across states). `unreachable-via-guard` still needs expression analysis.
+**Done:** `auto-forward-loop`, `actor-id-collision`, `guarded-only-entry` (inbound), `guarded-event-without-fallback` (outbound). Full expression-level always-false analysis still deferred.
 
 Followup batch from lint extension. (1) auto-forward-loop — parent auto-forwards event X to child; child sends event X to parent (SendParent); detect ping-pong. (2) actor-id-collision — multiple Spawn calls reuse same ActorID across states. (3) unreachable-via-guard — guard combos that are always-false (requires expression analysis or explicit annotation). (4) delayed-transition-shorter-than-action-duration — declarative annotation needed. Source: Quality review.
 
@@ -236,6 +236,8 @@ Frontend review: index.astro:13-19 boots Vue manually via createApp in inline sc
 ---
 
 ## Visualizer robustness — infinite-loop guard + roundRect fallback + error boundary
+
+**Done:** cycle detection in `useSimulation`; `roundRectCompat` in StateCanvas; `onErrorCaptured` + toasts; clipboard try/catch + execCommand fallback; json-validator cyclic `initial` + children↔parent consistency (+ Vitest).
 
 Frontend review: (1) Visualizer.vue:280-282 + :313-315 use `while (states[currentState].initial)` — infinite loop if initial chain cycles. Add cycle detection. (2) StateCanvas.vue:209 ctx.roundRect not in older Safari (<16) — silent throw breaks render. Add fillRect fallback or Path2D polyfill. (3) No app.config.errorHandler — Vue throws yield blank page. Add global error handler that surfaces to toast + console. (4) MachineJson.vue:43 navigator.clipboard.writeText unhandled rejection in older browsers / insecure context. Add try/catch with fallback. (5) json-validator.ts doesn't validate cyclic initial chains or that children[] matches actual parent refs. Source: Frontend review.
 

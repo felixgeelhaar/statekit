@@ -175,6 +175,7 @@ func CheckTyped[C any](l *Linter, machine *ir.MachineConfig[C]) *Result {
 	checkDeepNesting(l, machine, result)
 	checkHistoryWithoutSiblings(l, machine, result)
 	checkGuardedOnlyEntry(l, machine, result)
+	checkGuardedEventWithoutFallback(l, machine, result)
 	checkAutoForwardLoop(l, machine, result)
 
 	// Sort diagnostics by severity, then state
@@ -735,6 +736,48 @@ func checkGuardedOnlyEntry[C any](l *Linter, machine *ir.MachineConfig[C], resul
 	}
 }
 
+// checkGuardedEventWithoutFallback warns when every transition for an event
+// in a state carries a guard and none is an unguarded fallback. If all guards
+// fail at runtime the event is silently dropped — the outbound complement of
+// guarded-only-entry (which covers inbound reachability).
+func checkGuardedEventWithoutFallback[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules[RuleGuardedEventWithoutFallback] {
+		return
+	}
+
+	for id, state := range machine.States {
+		byEvent := make(map[statekit.EventType][]*ir.TransitionConfig)
+		for _, t := range state.Transitions {
+			if t.Event == "" {
+				continue // always / eventless handled elsewhere
+			}
+			byEvent[t.Event] = append(byEvent[t.Event], t)
+		}
+		for event, transitions := range byEvent {
+			if len(transitions) == 0 {
+				continue
+			}
+			allGuarded := true
+			for _, t := range transitions {
+				if t.Guard == "" {
+					allGuarded = false
+					break
+				}
+			}
+			if !allGuarded {
+				continue
+			}
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{
+				Severity: SeverityWarning,
+				Rule:     RuleGuardedEventWithoutFallback,
+				State:    id,
+				Event:    event,
+				Message:  fmt.Sprintf("event %q in state %q has only guarded transitions — if every guard fails the event is dropped", event, id),
+			})
+		}
+	}
+}
+
 // checkAutoForwardLoop warns when a state both auto-forwards an event to a
 // child machine and raises that same event from a transition on the state.
 // The child completing work by sending the event back to the parent (or the
@@ -786,21 +829,22 @@ func checkAutoForwardLoop[C any](l *Linter, machine *ir.MachineConfig[C], result
 
 // Rule names for reference
 const (
-	RuleUnreachable            = "unreachable"
-	RuleDeadEnd                = "dead-end"
-	RuleNonDeterminism         = "non-determinism"
-	RuleCompoundInitial        = "compound-initial"
-	RuleSelfTransition         = "self-transition"
-	RuleUnusedAction           = "unused-action"
-	RuleUnusedGuard            = "unused-guard"
-	RuleInvokeMissingOnError   = "invoke-missing-onerror"
-	RuleInvokeIDCollision      = "invoke-id-collision"
-	RuleAutoForwardRedundancy  = "auto-forward-redundancy"
-	RuleDeepNesting            = "deep-nesting"
-	RuleHistoryWithoutSiblings = "history-without-siblings"
-	RuleGuardedOnlyEntry       = "guarded-only-entry"
-	RuleAutoForwardLoop        = "auto-forward-loop"
-	RuleActorIDCollision       = "actor-id-collision"
+	RuleUnreachable                 = "unreachable"
+	RuleDeadEnd                     = "dead-end"
+	RuleNonDeterminism              = "non-determinism"
+	RuleCompoundInitial             = "compound-initial"
+	RuleSelfTransition              = "self-transition"
+	RuleUnusedAction                = "unused-action"
+	RuleUnusedGuard                 = "unused-guard"
+	RuleInvokeMissingOnError        = "invoke-missing-onerror"
+	RuleInvokeIDCollision           = "invoke-id-collision"
+	RuleAutoForwardRedundancy       = "auto-forward-redundancy"
+	RuleDeepNesting                 = "deep-nesting"
+	RuleHistoryWithoutSiblings      = "history-without-siblings"
+	RuleGuardedOnlyEntry            = "guarded-only-entry"
+	RuleGuardedEventWithoutFallback = "guarded-event-without-fallback"
+	RuleAutoForwardLoop             = "auto-forward-loop"
+	RuleActorIDCollision            = "actor-id-collision"
 )
 
 // AllRules returns all available rule names.
@@ -819,6 +863,7 @@ func AllRules() []string {
 		RuleDeepNesting,
 		RuleHistoryWithoutSiblings,
 		RuleGuardedOnlyEntry,
+		RuleGuardedEventWithoutFallback,
 		RuleAutoForwardLoop,
 		RuleActorIDCollision,
 	}

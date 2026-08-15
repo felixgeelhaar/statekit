@@ -648,6 +648,7 @@ func TestLint_AllRulesIncludesNew(t *testing.T) {
 		lint.RuleInvokeIDCollision,
 		lint.RuleHistoryWithoutSiblings,
 		lint.RuleGuardedOnlyEntry,
+		lint.RuleGuardedEventWithoutFallback,
 		lint.RuleAutoForwardLoop,
 		lint.RuleActorIDCollision,
 	}
@@ -847,6 +848,60 @@ func TestLint_GuardedOnlyEntry_UnguardedInboundOK(t *testing.T) {
 	for _, d := range result.Diagnostics {
 		if d.Rule == lint.RuleGuardedOnlyEntry {
 			t.Fatalf("unexpected guarded-only-entry: %v", d)
+		}
+	}
+}
+
+func TestLint_GuardedEventWithoutFallback(t *testing.T) {
+	t.Parallel()
+	machine, err := statekit.NewMachine[struct{}]("gated-event").
+		WithInitial("idle").
+		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
+		WithGuard("also", func(_ struct{}, _ statekit.Event) bool { return false }).
+		State("idle").
+		On("GO").Target("a").Guard("ok").End().
+		On("GO").Target("b").Guard("also").End().
+		Done().
+		State("a").On("BACK").Target("idle").End().Done().
+		State("b").On("BACK").Target("idle").End().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleGuardedEventWithoutFallback && d.State == "idle" && d.Event == "GO" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected guarded-event-without-fallback for idle/GO, got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_GuardedEventWithoutFallback_WithUnguardedOK(t *testing.T) {
+	t.Parallel()
+	machine, err := statekit.NewMachine[struct{}]("fallback").
+		WithInitial("idle").
+		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
+		State("idle").
+		On("GO").Target("a").Guard("ok").End().
+		On("GO").Target("b").End(). // unguarded fallback
+		Done().
+		State("a").On("BACK").Target("idle").End().Done().
+		State("b").On("BACK").Target("idle").End().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleGuardedEventWithoutFallback {
+			t.Fatalf("unexpected guarded-event-without-fallback: %v", d)
 		}
 	}
 }
