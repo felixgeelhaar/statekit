@@ -2,140 +2,128 @@
   "schema_version": "1.0.0",
   "entries": [
     {
-      "fingerprint": "298e486e28eb85310c171d94ecd195f1e4ee3602037b7c64f94313765195dd7b",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
-      "severity": "medium",
-      "reason": "False positive: Go fuzz corpus / seed plumbing, not an LLM seed",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
-    },
-    {
-      "fingerprint": "6d283573ea0dfa4b2f403b131da6f8d52cb46dc492be716df3e9d043aae39675",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
-      "severity": "medium",
-      "reason": "False positive: Go fuzz corpus / seed plumbing, not an LLM seed",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
-    },
-    {
-      "fingerprint": "146262a4300305254cddebfce1d2f8e08473c74452aa673119550bbf436d8d39",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
-      "severity": "medium",
-      "reason": "False positive: Go fuzz corpus / seed plumbing, not an LLM seed",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
-    },
-    {
-      "fingerprint": "13fcced20490c6f44108511cd6b8c8ec24fdc845045864ccdd4ce55214cde374",
-      "rule_id": "AI-028",
-      "file_path": "viz/fuzz_test.go",
-      "severity": "medium",
-      "reason": "False positive: Go fuzz corpus / seed plumbing, not an LLM seed",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
-    },
-    {
-      "fingerprint": "8350b50e1c155a355f6aad272c7fbc887bba3c9ab6cf5b2f5aa2d42bf8eb36f4",
+      "fingerprint": "6e0b4010f001855e353cec079d9ed971c8a4733797e5691ee8e7607e19205bfd",
       "rule_id": "DATA-001",
       "file_path": "examples/form_wizard/main.go",
       "severity": "medium",
       "reason": "False positive: Example email in form_wizard example code",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "created_at": "2026-03-25T06:39:23.020218Z"
     },
     {
-      "fingerprint": "fdbff9ae219374de021b4b26478adc3865b3df57b335fcc1d2e487c4ae186d53",
+      "fingerprint": "af16bac9211419c767e99f2eec848cd7974222db6c284f6f32582b288b993e3b",
       "rule_id": "DATA-001",
       "file_path": "examples/form_wizard/main_test.go",
       "severity": "medium",
       "reason": "False positive: Example email in form_wizard test",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "created_at": "2026-03-25T06:39:26.068251Z"
     },
     {
-      "fingerprint": "bad9361eeb8f840577f51a78a2710eb703ec7aef98ee347180e7139f791f51a5",
-      "rule_id": "DATA-001",
-      "file_path": "examples/form_wizard/main_test.go",
-      "severity": "medium",
-      "reason": "False positive: Example email in form_wizard test",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
-    },
-    {
-      "fingerprint": "b4ab0b02b05a7bd4d6392b67ca43ae73d3c632880892ee224815baaf2cbb7fc8",
+      "fingerprint": "dc45d25482380cc1fb81931598cc9eb041de0bd2d5867290ce8b415c2415ff81",
       "rule_id": "DATA-001",
       "file_path": "examples/incident_lifecycle/main.go",
       "severity": "medium",
       "reason": "False positive: Example email in incident_lifecycle example code",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "created_at": "2026-03-25T06:39:32.867304Z"
     },
     {
-      "fingerprint": "4af846f226f11f4e5985868cf25cbd7b1396cd4309b2021d897172a4699e2182",
+      "fingerprint": "18f98136e2310934aa82cf9053639e75d4bbdfc44983136ff0cea81b5d422808",
       "rule_id": "DATA-001",
       "file_path": "examples/incident_lifecycle/main_test.go",
       "severity": "medium",
       "reason": "False positive: Example email in incident_lifecycle test",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "created_at": "2026-03-25T06:39:45.865869Z"
     },
     {
-      "fingerprint": "71d669e56a2d75ec0556ce6e8f14f9c11a0d1f43a64317d013a3bc7c6b20af4f",
-      "rule_id": "DATA-001",
-      "file_path": "examples/incident_lifecycle/main_test.go",
-      "severity": "medium",
-      "reason": "False positive: Example email in incident_lifecycle test",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
-    },
-    {
-      "fingerprint": "298e02648e8b41d1e2a84bf46c4a34978017a824229f405c79a25fd2f793936d",
+      "fingerprint": "cc94d1fdd513f61d7fdd535b3af64e62287d57f9fa32b935d876c24f2aa39066",
       "rule_id": "SEC-161",
       "file_path": "performance_bench_test.go",
       "severity": "medium",
-      "reason": "False positive: High-entropy alphabet string in performance benchmark, not a secret",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "reason": "False positive: High-entropy test string in performance benchmark, not a secret",
+      "created_at": "2026-03-25T06:39:49.789535Z"
     },
     {
-      "fingerprint": "f5c53d00d98cf809e1bb8c3c74c9d07746f873a302072eb2e3d4508b9e1d16a5",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: SEC-574 matches long CamelCase identifiers (findMatchingTransitionHierarchical), not Wise API keys",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "fingerprint": "86d98e85041472dd36966858cb710e14e8e674816fbfe8c199df32808f9ab720",
+      "rule_id": "SEC-163",
+      "file_path": "docs/dist/_astro/runtime-dom.esm-bundler.WwE3ir1L.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "dfa0f5f7a2329f49a6bc176e8bf3b32ab1ad54d54430936f75d77867ccb4f9cc",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: SEC-574 matches long CamelCase identifiers (findMatchingTransitionHierarchical), not Wise API keys",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "fingerprint": "ecd4809780d58d7fd3dbfc04272730a314cd7c56ca01005892a65decac197f90",
+      "rule_id": "SEC-163",
+      "file_path": "docs/dist/_astro/runtime-dom.esm-bundler.WwE3ir1L.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "1f1be299908df731b97419987b6d499bcf7c00aa731b90e595fa77b9d83fe481",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: SEC-574 matches long CamelCase identifiers (findMatchingTransitionHierarchical), not Wise API keys",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "fingerprint": "b887e883ca06af47a8e3adb4bf3e145b3734f7d21efa0f0c8af5c75ca61a269e",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "de23fb469404817e0b31abf1877a8b78fccbba2c23a2da0efdf16c9dd98f98a8",
-      "rule_id": "SEC-574",
-      "file_path": "interpreter.go",
-      "severity": "high",
-      "reason": "False positive: SEC-574 matches long CamelCase identifiers (findMatchingTransitionHierarchical), not Wise API keys",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "fingerprint": "069118dd204d2f94557552765fec67b6746be0002109897392184cdf170ab4fb",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "ad370a4daaebbc9bd6f8b232e01931a65fa8706e722519a4e94ca80ea5610c0f",
-      "rule_id": "SEC-574",
-      "file_path": "viz/parser_exporter_roundtrip_test.go",
-      "severity": "high",
-      "reason": "False positive: SEC-574 matches long CamelCase test names, not Wise API keys",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "fingerprint": "2f6c05198b92da02f042e04e1e3c40685f4c4721995b7674c4652fd757f631f1",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     },
     {
-      "fingerprint": "63ad2d73aeaf3251ef98adb33e7c4456ab35ff8335da3608e4966bb40b8a1faf",
-      "rule_id": "SEC-574",
-      "file_path": "viz/parser_exporter_roundtrip_test.go",
-      "severity": "high",
-      "reason": "False positive: SEC-574 matches long CamelCase test names, not Wise API keys",
-      "created_at": "2026-08-15T16:22:15.039021501Z"
+      "fingerprint": "6f08532422b579402de48b6414faf6d013988c2ee83cb971abf1969581cb0d34",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "4ce386260c83b16c5979bff39eeebb3a42ea56b2cbb65ee6a15e913ba7b42931",
+      "rule_id": "SEC-163",
+      "file_path": "mcp/ui/vendor/vue.global.prod.js",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "11fd06f0fd53084c7f45ddd9c52a8a72452fb839c6f9a901a4a5b94ced4924b0",
+      "rule_id": "SLOP-001",
+      "file_path": "mcp/ui/vendor/cytoscape-dagre.min.js",
+      "severity": "low",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "3d2a14ef900a1644910828e7fb61b869332a7520974a87850b1d0ab6dbfb13ff",
+      "rule_id": "SLOP-001",
+      "file_path": "mcp/ui/vendor/dagre.min.js",
+      "severity": "low",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "6cc7abd97eec6c3b4b843ced6df1aae83d738c652df43d8b1e4edcff7f4cbe74",
+      "rule_id": "SLOP-001",
+      "file_path": "mcp/ui/vendor/dagre.min.js",
+      "severity": "low",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "f7577b93acc677b98c052d2000ab5e42cd83fa3c009daa7d6c9ad6c188c25142",
+      "rule_id": "VULN-001",
+      "file_path": "docs/package-lock.json",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
+    },
+    {
+      "fingerprint": "ae70366bfebc8b6cdcbd748666b5a9eabc853c7c13478cea81c18dcfe805ed15",
+      "rule_id": "VULN-002",
+      "file_path": "docs/package-lock.json",
+      "severity": "medium",
+      "created_at": "2026-07-06T11:04:41.52895Z"
     }
   ]
 }
