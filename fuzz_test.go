@@ -39,7 +39,7 @@ func FuzzBuilderAndInterpreter(f *testing.F) {
 		}
 
 		interp := statekit.NewInterpreter(machine)
-		defer interp.Close()
+		defer func() { _ = interp.Close() }()
 		interp.Start()
 
 		for i := 0; i < 8; i++ {
