@@ -6,7 +6,7 @@
 [![Security: A](https://raw.githubusercontent.com/klarlabs-studio/statekit/main/.nox/security-badge.svg)](https://github.com/klarlabs-studio/statekit/security)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Stop modeling order, payment, and incident lifecycles with switch statements and ad-hoc FSMs.** Statekit is a typed statechart library for Go: hierarchical states, guards, actions, delayed and parallel transitions, with built-in visualization and lint.
+**Stop modeling order, payment, and incident lifecycles with `switch` and ad-hoc FSMs.** Statekit is a typed statechart library for Go — hierarchical states, guards, actions, delayed and parallel transitions — with built-in visualization and lint. One library, one mental model, still v1.x stable on the core API.
 
 ```go
 machine, _ := statekit.NewMachine[Order]("checkout").
@@ -22,7 +22,13 @@ interp.Start()
 interp.Send(statekit.Event{Type: "CHECKOUT"})
 ```
 
-A working machine in 10 lines. Hierarchy and parallel states scale from there. `statekit viz` renders any machine to ASCII, Mermaid, an interactive HTML simulator, or a TUI.
+A working machine in 10 lines. Hierarchy and parallel states scale from there. `statekit viz` renders any machine to ASCII, Mermaid, an interactive HTML simulator, or a TUI:
+
+```text
+┌─────────┐  CHECKOUT   ┌────────────┐  PAID   ┌─────────┐
+│  cart   │ ──────────► │ processing │ ──────► │ shipped │
+└─────────┘             └────────────┘         └─────────┘
+```
 
 ## Two jobs
 
@@ -235,16 +241,14 @@ State("cart").On("CHECKOUT").Target("paid").Done().
 State("paid").Final().Done().
 ```
 
-**Nested** — children closed with `End()`, one call per level, the top-level
-parent with `Done()`:
+**Nested** — prefer `Up()` after a transition on a child (≡ `End().End()`), then
+`Done()` on the top-level parent. Use `EndTo("ancestor")` to unwind deep nesting:
 
 ```go
 State("editing").
     WithInitial("idle").
-    State("idle").On("TYPE").Target("dirty").End().End().
-    //                                       │      └─ back to "editing"
-    //                                       └─ back to "idle"
-    State("dirty").On("CLEAR").Target("idle").End().End().
+    State("idle").On("TYPE").Target("dirty").Up().
+    State("dirty").On("CLEAR").Target("idle").Up().
 Done().
 ```
 

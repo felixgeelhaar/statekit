@@ -187,11 +187,16 @@ func TestDistributedInterpreter_LockExpiry(t *testing.T) {
 	// Stop renewal early
 	di1.renewStop()
 
-	// Wait for lock to expire
-	time.Sleep(150 * time.Millisecond)
-
-	// Second node should now be able to acquire
-	di2, err := NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
+	// Poll until the lock TTL expires and another node can acquire.
+	deadline := time.Now().Add(time.Second)
+	var di2 *DistributedInterpreter[struct{}]
+	for time.Now().Before(deadline) {
+		di2, err = NewDistributedInterpreter(ctx, "stream-1", machine, eventStore, streamLock)
+		if err == nil {
+			break
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
 	if err != nil {
 		t.Fatalf("expected success after expiry, got %v", err)
 	}

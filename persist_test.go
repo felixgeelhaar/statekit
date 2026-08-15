@@ -620,18 +620,13 @@ func TestSnapshotByTime(t *testing.T) {
 	pi.Send(Event{Type: "TICK"})
 	_, _ = pi.Commit(ctx)
 
-	// Wait for time to elapse
-	time.Sleep(15 * time.Millisecond)
-
-	// Second event should trigger snapshot
-	pi.Send(Event{Type: "TICK"})
-	_, _ = pi.Commit(ctx)
-
-	// Check snapshot exists
-	snap, _, _ := snapshotStore.LoadSnapshot(ctx, "stream-1", 100)
-	if snap == nil {
-		t.Error("expected snapshot after time interval")
-	}
+	// Poll until the time-based strategy will snapshot on the next commit
+	waitUntil(t, time.Second, func() bool {
+		pi.Send(Event{Type: "TICK"})
+		_, _ = pi.Commit(ctx)
+		snap, _, _ := snapshotStore.LoadSnapshot(ctx, "stream-1", 100)
+		return snap != nil
+	})
 
 	pi.Stop()
 }

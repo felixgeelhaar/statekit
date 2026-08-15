@@ -138,8 +138,7 @@ func TestInvoke_OnDoneTransition(t *testing.T) {
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
 
-	// Wait for service to complete and transition
-	time.Sleep(100 * time.Millisecond)
+	waitUntil(t, time.Second, func() bool { return interp.State().Value == "success" })
 
 	state := interp.State()
 	if state.Value != "success" {
@@ -175,8 +174,7 @@ func TestInvoke_OnErrorTransition(t *testing.T) {
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
 
-	// Wait for service to fail and transition
-	time.Sleep(100 * time.Millisecond)
+	waitUntil(t, time.Second, func() bool { return interp.State().Value == "failure" })
 
 	state := interp.State()
 	if state.Value != "failure" {
@@ -214,7 +212,7 @@ func TestInvoke_OnDoneAction(t *testing.T) {
 	interp.Start()
 
 	// Wait for service to complete
-	time.Sleep(100 * time.Millisecond)
+	waitUntil(t, time.Second, func() bool { return interp.State().Context.ActionExecuted })
 
 	state := interp.State()
 	if !state.Context.ActionExecuted {
@@ -257,7 +255,7 @@ func TestInvoke_ServiceSendsEvents(t *testing.T) {
 	interp.Start()
 
 	// Wait for event to be processed
-	time.Sleep(100 * time.Millisecond)
+	waitUntil(t, time.Second, func() bool { return interp.State().Value == "processing" })
 
 	state := interp.State()
 	if state.Value != "processing" {
@@ -322,15 +320,18 @@ func TestInvoke_StopCancelsAllServices(t *testing.T) {
 	t.Parallel()
 	var cancelled sync.WaitGroup
 	cancelled.Add(2)
+	started := make(chan struct{}, 2)
 
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("loading").
 		WithService("service1", func(ctx ir.ServiceContext[struct{}]) error {
+			started <- struct{}{}
 			<-ctx.Context.(context.Context).Done()
 			cancelled.Done()
 			return nil
 		}).
 		WithService("service2", func(ctx ir.ServiceContext[struct{}]) error {
+			started <- struct{}{}
 			<-ctx.Context.(context.Context).Done()
 			cancelled.Done()
 			return nil
@@ -348,8 +349,9 @@ func TestInvoke_StopCancelsAllServices(t *testing.T) {
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
 
-	// Give services time to start
-	time.Sleep(50 * time.Millisecond)
+	waitUntil(t, time.Second, func() bool {
+		return len(started) == 2
+	})
 
 	// Stop should cancel all services
 	interp.Stop()
@@ -459,11 +461,12 @@ func TestInvoke_DoesNotTransitionIfStateChanged(t *testing.T) {
 	// Now let the service complete
 	close(serviceCanComplete)
 
-	// Give time for any potential transition
-	time.Sleep(100 * time.Millisecond)
-
-	// Should still be in cancelled state, not success
-	if interp.State().Value != "cancelled" {
-		t.Errorf("Expected state 'cancelled' after service complete, got '%s'", interp.State().Value)
+	// Service completion must not move us out of cancelled — poll briefly.
+	deadline := time.Now().Add(50 * time.Millisecond)
+	for time.Now().Before(deadline) {
+		if interp.State().Value != "cancelled" {
+			t.Fatalf("Expected state 'cancelled' after service complete, got '%s'", interp.State().Value)
+		}
+		time.Sleep(time.Millisecond)
 	}
 }

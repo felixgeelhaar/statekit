@@ -352,7 +352,7 @@ func (i *Interpreter[C]) restoreTimers(pending []PendingTimer) {
 			duration = time.Millisecond
 		}
 
-		timer := time.AfterFunc(duration, func() {
+		timer := i.clock.AfterFunc(duration, func() {
 			i.mu.Lock()
 			defer i.mu.Unlock()
 
