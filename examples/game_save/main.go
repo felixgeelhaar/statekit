@@ -68,12 +68,13 @@ func main() {
 	fmt.Printf("Saved game state:\n%s\n", saveData)
 
 	// Simulate closing the game
-	interp.Stop()
+	_ = interp.Close()
 	fmt.Println("\n--- Game Closed ---")
 
 	// Later: Load the game
 	fmt.Println("\n--- Loading Saved Game ---")
 	newInterp := statekit.NewInterpreter(machine)
+	defer func() { _ = newInterp.Close() }()
 
 	// Restore from snapshot
 	var loadedSnapshot statekit.Snapshot[GameContext]
@@ -97,7 +98,6 @@ func main() {
 	newInterp.Send(statekit.Event{Type: "COMPLETE_QUEST"})
 	printGameState(newInterp, "After completing quest")
 
-	newInterp.Stop()
 	fmt.Println("\n=== Demo Complete ===")
 }
 

@@ -183,6 +183,7 @@ func buildEditorMachine() *statekit.MachineConfig[EditorContext] {
 
 func runDemo(machine *statekit.MachineConfig[EditorContext]) {
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 	interp.Start()
 
 	printState(interp, "Initial state")
@@ -220,7 +221,6 @@ func runDemo(machine *statekit.MachineConfig[EditorContext]) {
 	interp.Send(statekit.Event{Type: "SAVE"})
 	fmt.Printf("Document saved: %v\n", interp.Done())
 
-	interp.Stop()
 }
 
 func printState(interp *statekit.Interpreter[EditorContext], label string) {

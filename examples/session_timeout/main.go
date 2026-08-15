@@ -120,6 +120,7 @@ func runActiveUserDemo(machine *statekit.MachineConfig[SessionContext]) {
 	fmt.Println("\n--- Scenario 1: Active User ---")
 
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 	interp.UpdateContext(func(ctx *SessionContext) {
 		ctx.UserID = "alice"
 	})
@@ -137,13 +138,13 @@ func runActiveUserDemo(machine *statekit.MachineConfig[SessionContext]) {
 
 	// Logout to clean up
 	interp.Send(statekit.Event{Type: "LOGOUT"})
-	interp.Stop()
 }
 
 func runTimeoutDemo(machine *statekit.MachineConfig[SessionContext]) {
 	fmt.Println("\n--- Scenario 2: Timeout Flow ---")
 
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 	interp.UpdateContext(func(ctx *SessionContext) {
 		ctx.UserID = "bob"
 	})
@@ -162,13 +163,13 @@ func runTimeoutDemo(machine *statekit.MachineConfig[SessionContext]) {
 	fmt.Printf("After expiry time: state=%s, reason=%s\n", state.Value, state.Context.TimeoutReason)
 	fmt.Printf("Session complete: %v\n", interp.Done())
 
-	interp.Stop()
 }
 
 func runVIPDemo(machine *statekit.MachineConfig[SessionContext]) {
 	fmt.Println("\n--- Scenario 3: VIP Auto-Extend ---")
 
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 	interp.UpdateContext(func(ctx *SessionContext) {
 		ctx.UserID = "vip_charlie"
 		ctx.IsVIP = true
@@ -188,5 +189,4 @@ func runVIPDemo(machine *statekit.MachineConfig[SessionContext]) {
 	state = interp.State()
 	fmt.Printf("After logout: state=%s\n", state.Value)
 
-	interp.Stop()
 }

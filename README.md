@@ -55,28 +55,19 @@ Step-by-step migration guides:
 ## Why
 
 - **Type-safe over typed** — `[C any]` context, typed events, typed actions and guards. No `interface{}` casts at action time.
-- **Statecharts, not just FSMs** — compound, parallel, history, and delayed transitions handle the workflows that flat FSM libraries can't model without manual bookkeeping.
-- **Visualization as a feature** — every machine renders to multiple formats from one source of truth. XState v5 export for [Stately Studio](https://stately.ai/studio) round-trip editing.
-- **Static analysis** — `lint.Lint(machine)` catches unreachable states, dead ends, non-determinism, missing OnError on Invoke, and more — at build time.
-- **Determinism for tests** — inject a `FakeClock` to make timer-driven behavior reproducible. No `time.Sleep` flakes.
+- **Statecharts, not just FSMs** — compound, parallel, history, and delayed transitions without manual bookkeeping.
+- **Visualization as a feature** — ASCII, Mermaid, HTML, and TUI from one source of truth (plus optional XState/Stately export).
+- **Static analysis** — `lint.Lint(machine)` catches unreachable states, dead ends, missing OnError, and more at build time.
+- **Determinism for tests** — inject a `FakeClock` so timer-driven behavior is reproducible.
 
 ## Core features
 
-- Hierarchical states with event bubbling
-- History states (shallow and deep)
-- Delayed transitions and parallel/orthogonal regions
-- Eventless (`Always`) transitions, `Raise` internal events, and state `Tags`
-- Wildcard (`*`) event handlers, internal transitions, and `Choose` conditional actions
-- Guards, actions, entry/exit hooks
-- Reflection DSL — define machines with struct tags
-- Build-time validation
-- Visualization: ASCII, Mermaid, interactive HTML, TUI
-- Static analysis (`lint`)
-- Snapshot / Restore
-- Plugin system with lifecycle hooks
-- Testing utilities (`statetest`)
-- HTTP integration, OpenTelemetry tracing, Prometheus metrics, Kubernetes health probes
-- Code generation from Native JSON
+- Hierarchical, parallel, and history states
+- Guards, actions, entry/exit, delayed and eventless transitions
+- Reflection DSL, build-time validation, and `lint`
+- Snapshot / Restore, plugins, and `statetest` helpers
+- `statekit viz` (ASCII / Mermaid / HTML / TUI) and codegen
+- HTTP, OpenTelemetry, Prometheus, and health integrations
 
 ## Advanced (Tier 2 — see [stability tiers](./docs/reference/stability.md))
 

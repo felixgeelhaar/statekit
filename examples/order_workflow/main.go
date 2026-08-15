@@ -113,6 +113,7 @@ func main() {
 	// Run the workflow
 	fmt.Println("=== Running Order Workflow ===")
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 	interp.Start()
 	printState(interp)
 

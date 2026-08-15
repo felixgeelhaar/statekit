@@ -34,6 +34,7 @@ func main() {
 	// Create and start the supervisor
 	supervisor := buildSupervisor()
 	interp := statekit.NewInterpreter(supervisor)
+	defer func() { _ = interp.Close() }()
 	interp.Start()
 
 	fmt.Println("Supervisor started in 'idle' state")
@@ -98,7 +99,6 @@ func main() {
 	fmt.Printf("Final state: %s\n", interp.State().Value)
 
 	// Clean shutdown
-	interp.Stop()
 	fmt.Println("\n=== Example Complete ===")
 }
 
