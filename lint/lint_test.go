@@ -550,6 +550,47 @@ func TestLint_InvokeIDCollision(t *testing.T) {
 	}
 }
 
+func TestLint_ActorIDCollision(t *testing.T) {
+	t.Parallel()
+	child, err := statekit.NewMachine[struct{}]("child").
+		WithInitial("a").
+		State("a").Final().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("child build: %v", err)
+	}
+	factory := func(ctx struct{}, send func(statekit.Event) error) ir.ChildInterpreter {
+		return statekit.NewInterpreter(child)
+	}
+	machine, err := statekit.NewMachine[struct{}]("parent").
+		WithInitial("one").
+		WithChildMachine("worker", factory).
+		State("one").
+		InvokeMachine("worker").ID("shared").OnDone("two").End().
+		On("NEXT").Target("two").End().
+		Done().
+		State("two").
+		InvokeMachine("worker").ID("shared").OnDone("done").End().
+		Done().
+		State("done").Final().Done().
+		Build()
+	if err != nil {
+		t.Fatalf("parent build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleActorIDCollision {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected actor-id-collision, got: %v", result.Diagnostics)
+	}
+}
+
 func TestLint_InvokeWithOnError_NoWarning(t *testing.T) {
 	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
 	machine, err := statekit.NewMachine[struct{}]("svc-ok").
@@ -584,6 +625,7 @@ func TestLint_AllRulesIncludesNew(t *testing.T) {
 		lint.RuleHistoryWithoutSiblings,
 		lint.RuleGuardedOnlyEntry,
 		lint.RuleAutoForwardLoop,
+		lint.RuleActorIDCollision,
 	}
 	for _, want := range expected {
 		found := false

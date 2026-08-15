@@ -119,6 +119,8 @@ Followup to goleak task. Add Clock interface (jonboulle/clockwork or own) inject
 
 ## Lint rules followup — auto-forward-loop, actor-id-collision, unreachable-via-guard
 
+**Done (partial):** `auto-forward-loop`, `actor-id-collision` (MachineInvocation IDs reused across states). `unreachable-via-guard` still needs expression analysis.
+
 Followup batch from lint extension. (1) auto-forward-loop — parent auto-forwards event X to child; child sends event X to parent (SendParent); detect ping-pong. (2) actor-id-collision — multiple Spawn calls reuse same ActorID across states. (3) unreachable-via-guard — guard combos that are always-false (requires expression analysis or explicit annotation). (4) delayed-transition-shorter-than-action-duration — declarative annotation needed. Source: Quality review.
 
 ---
@@ -166,6 +168,8 @@ looplab/fsm #40 reports that the FSM type has no exported fields, blocking gob e
 ---
 
 ## Add transition-budget lint rule — directly addresses qmuntal #77
+
+**Done (docs):** recommended pattern in [`docs/how-to/transition-budget.md`](../how-to/transition-budget.md) + Stripe webhook example. Dedicated lint/plugin deferred.
 
 qmuntal #77 author needs to halt workflow execution after N transitions (runaway prevention). Add a lint rule "missing-transition-budget" or document the recommended pattern: use Action+Guard pair with attempt counter (the stripe_webhook example pattern). Could also ship as a new aiplugin.RetryBudget[C] plugin that wraps OnEvent and emits a HALT event when count exceeds threshold. Source: ICP signal sweep — direct quote from qmuntal #77.
 
