@@ -68,6 +68,7 @@ func main() {
 | `deep-nesting` | Info | State nests five or more levels deep |
 | `history-without-siblings` | Warning | History state has no non-history siblings to remember |
 | `guarded-only-entry` | Warning | State is only entered via guarded transitions |
+| `guarded-event-without-fallback` | Warning | Event has only guarded transitions (no unguarded fallback) |
 | `auto-forward-loop` | Warning | State auto-forwards and raises the same event (ping-pong risk) |
 | `actor-id-collision` | Warning | Same MachineInvocation ID reused across states |
 
@@ -241,13 +242,15 @@ func TestMachine_Lint(t *testing.T) {
 Use these constants when configuring ignored rules:
 
 ```go
-lint.RuleUnreachable     // "unreachable"
-lint.RuleDeadEnd         // "dead-end"
-lint.RuleNonDeterminism  // "non-determinism"
-lint.RuleCompoundInitial // "compound-initial"
-lint.RuleSelfTransition  // "self-transition"
-lint.RuleUnusedAction    // "unused-action"
-lint.RuleUnusedGuard     // "unused-guard"
+lint.RuleUnreachable                 // "unreachable"
+lint.RuleDeadEnd                     // "dead-end"
+lint.RuleNonDeterminism              // "non-determinism"
+lint.RuleCompoundInitial             // "compound-initial"
+lint.RuleSelfTransition              // "self-transition"
+lint.RuleUnusedAction                // "unused-action"
+lint.RuleUnusedGuard                 // "unused-guard"
+lint.RuleGuardedOnlyEntry            // "guarded-only-entry"
+lint.RuleGuardedEventWithoutFallback // "guarded-event-without-fallback"
 ```
 
 Get all rule names:
