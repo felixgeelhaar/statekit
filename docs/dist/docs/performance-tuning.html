@@ -1,117 +1,112 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Performance Tuning · Statekit</title><meta name="description" content="Performance Tuning — Statekit documentation"><link rel="canonical" href="https://klarlabs-studio.github.io/statekit/docs/performance-tuning"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://klarlabs-studio.github.io/statekit/docs/performance-tuning"><meta property="og:title" content="Performance Tuning · Statekit"><meta property="og:description" content="Performance Tuning — Statekit documentation"><meta property="og:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Performance Tuning · Statekit"><meta name="twitter:description" content="Performance Tuning — Statekit documentation"><meta name="twitter:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Performance Tuning — Statekit documentation","codeRepository":"https://github.com/klarlabs-studio/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://klarlabs-studio.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
-<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
-</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/go.klarlabs.de/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/klarlabs-studio/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
-MCP
-</a> <a href="https://github.com/klarlabs-studio/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
-GitHub
-</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link is-active" aria-current="page"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Performance Tuning</h1> </header> <div class="markdown-body"> <h1 id="performance-tuning-guide">Performance Tuning Guide</h1>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Performance Tuning · Statekit</title><meta name="description" content="Performance Tuning — Statekit documentation"><link rel="canonical" href="https://klarlabs-studio.github.io/statekit/docs/performance-tuning"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://klarlabs-studio.github.io/statekit/docs/performance-tuning"><meta property="og:title" content="Performance Tuning · Statekit"><meta property="og:description" content="Performance Tuning — Statekit documentation"><meta property="og:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Performance Tuning · Statekit"><meta name="twitter:description" content="Performance Tuning — Statekit documentation"><meta name="twitter:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Performance Tuning — Statekit documentation","codeRepository":"https://github.com/klarlabs-studio/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://klarlabs-studio.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.5tfqMtrl.css"><style>.docs-shell{background:var(--bg);min-height:100vh}.docs-layout{grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem;display:grid}.docs-sidebar{align-self:start;max-height:calc(100vh - 3rem);padding-right:.5rem;position:sticky;top:1.5rem;overflow-y:auto}.docs-sidebar-title{text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem;font-size:.75rem;font-weight:600}.docs-nav{gap:.15rem;margin:0;padding:0;list-style:none;display:grid}.docs-nav-link{color:var(--text-secondary);border-radius:6px;padding:.4rem .6rem;font-size:.9rem;text-decoration:none;display:block}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{margin:0 0 1.5rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem)}.markdown-body{color:var(--text);font-size:1rem;line-height:1.7}.markdown-body h2{border-bottom:1px solid var(--border);margin:2.5rem 0 1rem;padding-bottom:.4rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:1.4rem}.markdown-body h3{margin:1.75rem 0 .75rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);border-bottom:1px solid #0000;text-decoration:none}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{background:var(--bg-secondary);color:var(--text);border-radius:4px;padding:.1rem .35rem;font-family:JetBrains Mono,monospace;font-size:.88em}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;margin:1rem 0;padding:1rem 1.2rem;overflow-x:auto}.markdown-body pre code{background:0 0;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);text-align:left;padding:.5rem .75rem}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);color:var(--text-secondary);background:#00d4ff0a;margin:1rem 0;padding:.4rem 1rem}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media (width<=768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{border-bottom:1px solid var(--border);max-height:none;margin-bottom:1rem;padding-bottom:1rem;position:static}}
+</style></head><body><div class="docs-shell"><header class="header"><a href="/statekit/" class="logo" aria-label="Statekit home"><div class="logo-icon"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"><rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect><circle cx="12" cy="12" r="4" fill="#00d4ff"></circle><circle cx="24" cy="12" r="4" fill="#a855f7"></circle><circle cx="18" cy="24" r="4" fill="#00ff88"></circle><path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path><path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path><path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path></svg></div><span class="logo-text">State<span>kit</span></span></a><nav class="header-nav" aria-label="Primary"><a href="/statekit/" class="header-nav-link">Home</a><a href="/statekit/play" class="header-nav-link">Play</a><a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a><a href="https://pkg.go.dev/go.klarlabs.de/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a></nav><div class="header-actions"><a href="https://github.com/klarlabs-studio/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>MCP</a><a href="https://github.com/klarlabs-studio/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>GitHub</a></div></header><script type="module">document.getElementById(`shortcuts-btn`)?.addEventListener(`click`,()=>{document.getElementById(`shortcuts-overlay`)?.classList.toggle(`active`)});</script><div class="docs-layout"><aside class="docs-sidebar" aria-label="Documentation navigation"><h2 class="docs-sidebar-title">Documentation</h2><ul class="docs-nav"><li><a href="/statekit/docs/actor-persistence" class="docs-nav-link">Actor Persistence</a></li><li><a href="/statekit/docs/api-reference" class="docs-nav-link">Api Reference</a></li><li><a href="/statekit/docs/builder-terminators" class="docs-nav-link">Builder Terminators</a></li><li><a href="/statekit/docs/choosing-an-api" class="docs-nav-link">Choosing An Api</a></li><li><a href="/statekit/docs/code-generation" class="docs-nav-link">Code Generation</a></li><li><a href="/statekit/docs/getting-started" class="docs-nav-link">Getting Started</a></li><li><a href="/statekit/docs/guards-actions" class="docs-nav-link">Guards Actions</a></li><li><a href="/statekit/docs/hierarchical-states" class="docs-nav-link">Hierarchical States</a></li><li><a href="/statekit/docs/http-integration" class="docs-nav-link">Http Integration</a></li><li><a href="/statekit/docs/lint" class="docs-nav-link">Lint</a></li><li><a href="/statekit/docs/machine-composition" class="docs-nav-link">Machine Composition</a></li><li><a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link">Migration From Looplab Fsm</a></li><li><a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link">Migration From Qmuntal Stateless</a></li><li><a href="/statekit/docs/observability" class="docs-nav-link">Observability</a></li><li><a href="/statekit/docs/opentelemetry" class="docs-nav-link">Opentelemetry</a></li><li><a href="/statekit/docs/patterns-recipes" class="docs-nav-link">Patterns Recipes</a></li><li><a href="/statekit/docs/performance-tuning" class="docs-nav-link is-active" aria-current="page">Performance Tuning</a></li><li><a href="/statekit/docs/plugin-system" class="docs-nav-link">Plugin System</a></li><li><a href="/statekit/docs/reflection-dsl" class="docs-nav-link">Reflection Dsl</a></li><li><a href="/statekit/docs/stability" class="docs-nav-link">Stability</a></li><li><a href="/statekit/docs/stripe-webhook-saga" class="docs-nav-link">Stripe Webhook Saga</a></li><li><a href="/statekit/docs/tdd" class="docs-nav-link">Tdd</a></li><li><a href="/statekit/docs/testing" class="docs-nav-link">Testing</a></li><li><a href="/statekit/docs/visualization" class="docs-nav-link">Visualization</a></li><li><a href="/statekit/docs/xstate-migration" class="docs-nav-link">Xstate Migration</a></li></ul></aside><article class="docs-article"><header class="docs-article-header"><h1>Performance Tuning</h1></header><div class="markdown-body"><h1 id="performance-tuning-guide">Performance Tuning Guide</h1>
 <p>This guide covers performance characteristics, optimization techniques, and best practices for building high-performance state machines with Statekit.</p>
 <h2 id="performance-baseline">Performance Baseline</h2>
 <p>Benchmarks run on Apple M1 (arm64):</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Operation</th><th>Time</th><th>Allocations</th><th>Notes</th></tr></thead><tbody><tr><td>Simple transition</td><td>~364ns</td><td>7 allocs</td><td>Basic event → state change</td></tr><tr><td>Hierarchical bubble</td><td>~669ns</td><td>10 allocs</td><td>Event bubbles to parent</td></tr><tr><td>No matching transition</td><td>~36ns</td><td>0 allocs</td><td>Fast rejection path</td></tr><tr><td>State query (<code>State()</code>)</td><td>~14ns</td><td>0 allocs</td><td>Zero-cost access</td></tr><tr><td><code>Matches()</code> direct</td><td>~14ns</td><td>0 allocs</td><td>Current state check</td></tr><tr><td><code>Matches()</code> ancestor</td><td>~21ns</td><td>0 allocs</td><td>Parent state check</td></tr><tr><td><code>UpdateContext()</code></td><td>~15ns</td><td>0 allocs</td><td>Context mutation</td></tr><tr><td><code>Snapshot()</code></td><td>~196ns</td><td>3 allocs</td><td>State serialization</td></tr><tr><td>Parallel state entry</td><td>~1μs</td><td>16 allocs</td><td>Multiple regions</td></tr><tr><td>Plugin overhead</td><td>~16ns</td><td>0 allocs</td><td>Per-plugin per-hook</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Time</th>
+<th>Allocations</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple transition</td>
+<td>~364ns</td>
+<td>7 allocs</td>
+<td>Basic event → state change</td>
+</tr>
+<tr>
+<td>Hierarchical bubble</td>
+<td>~669ns</td>
+<td>10 allocs</td>
+<td>Event bubbles to parent</td>
+</tr>
+<tr>
+<td>No matching transition</td>
+<td>~36ns</td>
+<td>0 allocs</td>
+<td>Fast rejection path</td>
+</tr>
+<tr>
+<td>State query (<code>State()</code>)</td>
+<td>~14ns</td>
+<td>0 allocs</td>
+<td>Zero-cost access</td>
+</tr>
+<tr>
+<td><code>Matches()</code> direct</td>
+<td>~14ns</td>
+<td>0 allocs</td>
+<td>Current state check</td>
+</tr>
+<tr>
+<td><code>Matches()</code> ancestor</td>
+<td>~21ns</td>
+<td>0 allocs</td>
+<td>Parent state check</td>
+</tr>
+<tr>
+<td><code>UpdateContext()</code></td>
+<td>~15ns</td>
+<td>0 allocs</td>
+<td>Context mutation</td>
+</tr>
+<tr>
+<td><code>Snapshot()</code></td>
+<td>~196ns</td>
+<td>3 allocs</td>
+<td>State serialization</td>
+</tr>
+<tr>
+<td>Parallel state entry</td>
+<td>~1μs</td>
+<td>16 allocs</td>
+<td>Multiple regions</td>
+</tr>
+<tr>
+<td>Plugin overhead</td>
+<td>~16ns</td>
+<td>0 allocs</td>
+<td>Per-plugin per-hook</td>
+</tr>
+</tbody>
+</table>
 <h3 id="machine-construction">Machine Construction</h3>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Method</th><th>Time</th><th>Allocations</th></tr></thead><tbody><tr><td>Builder (3 states)</td><td>~1.3μs</td><td>40 allocs</td></tr><tr><td>Builder (5 states, nested)</td><td>~1.5μs</td><td>46 allocs</td></tr><tr><td>Reflection DSL (2 states)</td><td>~2.4μs</td><td>42 allocs</td></tr><tr><td>Reflection DSL (nested)</td><td>~2.8μs</td><td>49 allocs</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Time</th>
+<th>Allocations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Builder (3 states)</td>
+<td>~1.3μs</td>
+<td>40 allocs</td>
+</tr>
+<tr>
+<td>Builder (5 states, nested)</td>
+<td>~1.5μs</td>
+<td>46 allocs</td>
+</tr>
+<tr>
+<td>Reflection DSL (2 states)</td>
+<td>~2.4μs</td>
+<td>42 allocs</td>
+</tr>
+<tr>
+<td>Reflection DSL (nested)</td>
+<td>~2.8μs</td>
+<td>49 allocs</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Key insight</strong>: Machine construction is a one-time cost. Build once, reuse the <code>MachineConfig</code> across all interpreters.</p>
 <hr>
 <h2 id="optimization-strategies">Optimization Strategies</h2>
@@ -214,24 +209,24 @@ GitHub
 <p><strong>Guideline</strong>: Each hierarchy level adds ~100-200ns to event processing when bubbling.</p>
 <h3 id="5-prefer-builder-over-reflection-dsl-for-hot-paths">5. Prefer Builder over Reflection DSL for Hot Paths</h3>
 <p>The builder API is slightly faster for machine construction:</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Approach</th><th>Build Time</th></tr></thead><tbody><tr><td>Builder API</td><td>~1.7μs</td></tr><tr><td>Reflection DSL</td><td>~2.4μs</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Build Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Builder API</td>
+<td>~1.7μs</td>
+</tr>
+<tr>
+<td>Reflection DSL</td>
+<td>~2.4μs</td>
+</tr>
+</tbody>
+</table>
 <p>For applications creating machines dynamically, prefer the builder. For most applications where machines are built once at startup, either approach is fine.</p>
 <h3 id="6-batch-state-checks">6. Batch State Checks</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Inefficient: Multiple Matches() calls</span></span>
@@ -275,42 +270,42 @@ GitHub
 <hr>
 <h2 id="memory-optimization">Memory Optimization</h2>
 <h3 id="allocation-sources">Allocation Sources</h3>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Source</th><th>Allocations</th><th>Mitigation</th></tr></thead><tbody><tr><td>Event creation</td><td>1-2 per event</td><td>Pool events if needed</td></tr><tr><td>Transition resolution</td><td>5-7 per transition</td><td>Normal, unavoidable</td></tr><tr><td>History tracking</td><td>1-2 per compound exit</td><td>Use shallow history when possible</td></tr><tr><td>Parallel regions</td><td>2-4 per region</td><td>Minimize region count</td></tr><tr><td>Snapshots</td><td>3-4 per snapshot</td><td>Snapshot infrequently</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Allocations</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Event creation</td>
+<td>1-2 per event</td>
+<td>Pool events if needed</td>
+</tr>
+<tr>
+<td>Transition resolution</td>
+<td>5-7 per transition</td>
+<td>Normal, unavoidable</td>
+</tr>
+<tr>
+<td>History tracking</td>
+<td>1-2 per compound exit</td>
+<td>Use shallow history when possible</td>
+</tr>
+<tr>
+<td>Parallel regions</td>
+<td>2-4 per region</td>
+<td>Minimize region count</td>
+</tr>
+<tr>
+<td>Snapshots</td>
+<td>3-4 per snapshot</td>
+<td>Snapshot infrequently</td>
+</tr>
+</tbody>
+</table>
 <h3 id="reducing-allocations">Reducing Allocations</h3>
 <p><strong>1. Pre-allocate event payloads:</strong></p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Allocates new map each time</span></span>
@@ -414,9 +409,9 @@ GitHub
 <span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=BenchmarkInterpreterSend</span><span style="color:#79B8FF"> -benchmem</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D"># Compare before/after optimization</span></span>
-<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> before.txt</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> before.txt</span></span>
 <span class="line"><span style="color:#6A737D"># Make changes</span></span>
-<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> after.txt</span></span>
+<span class="line"><span style="color:#B392F0">go</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> -bench=.</span><span style="color:#79B8FF"> -benchmem</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> after.txt</span></span>
 <span class="line"><span style="color:#B392F0">benchcmp</span><span style="color:#9ECBFF"> before.txt</span><span style="color:#9ECBFF"> after.txt</span></span></code></pre>
 <h3 id="adding-custom-benchmarks">Adding Custom Benchmarks</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> BenchmarkMyWorkflow</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">b</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">B</span><span style="color:#E1E4E8">) {</span></span>
@@ -428,7 +423,7 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">    }</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#E1E4E8">    b.</span><span style="color:#B392F0">ResetTimer</span><span style="color:#E1E4E8">()</span></span>
-<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">:=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> b.N; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">:=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&lt;</span><span style="color:#E1E4E8"> b.N; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#E1E4E8">        interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
 <span class="line"><span style="color:#E1E4E8">        interp.</span><span style="color:#B392F0">Start</span><span style="color:#E1E4E8">()</span></span>
 <span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> _, e </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> events {</span></span>
@@ -443,7 +438,7 @@ GitHub
 <li class="task-list-item"><input type="checkbox" disabled> Machine configs are built once and reused</li>
 <li class="task-list-item"><input type="checkbox" disabled> Context contains only necessary data (pointers for large objects)</li>
 <li class="task-list-item"><input type="checkbox" disabled> Guards are fast (no I/O, minimal computation)</li>
-<li class="task-list-item"><input type="checkbox" disabled> State hierarchy depth is reasonable (&#x3C; 5 levels typical)</li>
+<li class="task-list-item"><input type="checkbox" disabled> State hierarchy depth is reasonable (&lt; 5 levels typical)</li>
 <li class="task-list-item"><input type="checkbox" disabled> Snapshots are taken only when persisting</li>
 <li class="task-list-item"><input type="checkbox" disabled> Each goroutine has its own interpreter (or mutex protection)</li>
 <li class="task-list-item"><input type="checkbox" disabled> Benchmark results are acceptable for your use case</li>
@@ -487,7 +482,8 @@ GitHub
 <hr>
 <h2 id="see-also">See Also</h2>
 <ul>
-<li><a href="getting-started.md">Getting Started</a></li>
-<li><a href="patterns-recipes.md">Patterns &#x26; Recipes</a></li>
-<li><a href="api-reference.md">API Reference</a></li>
-</ul> </div> </article> </div> </div> </body></html>
+<li><a href="../tutorials/getting-started.md">Getting Started</a></li>
+<li><a href="../explanation/patterns-recipes.md">Patterns &amp; Recipes</a></li>
+<li><a href="../reference/api-reference.md">API Reference</a></li>
+</ul>
+</div></article></div></div></body></html>

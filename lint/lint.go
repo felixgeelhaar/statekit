@@ -172,6 +172,9 @@ func CheckTyped[C any](l *Linter, machine *ir.MachineConfig[C]) *Result {
 	checkInvokeIDCollision(l, machine, result)
 	checkAutoForwardRedundancy(l, machine, result)
 	checkDeepNesting(l, machine, result)
+	checkHistoryWithoutSiblings(l, machine, result)
+	checkGuardedOnlyEntry(l, machine, result)
+	checkAutoForwardLoop(l, machine, result)
 
 	// Sort diagnostics by severity, then state
 	sort.Slice(result.Diagnostics, func(i, j int) bool {
@@ -569,19 +572,187 @@ func checkDeepNesting[C any](l *Linter, machine *ir.MachineConfig[C], result *Re
 	}
 }
 
+// checkHistoryWithoutSiblings warns when a history state sits in a compound
+// parent that has no other children. History remembers the last active sibling;
+// with only itself present, resume always falls through to the default — a
+// no-op that usually means the modeller forgot the real children.
+func checkHistoryWithoutSiblings[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules[RuleHistoryWithoutSiblings] {
+		return
+	}
+
+	for id, state := range machine.States {
+		if state.Type != ir.StateTypeHistory {
+			continue
+		}
+		if state.Parent == "" {
+			continue // HISTORY_NOT_IN_COMPOUND is a build-time validation error
+		}
+		parent := machine.States[state.Parent]
+		if parent == nil {
+			continue
+		}
+		siblings := 0
+		for _, childID := range parent.Children {
+			if childID == id {
+				continue
+			}
+			child := machine.States[childID]
+			if child != nil && child.Type != ir.StateTypeHistory {
+				siblings++
+			}
+		}
+		if siblings == 0 {
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{
+				Severity: SeverityWarning,
+				Rule:     RuleHistoryWithoutSiblings,
+				State:    id,
+				Message:  fmt.Sprintf("history state %q has no non-history siblings under %q — resume will always use the default", id, state.Parent),
+			})
+		}
+	}
+}
+
+// checkGuardedOnlyEntry warns when a non-initial state is only reachable
+// through guarded transitions (and eventless transitions that also carry
+// guards). If every inbound guard fails at runtime the state is unreachable —
+// a common "always-false guard combo" production hazard.
+func checkGuardedOnlyEntry[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules[RuleGuardedOnlyEntry] {
+		return
+	}
+
+	inbound := make(map[ir.StateID][]*ir.TransitionConfig)
+	for _, state := range machine.States {
+		for _, t := range state.Transitions {
+			if t.Target == "" || t.Internal {
+				continue
+			}
+			inbound[t.Target] = append(inbound[t.Target], t)
+		}
+		for _, t := range state.Always {
+			if t.Target == "" {
+				continue
+			}
+			inbound[t.Target] = append(inbound[t.Target], t)
+		}
+		for _, inv := range state.Invocations {
+			if inv.OnDone != nil && inv.OnDone.Target != "" {
+				inbound[inv.OnDone.Target] = append(inbound[inv.OnDone.Target], inv.OnDone)
+			}
+			if inv.OnError != nil && inv.OnError.Target != "" {
+				inbound[inv.OnError.Target] = append(inbound[inv.OnError.Target], inv.OnError)
+			}
+		}
+		for _, inv := range state.MachineInvocations {
+			if inv.OnDone != nil && inv.OnDone.Target != "" {
+				inbound[inv.OnDone.Target] = append(inbound[inv.OnDone.Target], inv.OnDone)
+			}
+			if inv.OnError != nil && inv.OnError.Target != "" {
+				inbound[inv.OnError.Target] = append(inbound[inv.OnError.Target], inv.OnError)
+			}
+		}
+	}
+
+	// Compound initials and the machine initial are reachable without a
+	// guarded transition.
+	unguardedEntry := map[ir.StateID]bool{machine.Initial: true}
+	for _, state := range machine.States {
+		if state.Initial != "" {
+			unguardedEntry[state.Initial] = true
+		}
+	}
+
+	for id, edges := range inbound {
+		if unguardedEntry[id] {
+			continue
+		}
+		if len(edges) == 0 {
+			continue
+		}
+		allGuarded := true
+		for _, t := range edges {
+			if t.Guard == "" {
+				allGuarded = false
+				break
+			}
+		}
+		if allGuarded {
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{
+				Severity: SeverityWarning,
+				Rule:     RuleGuardedOnlyEntry,
+				State:    id,
+				Message:  fmt.Sprintf("state %q is only entered via guarded transitions — if every guard fails it is unreachable", id),
+			})
+		}
+	}
+}
+
+// checkAutoForwardLoop warns when a state both auto-forwards an event to a
+// child machine and raises that same event from a transition on the state.
+// The child completing work by sending the event back to the parent (or the
+// parent re-raising it) forms a parent↔child ping-pong.
+func checkAutoForwardLoop[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules[RuleAutoForwardLoop] {
+		return
+	}
+
+	for id, state := range machine.States {
+		if len(state.MachineInvocations) == 0 {
+			continue
+		}
+		forwarded := make(map[ir.EventType]string) // event → child id
+		for _, inv := range state.MachineInvocations {
+			name := inv.ID
+			if name == "" {
+				name = inv.MachineRef
+			}
+			for _, evt := range inv.AutoForward {
+				forwarded[evt] = name
+			}
+		}
+		if len(forwarded) == 0 {
+			continue
+		}
+
+		checkRaise := func(t *ir.TransitionConfig, via string) {
+			for _, raised := range t.Raise {
+				if child, ok := forwarded[raised]; ok {
+					result.Diagnostics = append(result.Diagnostics, Diagnostic{
+						Severity: SeverityWarning,
+						Rule:     RuleAutoForwardLoop,
+						State:    id,
+						Event:    raised,
+						Message:  fmt.Sprintf("state %q auto-forwards %q to child %q and also raises it%s — parent/child ping-pong risk", id, raised, child, via),
+					})
+				}
+			}
+		}
+		for _, t := range state.Transitions {
+			checkRaise(t, "")
+		}
+		for _, t := range state.Always {
+			checkRaise(t, " on an always transition")
+		}
+	}
+}
+
 // Rule names for reference
 const (
-	RuleUnreachable           = "unreachable"
-	RuleDeadEnd               = "dead-end"
-	RuleNonDeterminism        = "non-determinism"
-	RuleCompoundInitial       = "compound-initial"
-	RuleSelfTransition        = "self-transition"
-	RuleUnusedAction          = "unused-action"
-	RuleUnusedGuard           = "unused-guard"
-	RuleInvokeMissingOnError  = "invoke-missing-onerror"
-	RuleInvokeIDCollision     = "invoke-id-collision"
-	RuleAutoForwardRedundancy = "auto-forward-redundancy"
-	RuleDeepNesting           = "deep-nesting"
+	RuleUnreachable            = "unreachable"
+	RuleDeadEnd                = "dead-end"
+	RuleNonDeterminism         = "non-determinism"
+	RuleCompoundInitial        = "compound-initial"
+	RuleSelfTransition         = "self-transition"
+	RuleUnusedAction           = "unused-action"
+	RuleUnusedGuard            = "unused-guard"
+	RuleInvokeMissingOnError   = "invoke-missing-onerror"
+	RuleInvokeIDCollision      = "invoke-id-collision"
+	RuleAutoForwardRedundancy  = "auto-forward-redundancy"
+	RuleDeepNesting            = "deep-nesting"
+	RuleHistoryWithoutSiblings = "history-without-siblings"
+	RuleGuardedOnlyEntry       = "guarded-only-entry"
+	RuleAutoForwardLoop        = "auto-forward-loop"
 )
 
 // AllRules returns all available rule names.
@@ -598,5 +769,8 @@ func AllRules() []string {
 		RuleInvokeIDCollision,
 		RuleAutoForwardRedundancy,
 		RuleDeepNesting,
+		RuleHistoryWithoutSiblings,
+		RuleGuardedOnlyEntry,
+		RuleAutoForwardLoop,
 	}
 }

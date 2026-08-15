@@ -118,9 +118,6 @@ func TestActorRef_Send(t *testing.T) {
 		t.Errorf("failed to send: %v", err)
 	}
 
-	// Give child time to process
-	time.Sleep(10 * time.Millisecond)
-
 	parent.Stop()
 }
 
@@ -244,24 +241,16 @@ func TestStateScopedLifecycle(t *testing.T) {
 	parentInterp = NewInterpreter(machine)
 	parentInterp.Start()
 
-	// Give spawn time to complete
-	time.Sleep(10 * time.Millisecond)
-
-	// Verify actor exists
-	if parentInterp.GetActor(spawnedActorID) == nil {
-		t.Error("actor should exist in spawning state")
-	}
+	waitUntil(t, func() bool {
+		return parentInterp.GetActor(spawnedActorID) != nil
+	})
 
 	// Transition to other state - actor should be stopped
 	parentInterp.Send(Event{Type: "NEXT"})
 
-	// Give cleanup time
-	time.Sleep(10 * time.Millisecond)
-
-	// Actor should be gone
-	if parentInterp.GetActor(spawnedActorID) != nil {
-		t.Error("actor should be stopped when exiting spawning state")
-	}
+	waitUntil(t, func() bool {
+		return parentInterp.GetActor(spawnedActorID) == nil
+	})
 
 	parentInterp.Stop()
 }
@@ -295,15 +284,20 @@ func TestAutoForward(t *testing.T) {
 		WithAutoForward("FORWARD_ME"),
 	)
 
-	// Give spawn time
-	time.Sleep(10 * time.Millisecond)
-
 	// Send events to parent
 	parent.Send(Event{Type: "FORWARD_ME"})
 	parent.Send(Event{Type: "DONT_FORWARD"})
 
-	// Give processing time
-	time.Sleep(20 * time.Millisecond)
+	waitUntil(t, func() bool {
+		mu.Lock()
+		defer mu.Unlock()
+		for _, et := range receivedEvents {
+			if et == "FORWARD_ME" {
+				return true
+			}
+		}
+		return false
+	})
 
 	mu.Lock()
 	hasForwardMe := false
@@ -440,13 +434,9 @@ func TestActorDone_NotifiesParent(t *testing.T) {
 	// Complete the child
 	_ = ref.Send(Event{Type: "COMPLETE"})
 
-	// Wait for child to finish and parent to transition
-	time.Sleep(50 * time.Millisecond)
-
-	// Parent should now be in completed state
-	if parent.State().Value != "completed" {
-		t.Errorf("expected parent in 'completed', got %s", parent.State().Value)
-	}
+	waitUntil(t, func() bool {
+		return parent.State().Value == "completed"
+	})
 
 	parent.Stop()
 }

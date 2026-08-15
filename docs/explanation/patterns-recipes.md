@@ -679,7 +679,7 @@ Done()
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Hierarchical States](hierarchical-states.md)
-- [XState Migration](xstate-migration.md)
-- [API Reference](api-reference.md)
+- [Getting Started](../tutorials/getting-started.md)
+- [Hierarchical States](../how-to/hierarchical-states.md)
+- [XState Migration](../tutorials/xstate-migration.md)
+- [API Reference](../reference/api-reference.md)

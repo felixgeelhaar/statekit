@@ -763,8 +763,8 @@ machine, _ := statekit.FromStruct[OrderMachine, OrderContext](registry)
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Visualization](visualization.md)
-- [Reflection DSL](reflection-dsl.md)
-- [Plugin System](plugin-system.md)
-- [API Reference](api-reference.md)
+- [Getting Started](./getting-started.md)
+- [Visualization](../how-to/visualization.md)
+- [Reflection DSL](../how-to/reflection-dsl.md)
+- [Plugin System](../how-to/plugin-system.md)
+- [API Reference](../reference/api-reference.md)

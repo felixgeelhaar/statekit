@@ -127,7 +127,7 @@ registry := statekit.NewActionRegistry[Context]()
 machine, _ := statekit.FromStruct[MyMachine, Context](registry)
 ```
 
-See [Reflection DSL Guide](reflection-dsl.md) for more details.
+See [Reflection DSL Guide](../how-to/reflection-dsl.md) for more details.
 
 ## Visualization
 
@@ -143,15 +143,15 @@ Or export to JSON programmatically:
 exporter := export.NewNativeExporter(machine)
 ```
 
-See [Visualization Guide](visualization.md) for more details.
+See [Visualization Guide](../how-to/visualization.md) for more details.
 
 ## Next Steps
 
-- [Guards and Actions](guards-actions.md) - Add behavior to your machines
-- [Hierarchical States](hierarchical-states.md) - Nested states and event bubbling
-- [Patterns & Recipes](patterns-recipes.md) - Common patterns and best practices
-- [Performance Tuning](performance-tuning.md) - Optimization techniques
-- [Reflection DSL](reflection-dsl.md) - Declarative machine definition
-- [Visualization](visualization.md) - Interactive graphs and diagrams
-- [XState Migration](xstate-migration.md) - Coming from XState/TypeScript?
-- [API Reference](api-reference.md) - Complete API documentation
+- [Guards and Actions](../how-to/guards-actions.md) - Add behavior to your machines
+- [Hierarchical States](../how-to/hierarchical-states.md) - Nested states and event bubbling
+- [Patterns & Recipes](../explanation/patterns-recipes.md) - Common patterns and best practices
+- [Performance Tuning](../how-to/performance-tuning.md) - Optimization techniques
+- [Reflection DSL](../how-to/reflection-dsl.md) - Declarative machine definition
+- [Visualization](../how-to/visualization.md) - Interactive graphs and diagrams
+- [XState Migration](./xstate-migration.md) - Coming from XState/TypeScript?
+- [API Reference](../reference/api-reference.md) - Complete API documentation

@@ -180,3 +180,116 @@ func TestRenderer_CompoundState(t *testing.T) {
 		t.Error("expected nested initial state")
 	}
 }
+
+func TestRenderer_ParallelHistoryAndEntry(t *testing.T) {
+	machine := &viz.VizMachine{
+		ID:      "rich",
+		Initial: "editor",
+		States: map[string]*viz.VizState{
+			"editor": {
+				ID:       "editor",
+				Type:     viz.VizStateParallel,
+				Children: []string{"bold", "italic"},
+			},
+			"bold": {
+				ID:       "bold",
+				Type:     viz.VizStateCompound,
+				Parent:   "editor",
+				Initial:  "off",
+				Children: []string{"off", "on"},
+			},
+			"italic": {
+				ID:       "italic",
+				Type:     viz.VizStateCompound,
+				Parent:   "editor",
+				Initial:  "off2",
+				Children: []string{"off2"},
+			},
+			"off": {
+				ID:     "off",
+				Type:   viz.VizStateAtomic,
+				Parent: "bold",
+				Entry:  []string{"logOff"},
+				Exit:   []string{"cleanup"},
+				Transitions: []viz.VizTransition{
+					{Event: "TOGGLE", Target: "on"},
+				},
+			},
+			"on": {
+				ID:     "on",
+				Type:   viz.VizStateAtomic,
+				Parent: "bold",
+			},
+			"off2": {
+				ID:     "off2",
+				Type:   viz.VizStateAtomic,
+				Parent: "italic",
+			},
+			"hist": {
+				ID:             "hist",
+				Type:           viz.VizStateHistory,
+				HistoryType:    "deep",
+				HistoryDefault: "off",
+			},
+			"shallow": {
+				ID:          "shallow",
+				Type:        viz.VizStateHistory,
+				HistoryType: "shallow",
+			},
+		},
+	}
+
+	r := NewRenderer()
+	output := r.Render(machine)
+
+	if !strings.Contains(output, "state editor {") {
+		t.Error("expected parallel state block")
+	}
+	if !strings.Contains(output, "--") {
+		t.Error("expected region separator for parallel children")
+	}
+	if !strings.Contains(output, `state "hist (H*)" as hist`) {
+		t.Error("expected deep history notation")
+	}
+	if !strings.Contains(output, `state "shallow (H)" as shallow`) {
+		t.Error("expected shallow history notation")
+	}
+	if !strings.Contains(output, "hist --> off : default") {
+		t.Error("expected history default edge")
+	}
+	if !strings.Contains(output, "note right of off : entry: logOff") {
+		t.Error("expected entry note on atomic state")
+	}
+}
+
+func TestRenderer_HideGuardsAndActions(t *testing.T) {
+	machine := &viz.VizMachine{
+		ID:      "test",
+		Initial: "idle",
+		States: map[string]*viz.VizState{
+			"idle": {
+				ID:   "idle",
+				Type: viz.VizStateAtomic,
+				Transitions: []viz.VizTransition{
+					{Event: "GO", Target: "running", Guard: "canGo", Actions: []string{"act"}},
+				},
+			},
+			"running": {ID: "running", Type: viz.VizStateAtomic},
+		},
+	}
+
+	r := NewRenderer()
+	r.ShowGuards = false
+	r.ShowActions = false
+	output := r.Render(machine)
+
+	if strings.Contains(output, "[canGo]") {
+		t.Error("guards should be hidden")
+	}
+	if strings.Contains(output, "/ act") {
+		t.Error("actions should be hidden")
+	}
+	if !strings.Contains(output, "idle --> running : GO") {
+		t.Error("expected bare event label")
+	}
+}

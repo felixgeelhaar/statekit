@@ -11,6 +11,8 @@ Hierarchical states allow you to:
 
 ## Creating Nested States
 
+Children close with `Up()` after a transition (or `End()` one level at a time). The top-level parent closes with `Done()`. See [Builder Terminators](./builder-terminators.md) for the full table, including `EndTo` and parallel regions.
+
 ### Fluent Builder API
 
 ```go
@@ -216,6 +218,6 @@ func main() {
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Guards and Actions](guards-actions.md)
-- [Visualization](visualization.md) - Visualize hierarchical machines
+- [Getting Started](../tutorials/getting-started.md)
+- [Guards and Actions](./guards-actions.md)
+- [Visualization](./visualization.md) - Visualize hierarchical machines

@@ -11,6 +11,10 @@ import (
 	"go.klarlabs.de/statekit/internal/ir"
 )
 
+// PersistentInterpreter and the EventStore / SnapshotStore interfaces are
+// Tier 2 — experimental. The API may change in a future v1.x minor; pin a
+// specific minor if you depend on them in production. See docs/reference/stability.md.
+
 // PersistentInterpreter wraps an Interpreter with event sourcing capabilities.
 // All state transitions are persisted to an EventStore and can be replayed.
 type PersistentInterpreter[C any] struct {

@@ -16,6 +16,10 @@ scan:
     - "CHANGELOG.md"
     - "docs/*.md"
     - "**/README.md"
+    # Built Astro site: minified vendor bundles (Vue runtime-dom, etc.) trip
+    # SEC-163 high-entropy hex detectors whenever content hashes change.
+    - "docs/dist/"
+    - "docs/dist/**"
     # Generated coverage badge.
     - "assets/coverage-badge.svg"
     # Grafana dashboard JSON contains Prometheus query expressions that

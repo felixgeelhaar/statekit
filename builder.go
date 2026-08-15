@@ -424,13 +424,12 @@ func (b *StateBuilder[C]) EndMachine() *MachineBuilder[C] {
 // one level up, not to the machine root.
 //
 // This is the terminator for a child of a compound state. Chain it once per
-// level to unwind:
+// level to unwind, or prefer Up on a TransitionBuilder / EndTo on a
+// StateBuilder when counting End calls gets noisy:
 //
 //	State("editing").
 //		WithInitial("idle").
-//		State("idle").On("TYPE").Target("dirty").End().End().
-//		//                                       ^      ^ back to "editing"
-//		//                                       back to "idle"
+//		State("idle").On("TYPE").Target("dirty").Up(). // was .End().End()
 //		Done()
 //
 // It panics when called on a top-level state, which has no enclosing state to
@@ -441,6 +440,34 @@ func (b *StateBuilder[C]) End() *StateBuilder[C] {
 			"which has no enclosing state; use Done to return to the machine builder", b.id))
 	}
 	return b.parent
+}
+
+// EndTo unwinds nested StateBuilders until the named parent is current.
+// Prefer this over counting End() calls in deep compounds:
+//
+//	State("app").
+//		State("editor").
+//			State("idle").On("TYPE").Target("dirty").End(). // back to idle's parent path
+//			EndTo("app") // idle → editor → app
+//
+// The receiver must be a descendant of parent. Panics if parent is not an
+// ancestor, or if parent is empty.
+func (b *StateBuilder[C]) EndTo(parent StateID) *StateBuilder[C] {
+	if parent == "" {
+		panic("statekit: EndTo requires a non-empty parent state id")
+	}
+	cur := b
+	for cur != nil {
+		if cur.id == parent {
+			return cur
+		}
+		if cur.parent == nil {
+			panic(fmt.Sprintf("statekit: EndTo(%q) from state %q: %q is not an ancestor; "+
+				"use Done to return to the machine builder", parent, b.id, parent))
+		}
+		cur = cur.parent
+	}
+	panic(fmt.Sprintf("statekit: EndTo(%q) from state %q: walk exhausted", parent, b.id))
 }
 
 // EndState closes this state and returns to the enclosing RegionBuilder (v2.0)
@@ -517,6 +544,9 @@ func (b *StateBuilder[C]) Invoke(src ServiceType) *InvokeBuilder[C] {
 // InvokeMachine starts building a child machine invocation for this state (v0.14).
 // The child machine is spawned when entering the state and stopped when exiting.
 // The machineRef must match a name registered with WithChildMachine.
+//
+// Tier 2 — experimental: the composition API may change in a future v1.x minor.
+// See docs/reference/stability.md.
 func (b *StateBuilder[C]) InvokeMachine(machineRef string) *MachineInvokeBuilder[C] {
 	mib := &MachineInvokeBuilder[C]{
 		state:      b,
@@ -774,8 +804,33 @@ func (b *TransitionBuilder[C]) EndMachine() *MachineBuilder[C] {
 //
 //	State("idle").On("TYPE").Target("dirty").End().End()
 //	//                                       ^ back to "idle"
+//
+// Prefer Up when the intent is "close the transition and the nested state":
+//
+//	State("idle").On("TYPE").Target("dirty").Up() // ≡ .End().End()
 func (b *TransitionBuilder[C]) End() *StateBuilder[C] {
 	return b.state
+}
+
+// Up closes this transition and its owning nested state, returning to the
+// enclosing parent StateBuilder. It is the one-call form of .End().End() —
+// the doubled End that nested examples used to require after a transition.
+//
+//	State("editing").
+//		WithInitial("idle").
+//		State("idle").On("TYPE").Target("dirty").Up().
+//		State("dirty").On("CLEAR").Target("idle").Up().
+//		Done()
+//
+// Panics when the owning state is top-level (no parent). Use Done there.
+func (b *TransitionBuilder[C]) Up() *StateBuilder[C] {
+	return b.state.End()
+}
+
+// EndTo closes this transition, then unwinds nested states until parent is
+// current. Equivalent to End().EndTo(parent).
+func (b *TransitionBuilder[C]) EndTo(parent StateID) *StateBuilder[C] {
+	return b.state.EndTo(parent)
 }
 
 // EndState closes this transition and its owning state, returning to the

@@ -308,21 +308,22 @@ func TestSnapshot_RestoreWithDelayedTransition(t *testing.T) {
 		State("cancelled").Done().
 		Build()
 
-	interp1 := NewInterpreter(machine)
+	clk1 := NewFakeClock(time.Unix(0, 0))
+	interp1 := NewInterpreter(machine, WithClock[struct{}](clk1))
 	interp1.Start()
 
 	// Take snapshot while timer is pending
 	snap := interp1.Snapshot()
 	interp1.Stop()
 
-	// Restore to new interpreter
-	interp2 := NewInterpreter(machine)
+	// Restore to new interpreter sharing a FakeClock so the restored timer is deterministic
+	clk2 := NewFakeClock(time.Unix(0, 0))
+	interp2 := NewInterpreter(machine, WithClock[struct{}](clk2))
 	if err := interp2.Restore(snap); err != nil {
 		t.Fatalf("restore failed: %v", err)
 	}
 
-	// Wait for timer to fire
-	time.Sleep(150 * time.Millisecond)
+	clk2.Advance(100 * time.Millisecond)
 
 	if interp2.State().Value != "timeout" {
 		t.Errorf("expected 'timeout', got %q", interp2.State().Value)
@@ -346,7 +347,8 @@ func TestSnapshot_RestoreCancelsExistingTimers(t *testing.T) {
 		State("timeout2").Done().
 		Build()
 
-	interp := NewInterpreter(machine)
+	clk := NewFakeClock(time.Unix(0, 0))
+	interp := NewInterpreter(machine, WithClock[struct{}](clk))
 	interp.Start()
 
 	// Create snapshot at state2
@@ -361,8 +363,7 @@ func TestSnapshot_RestoreCancelsExistingTimers(t *testing.T) {
 		t.Fatalf("restore failed: %v", err)
 	}
 
-	// Wait a bit for timers
-	time.Sleep(100 * time.Millisecond)
+	clk.Advance(50 * time.Millisecond)
 
 	// Should be at timeout2, not timeout1
 	if interp.State().Value != "timeout2" {

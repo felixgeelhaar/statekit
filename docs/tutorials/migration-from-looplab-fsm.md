@@ -179,7 +179,7 @@ When you exit `loading` (e.g., user cancels), the service's `context.Context` is
 - **Delayed transitions** — `.After(30 * time.Second).Target("timeout")`. No goroutine bookkeeping.
 - **Visualization** — `statekit viz door.json` (or via Go package) gives you a Mermaid / HTML / TUI diagram.
 - **Lint** — `lint.Lint(machine)` reports unreachable states, dead ends, non-determinism, missing OnError on Invoke, etc.
-- **Snapshots** — pause/resume long-running workflows, persist them to a database. `Snapshot[C]` round-trips through `encoding/json` and `encoding/gob` (see [snapshot serialization tests](../snapshot_serialization_test.go)) — no more "FSM has no exported fields" pain ([looplab/fsm #40](https://github.com/looplab/fsm/issues/40)).
+- **Snapshots** — pause/resume long-running workflows, persist them to a database. `Snapshot[C]` round-trips through `encoding/json` and `encoding/gob` (see [snapshot serialization tests](../../snapshot_serialization_test.go)) — no more "FSM has no exported fields" pain ([looplab/fsm #40](https://github.com/looplab/fsm/issues/40)).
 - **Clean recovery from errors** — service errors route via `OnError`; the interpreter accepts events again immediately, no stuck `InTransitionError` ([looplab/fsm #115](https://github.com/looplab/fsm/issues/115)).
 - **Test determinism** — `WithClock(NewFakeClock(...))` removes timer flake.
 
@@ -205,7 +205,7 @@ When you exit `loading` (e.g., user cancels), the service's `context.Context` is
 ## See also
 
 - [Getting Started](./getting-started.md)
-- [Hierarchical States](./hierarchical-states.md)
-- [Guards & Actions](./guards-actions.md)
-- [Static Analysis (Lint)](./lint.md)
+- [Hierarchical States](../how-to/hierarchical-states.md)
+- [Guards & Actions](../how-to/guards-actions.md)
+- [Static Analysis (Lint)](../how-to/lint.md)
 - [XState Migration](./xstate-migration.md) — if your team also uses XState on the JS side

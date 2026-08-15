@@ -8,6 +8,19 @@ import (
 	"go.klarlabs.de/statekit/internal/ir"
 )
 
+func waitUntil(t *testing.T, cond func() bool) {
+	t.Helper()
+	const timeout = time.Second
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if cond() {
+			return
+		}
+		time.Sleep(time.Millisecond)
+	}
+	t.Fatalf("condition not met within %s", timeout)
+}
+
 // Helper to create a child machine that processes work
 func createWorkerChildMachine() *ir.MachineConfig[struct{}] {
 	machine, err := statekit.NewMachine[struct{}]("worker").
@@ -67,13 +80,13 @@ func TestInvokeMachine_Basic(t *testing.T) {
 		t.Errorf("expected processing, got %s", interp.State().Value)
 	}
 
-	// The child machine should have started
-	// Give it time to start (async)
-	time.Sleep(50 * time.Millisecond)
-
-	// The child is not yet done, so parent should still be in processing
-	if interp.State().Value != "processing" {
-		t.Errorf("expected processing, got %s", interp.State().Value)
+	// The child machine should have started; parent must stay in processing.
+	deadline := time.Now().Add(50 * time.Millisecond)
+	for time.Now().Before(deadline) {
+		if interp.State().Value != "processing" {
+			t.Fatalf("expected processing, got %s", interp.State().Value)
+		}
+		time.Sleep(time.Millisecond)
 	}
 
 	interp.Stop()
@@ -121,7 +134,9 @@ func TestInvokeMachine_OnDone(t *testing.T) {
 	interp.Start()
 
 	// Should start in processing and child should be running
-	time.Sleep(50 * time.Millisecond)
+	waitUntil(t, func() bool {
+		return childInterp != nil && string(childInterp.State().Value) == "working"
+	})
 
 	if interp.State().Value != "processing" {
 		t.Errorf("expected processing, got %s", interp.State().Value)
@@ -133,7 +148,7 @@ func TestInvokeMachine_OnDone(t *testing.T) {
 	}
 
 	// Wait for OnDone transition
-	time.Sleep(100 * time.Millisecond)
+	waitUntil(t, func() bool { return interp.State().Value == "completed" })
 
 	// Parent should have transitioned to completed
 	if interp.State().Value != "completed" {
@@ -182,13 +197,12 @@ func TestInvokeMachine_StopOnParentExit(t *testing.T) {
 	interp.Start()
 
 	// Give child time to start
-	time.Sleep(50 * time.Millisecond)
+	waitUntil(t, func() bool { return interp.State().Value == "processing" })
 
 	// Exit the processing state - this should stop the child
 	interp.Send(statekit.Event{Type: "CANCEL"})
 
-	// Give time for cleanup
-	time.Sleep(50 * time.Millisecond)
+	waitUntil(t, func() bool { return interp.State().Value == "cancelled" })
 
 	// Child should have been stopped (exit action called)
 	// Note: We can't directly verify the child was stopped, but we verify
@@ -284,16 +298,18 @@ func TestInvokeMachine_MultipleInvocations(t *testing.T) {
 	interp.Start()
 
 	// Give children time to start
-	time.Sleep(50 * time.Millisecond)
-
-	if interp.State().Value != "processing" {
-		t.Errorf("expected processing, got %s", interp.State().Value)
+	deadline := time.Now().Add(50 * time.Millisecond)
+	for time.Now().Before(deadline) {
+		if interp.State().Value != "processing" {
+			t.Fatalf("expected processing, got %s", interp.State().Value)
+		}
+		time.Sleep(time.Millisecond)
 	}
 
 	// Stop should clean up both children
 	interp.Send(statekit.Event{Type: "STOP"})
 
-	time.Sleep(50 * time.Millisecond)
+	waitUntil(t, func() bool { return interp.State().Value == "stopped" })
 
 	if interp.State().Value != "stopped" {
 		t.Errorf("expected stopped, got %s", interp.State().Value)

@@ -312,6 +312,6 @@ func main() {
 
 ## See Also
 
-- [Getting Started](getting-started.md)
-- [Hierarchical States](hierarchical-states.md)
-- [Reflection DSL](reflection-dsl.md)
+- [Getting Started](../tutorials/getting-started.md)
+- [Hierarchical States](./hierarchical-states.md)
+- [Reflection DSL](./reflection-dsl.md)

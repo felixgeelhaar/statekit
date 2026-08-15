@@ -3,6 +3,10 @@
 // etc.), a DistributedInterpreter that ensures only one node processes a
 // stream at a time, and consistent-hash stream routing for load distribution.
 //
+// Stability: Tier 2 — experimental. The API may change in a future v1.x
+// minor. Pin a specific minor if you depend on this package in production.
+// See docs/reference/stability.md.
+//
 // It lives in its own sub-package so that its eventual backing-store
 // dependencies never reach the statekit core module. Consumers that import
 // only go.klarlabs.de/statekit pay nothing for this package.

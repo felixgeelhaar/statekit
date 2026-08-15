@@ -62,6 +62,13 @@ func main() {
 | `self-transition` | Info | Unguarded self-transition will re-run entry actions |
 | `unused-action` | Info | Registered action is never referenced |
 | `unused-guard` | Info | Registered guard is never referenced |
+| `invoke-missing-onerror` | Warning | Invoke / InvokeMachine has no OnError handler |
+| `invoke-id-collision` | Error | Duplicate invocation IDs within a state |
+| `auto-forward-redundancy` | Warning | AutoForward event is also handled by the parent |
+| `deep-nesting` | Info | State nests five or more levels deep |
+| `history-without-siblings` | Warning | History state has no non-history siblings to remember |
+| `guarded-only-entry` | Warning | State is only entered via guarded transitions |
+| `auto-forward-loop` | Warning | State auto-forwards and raises the same event (ping-pong risk) |
 
 ### Rule Details
 

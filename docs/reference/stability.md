@@ -25,7 +25,9 @@ These are the load-bearing parts of the library. We follow [semver](https://semv
 
 ## Tier 2 — Experimental (may change in v1.x)
 
-These features ship in v1.0 but explore problem spaces where the right shape isn't fully settled. We may iterate on the API in a future minor release based on real-world usage. Pin the exact version if you depend on them in production today.
+> **Banner:** These APIs ship today but are not covered by the same “no breaking changes in v1.x” promise as Tier 1. Prefer Tier 1 primitives when they solve the problem. If you need Tier 2 in production, pin an exact minor (`v1.13.x`) and read release notes before bumping.
+
+These features explore problem spaces where the right shape isn't fully settled. We may iterate on the API in a future minor release based on real-world usage.
 
 - **Actor model** — `Spawn`, `SpawnWithContext`, `ActorRef`, `SendTo`, `SendParent`, supervision strategies (`SupervisionEscalate`, `SupervisionRecover`, `SupervisionRestart`, `SupervisionStop`)
 - **Persistent interpreter** — `PersistentInterpreter`, `EventStore`, `SnapshotStore`, `MemoryEventStore`, `MemorySnapshotStore`
@@ -53,4 +55,4 @@ The `internal/` packages (`internal/ir`, `internal/parser`) are not subject to s
 ## See also
 
 - [v1.0 release notes](https://github.com/klarlabs-studio/statekit/releases)
-- [Backlog](./backlog.md) — what's planned next
+- [Backlog](../project/backlog.md) — what's planned next

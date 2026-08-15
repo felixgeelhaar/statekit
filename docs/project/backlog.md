@@ -13,11 +13,15 @@ v1.0 froze API on speculative scope. DistributedInterpreter, PersistentInterpret
 
 ## Unify builder terminator API — collapse Done/End/EndState/EndRegion
 
+**Done (additive):** `TransitionBuilder.Up()` (≡ `End().End()`), `EndTo(parent)` unwind, docs updated. Existing Done/End/EndState/EndRegion kept for compatibility.
+
 Four terminators with subtle semantics. README hierarchical example shows .End().End().End().Done() — counting parens is YAML-indentation 2.0. Hick's law violation. Solution: single .End() that walks up to nearest meaningful parent, OR accept End(StateID) for explicit unwind, with compile-time error on mismatch. Update all examples + CLAUDE.md hierarchy snippet. Source: UX review — top friction point. File refs: builder.go:329-349.
 
 ---
 
 ## Restructure docs/ to Diataxis (tutorials, how-to, reference, explanation)
+
+**Done** (layout live under `docs/{tutorials,how-to,reference,explanation,project}/`; Astro glob updated; site slugs unchanged).
 
 20 .md files mixed paradigms. getting-started.md is part-tutorial part-reference. patterns-recipes.md (685 lines) mixes how-to + explanation. tdd.md 896 lines unclear category. Restructure to docs/tutorials/, docs/how-to/, docs/reference/, docs/explanation/. Move api-reference.md to godoc-only (single source). Delete prd.md and v1.0-roadmap.md from user-facing docs (project-meta). Add docs/choosing-an-api.md decision tree (builder vs reflection vs codegen). Fix broken xstate-export.md link in README.md:331. Source: UX review.
 
@@ -37,11 +41,15 @@ internal/ir at 66.9% — foundation package (validation, hierarchy LCA, transiti
 
 ## Extend lint package with production-hazard rules
 
+**Done:** invoke-missing-onerror, invoke-id-collision, auto-forward-redundancy, deep-nesting, history-without-siblings, guarded-only-entry, auto-forward-loop.
+
 Current 7 rules solid but miss production bugs: (1) missing-OnError-on-Invoke (silent failure path), (2) history-without-children (no-op), (3) actor-id-collision, (4) auto-forward-loop (parent-child event ping-pong), (5) unreachable-via-guard (always-false guard combos), (6) delayed-transition-shorter-than-action-duration warning. Lint is user-facing quality multiplier — biggest leverage. Source: Quality review.
 
 ---
 
 ## Ship one flagship tutorial — Stripe webhook saga with outbox
+
+**Done** — see `docs/tutorials/stripe-webhook-saga.md` + `examples/stripe_webhook`.
 
 11 thin examples = 0 examples for marketing. Promote ONE killer real-world scenario as flagship. Recommended: Stripe webhook saga with DB outbox pattern (touches event sourcing, guards, OnError, durable transitions, real domain). 2000-word tutorial + companion blog post + viz GIF. Distribute aggressively (HN, /r/golang, Go Weekly). Alt candidates: K8s operator state, OAuth flow, multi-step form. Source: GTM + Product reviews.
 

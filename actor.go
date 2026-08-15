@@ -9,6 +9,10 @@ import (
 	"go.klarlabs.de/statekit/internal/ir"
 )
 
+// Actor model APIs (Spawn, ActorRef, supervision) are Tier 2 — experimental.
+// The API may change in a future v1.x minor. Prefer InvokeMachine for typed
+// child-machine composition when that is enough. See docs/reference/stability.md.
+
 // ErrActorNotFound is returned when an actor ID doesn't exist in the registry
 var ErrActorNotFound = errors.New("actor not found")
 
@@ -271,4 +275,121 @@ func (i *Interpreter[C]) broadcastToAutoForward(event Event) {
 			}
 		}
 	}
+}
+
+// Spawn creates and starts a child actor from a machine configuration.
+// The actor is associated with the current state and will be stopped when
+// that state is exited (state-scoped lifecycle).
+//
+// Options can configure supervision strategy, auto-forwarding, and completion handlers.
+func Spawn[ParentC, ChildC any](
+	parent *Interpreter[ParentC],
+	id ActorID,
+	childMachine *ir.MachineConfig[ChildC],
+	opts ...SpawnOption,
+) (*ActorRef, error) {
+	// Check started status - no lock needed, it's safe to read this boolean
+	// If called from within an action, mu is already held by the caller
+	// If called externally, started will be stable
+	if !parent.started {
+		return nil, errors.New("interpreter not started")
+	}
+
+	// Use actorMu for actor registry operations (separate from main mu to allow spawning from actions)
+	parent.actorMu.Lock()
+	defer parent.actorMu.Unlock()
+
+	// Get current state - safe to read since if we're in an action, mu is held;
+	// if called externally, the state is only modified while mu is held
+	currentState := parent.state.Value
+
+	// Check for duplicate ID
+	if _, exists := parent.actorRegistry[id]; exists {
+		return nil, ErrActorAlreadyExists
+	}
+
+	// Apply options
+	options := spawnOptions{
+		supervision: SupervisionEscalate, // Default
+	}
+	for _, opt := range opts {
+		opt(&options)
+	}
+
+	// Create actor reference
+	ctx, cancel := context.WithCancel(context.Background())
+	ref := &ActorRef{
+		id:        id,
+		eventChan: make(chan Event, 16), // Buffered to prevent blocking
+		done:      make(chan struct{}),
+		cancel:    cancel,
+	}
+
+	// Build auto-forward map
+	autoForward := make(map[EventType]bool)
+	for _, et := range options.autoForward {
+		autoForward[et] = true
+	}
+
+	// Create OnDone/OnError transitions if targets specified
+	var onDone, onError *ir.TransitionConfig
+	if options.onDone != "" {
+		onDone = &ir.TransitionConfig{Target: options.onDone}
+	}
+	if options.onError != "" {
+		onError = &ir.TransitionConfig{Target: options.onError}
+	}
+
+	// Create actor entry
+	entry := &actorEntry{
+		ref:         ref,
+		stateID:     currentState,
+		supervision: options.supervision,
+		autoForward: autoForward,
+		onDone:      onDone,
+		onError:     onError,
+	}
+
+	// Register the actor
+	parent.actorRegistry[id] = entry
+	parent.actorsByState[currentState] = append(parent.actorsByState[currentState], id)
+
+	// Create child interpreter
+	childInterp := NewInterpreter(childMachine)
+
+	// Set up parent reference for SendParent
+	childInterp.parentSend = func(e Event) error {
+		parent.Send(e)
+		return nil
+	}
+
+	// Start the child actor in a goroutine
+	go runChildActor(parent, childInterp, entry, ctx)
+
+	return ref, nil
+}
+
+// SpawnWithContext is like Spawn but allows initializing the child context
+// from the parent context.
+func SpawnWithContext[ParentC, ChildC any](
+	parent *Interpreter[ParentC],
+	id ActorID,
+	childMachine *ir.MachineConfig[ChildC],
+	initContext func(ParentC) ChildC,
+	opts ...SpawnOption,
+) (*ActorRef, error) {
+	// Get parent context under main mutex
+	parent.mu.Lock()
+	if !parent.started {
+		parent.mu.Unlock()
+		return nil, errors.New("interpreter not started")
+	}
+	childContext := initContext(parent.state.Context)
+	parent.mu.Unlock()
+
+	// Create a new machine config with the initialized context
+	childMachineWithContext := childMachine.WithContext(childContext)
+
+	// Delegate to regular Spawn (which does its own duplicate ID check)
+	return Spawn(parent, id, childMachineWithContext, opts...)
 }

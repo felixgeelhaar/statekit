@@ -1,10 +1,5 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Testing · Statekit</title><meta name="description" content="Testing — Statekit documentation"><link rel="canonical" href="https://klarlabs-studio.github.io/statekit/docs/testing"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://klarlabs-studio.github.io/statekit/docs/testing"><meta property="og:title" content="Testing · Statekit"><meta property="og:description" content="Testing — Statekit documentation"><meta property="og:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Testing · Statekit"><meta name="twitter:description" content="Testing — Statekit documentation"><meta name="twitter:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Testing — Statekit documentation","codeRepository":"https://github.com/klarlabs-studio/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://klarlabs-studio.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.FCQJRL0B.css">
-<style>.docs-shell{min-height:100vh;background:var(--bg)}.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem}.docs-sidebar{position:sticky;top:1.5rem;align-self:start;max-height:calc(100vh - 3rem);overflow-y:auto;padding-right:.5rem}.docs-sidebar-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem}.docs-nav{list-style:none;padding:0;margin:0;display:grid;gap:.15rem}.docs-nav-link{display:block;padding:.4rem .6rem;border-radius:6px;color:var(--text-secondary);font-size:.9rem;text-decoration:none}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem);margin:0 0 1.5rem}.markdown-body{color:var(--text);line-height:1.7;font-size:1rem}.markdown-body h2{font-family:Space Grotesk,system-ui,sans-serif;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);font-size:1.4rem}.markdown-body h3{font-family:Space Grotesk,system-ui,sans-serif;margin:1.75rem 0 .75rem;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{font-family:JetBrains Mono,monospace;font-size:.88em;background:var(--bg-secondary);padding:.1rem .35rem;border-radius:4px;color:var(--text)}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin:1rem 0}.markdown-body pre code{background:transparent;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);padding:.5rem .75rem;text-align:left}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);margin:1rem 0;padding:.4rem 1rem;color:var(--text-secondary);background:#00d4ff0a}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media(max-width:768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{position:static;max-height:none;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem}}
-</style></head> <body>  <div class="docs-shell"> <header class="header"> <a href="/statekit/" class="logo" aria-label="Statekit home"> <div class="logo-icon"> <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"> <rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect> <circle cx="12" cy="12" r="4" fill="#00d4ff"></circle> <circle cx="24" cy="12" r="4" fill="#a855f7"></circle> <circle cx="18" cy="24" r="4" fill="#00ff88"></circle> <path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path> <path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path> <path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path> </svg> </div> <span class="logo-text">State<span>kit</span></span> </a> <nav class="header-nav" aria-label="Primary"> <a href="/statekit/" class="header-nav-link">Home</a> <a href="/statekit/play" class="header-nav-link">Play</a> <a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a> <a href="https://pkg.go.dev/go.klarlabs.de/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a> </nav> <div class="header-actions"> <a href="https://github.com/klarlabs-studio/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"> <path d="M12 2L2 7l10 5 10-5-10-5z"></path> <path d="M2 17l10 5 10-5"></path> <path d="M2 12l10 5 10-5"></path> </svg>
-MCP
-</a> <a href="https://github.com/klarlabs-studio/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg>
-GitHub
-</a>  </div> </header> <script type="module">document.getElementById("shortcuts-btn")?.addEventListener("click",()=>{document.getElementById("shortcuts-overlay")?.classList.toggle("active")});</script> <div class="docs-layout"> <aside class="docs-sidebar" aria-label="Documentation navigation"> <h2 class="docs-sidebar-title">Documentation</h2> <ul class="docs-nav"> <li> <a href="/statekit/docs/actor-persistence" class="docs-nav-link"> Actor Persistence </a> </li><li> <a href="/statekit/docs/api-reference" class="docs-nav-link"> Api Reference </a> </li><li> <a href="/statekit/docs/choosing-an-api" class="docs-nav-link"> Choosing An Api </a> </li><li> <a href="/statekit/docs/code-generation" class="docs-nav-link"> Code Generation </a> </li><li> <a href="/statekit/docs/getting-started" class="docs-nav-link"> Getting Started </a> </li><li> <a href="/statekit/docs/guards-actions" class="docs-nav-link"> Guards Actions </a> </li><li> <a href="/statekit/docs/hierarchical-states" class="docs-nav-link"> Hierarchical States </a> </li><li> <a href="/statekit/docs/http-integration" class="docs-nav-link"> Http Integration </a> </li><li> <a href="/statekit/docs/lint" class="docs-nav-link"> Lint </a> </li><li> <a href="/statekit/docs/machine-composition" class="docs-nav-link"> Machine Composition </a> </li><li> <a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link"> Migration From Looplab Fsm </a> </li><li> <a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link"> Migration From Qmuntal Stateless </a> </li><li> <a href="/statekit/docs/observability" class="docs-nav-link"> Observability </a> </li><li> <a href="/statekit/docs/opentelemetry" class="docs-nav-link"> Opentelemetry </a> </li><li> <a href="/statekit/docs/patterns-recipes" class="docs-nav-link"> Patterns Recipes </a> </li><li> <a href="/statekit/docs/performance-tuning" class="docs-nav-link"> Performance Tuning </a> </li><li> <a href="/statekit/docs/plugin-system" class="docs-nav-link"> Plugin System </a> </li><li> <a href="/statekit/docs/reflection-dsl" class="docs-nav-link"> Reflection Dsl </a> </li><li> <a href="/statekit/docs/stability" class="docs-nav-link"> Stability </a> </li><li> <a href="/statekit/docs/tdd" class="docs-nav-link"> Tdd </a> </li><li> <a href="/statekit/docs/testing" class="docs-nav-link is-active" aria-current="page"> Testing </a> </li><li> <a href="/statekit/docs/visualization" class="docs-nav-link"> Visualization </a> </li><li> <a href="/statekit/docs/xstate-migration" class="docs-nav-link"> Xstate Migration </a> </li> </ul> </aside> <article class="docs-article"> <header class="docs-article-header"> <h1>Testing</h1> </header> <div class="markdown-body"> <h1 id="testing-state-machines">Testing State Machines</h1>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Testing · Statekit</title><meta name="description" content="Testing — Statekit documentation"><link rel="canonical" href="https://klarlabs-studio.github.io/statekit/docs/testing"><link rel="icon" type="image/svg+xml" href="/statekit/favicon.svg"><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://klarlabs-studio.github.io/statekit/docs/testing"><meta property="og:title" content="Testing · Statekit"><meta property="og:description" content="Testing — Statekit documentation"><meta property="og:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><meta property="og:site_name" content="Statekit"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Testing · Statekit"><meta name="twitter:description" content="Testing — Statekit documentation"><meta name="twitter:image" content="https://klarlabs-studio.github.io/statekit/og-card.svg"><!-- Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Statekit","description":"Testing — Statekit documentation","codeRepository":"https://github.com/klarlabs-studio/statekit","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","url":"https://klarlabs-studio.github.io/statekit"}</script><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/statekit/_astro/Header.5tfqMtrl.css"><style>.docs-shell{background:var(--bg);min-height:100vh}.docs-layout{grid-template-columns:240px 1fr;gap:2rem;max-width:1200px;margin:0 auto;padding:2rem 1.5rem 6rem;display:grid}.docs-sidebar{align-self:start;max-height:calc(100vh - 3rem);padding-right:.5rem;position:sticky;top:1.5rem;overflow-y:auto}.docs-sidebar-title{text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .75rem;font-size:.75rem;font-weight:600}.docs-nav{gap:.15rem;margin:0;padding:0;list-style:none;display:grid}.docs-nav-link{color:var(--text-secondary);border-radius:6px;padding:.4rem .6rem;font-size:.9rem;text-decoration:none;display:block}.docs-nav-link:hover{background:var(--bg-tertiary);color:var(--text)}.docs-nav-link.is-active{color:var(--accent-cyan);background:#00d4ff14}.docs-article{min-width:0}.docs-article-header h1{margin:0 0 1.5rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:clamp(1.75rem,3vw,2.25rem)}.markdown-body{color:var(--text);font-size:1rem;line-height:1.7}.markdown-body h2{border-bottom:1px solid var(--border);margin:2.5rem 0 1rem;padding-bottom:.4rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:1.4rem}.markdown-body h3{margin:1.75rem 0 .75rem;font-family:Space Grotesk,system-ui,sans-serif;font-size:1.15rem}.markdown-body p,.markdown-body ul,.markdown-body ol,.markdown-body table{margin:.75rem 0}.markdown-body ul,.markdown-body ol{padding-left:1.4rem}.markdown-body li{margin:.3rem 0}.markdown-body a{color:var(--accent-cyan);border-bottom:1px solid #0000;text-decoration:none}.markdown-body a:hover{border-bottom-color:var(--accent-cyan)}.markdown-body code{background:var(--bg-secondary);color:var(--text);border-radius:4px;padding:.1rem .35rem;font-family:JetBrains Mono,monospace;font-size:.88em}.markdown-body pre{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;margin:1rem 0;padding:1rem 1.2rem;overflow-x:auto}.markdown-body pre code{background:0 0;padding:0;font-size:.85rem;line-height:1.55}.markdown-body table{border-collapse:collapse;width:100%;font-size:.92rem}.markdown-body th,.markdown-body td{border:1px solid var(--border);text-align:left;padding:.5rem .75rem}.markdown-body th{background:var(--bg-secondary);font-weight:600}.markdown-body blockquote{border-left:3px solid var(--accent-cyan);color:var(--text-secondary);background:#00d4ff0a;margin:1rem 0;padding:.4rem 1rem}.markdown-body hr{border:none;border-top:1px solid var(--border);margin:2rem 0}@media (width<=768px){.docs-layout{grid-template-columns:1fr;padding:1.5rem 1rem 3rem}.docs-sidebar{border-bottom:1px solid var(--border);max-height:none;margin-bottom:1rem;padding-bottom:1rem;position:static}}
+</style></head><body><div class="docs-shell"><header class="header"><a href="/statekit/" class="logo" aria-label="Statekit home"><div class="logo-icon"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statekit logo"><rect x="2" y="2" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2" fill="none"></rect><circle cx="12" cy="12" r="4" fill="#00d4ff"></circle><circle cx="24" cy="12" r="4" fill="#a855f7"></circle><circle cx="18" cy="24" r="4" fill="#00ff88"></circle><path d="M15 12 L21 12" stroke="#00d4ff" stroke-width="2"></path><path d="M12 15 L18 21" stroke="#00d4ff" stroke-width="2"></path><path d="M24 15 L18 21" stroke="#a855f7" stroke-width="2"></path></svg></div><span class="logo-text">State<span>kit</span></span></a><nav class="header-nav" aria-label="Primary"><a href="/statekit/" class="header-nav-link">Home</a><a href="/statekit/play" class="header-nav-link">Play</a><a href="/statekit/docs/" class="header-nav-link is-active" aria-current="page">Docs</a><a href="https://pkg.go.dev/go.klarlabs.de/statekit" class="header-nav-link" target="_blank" rel="noopener">API</a></nav><div class="header-actions"><a href="https://github.com/klarlabs-studio/statekit/tree/main/mcp" class="header-link" target="_blank" rel="noopener" aria-label="MCP Server for AI-assisted state machine development"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>MCP</a><a href="https://github.com/klarlabs-studio/statekit" class="header-link" target="_blank" rel="noopener" aria-label="View Statekit on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>GitHub</a></div></header><script type="module">document.getElementById(`shortcuts-btn`)?.addEventListener(`click`,()=>{document.getElementById(`shortcuts-overlay`)?.classList.toggle(`active`)});</script><div class="docs-layout"><aside class="docs-sidebar" aria-label="Documentation navigation"><h2 class="docs-sidebar-title">Documentation</h2><ul class="docs-nav"><li><a href="/statekit/docs/actor-persistence" class="docs-nav-link">Actor Persistence</a></li><li><a href="/statekit/docs/api-reference" class="docs-nav-link">Api Reference</a></li><li><a href="/statekit/docs/builder-terminators" class="docs-nav-link">Builder Terminators</a></li><li><a href="/statekit/docs/choosing-an-api" class="docs-nav-link">Choosing An Api</a></li><li><a href="/statekit/docs/code-generation" class="docs-nav-link">Code Generation</a></li><li><a href="/statekit/docs/getting-started" class="docs-nav-link">Getting Started</a></li><li><a href="/statekit/docs/guards-actions" class="docs-nav-link">Guards Actions</a></li><li><a href="/statekit/docs/hierarchical-states" class="docs-nav-link">Hierarchical States</a></li><li><a href="/statekit/docs/http-integration" class="docs-nav-link">Http Integration</a></li><li><a href="/statekit/docs/lint" class="docs-nav-link">Lint</a></li><li><a href="/statekit/docs/machine-composition" class="docs-nav-link">Machine Composition</a></li><li><a href="/statekit/docs/migration-from-looplab-fsm" class="docs-nav-link">Migration From Looplab Fsm</a></li><li><a href="/statekit/docs/migration-from-qmuntal-stateless" class="docs-nav-link">Migration From Qmuntal Stateless</a></li><li><a href="/statekit/docs/observability" class="docs-nav-link">Observability</a></li><li><a href="/statekit/docs/opentelemetry" class="docs-nav-link">Opentelemetry</a></li><li><a href="/statekit/docs/patterns-recipes" class="docs-nav-link">Patterns Recipes</a></li><li><a href="/statekit/docs/performance-tuning" class="docs-nav-link">Performance Tuning</a></li><li><a href="/statekit/docs/plugin-system" class="docs-nav-link">Plugin System</a></li><li><a href="/statekit/docs/reflection-dsl" class="docs-nav-link">Reflection Dsl</a></li><li><a href="/statekit/docs/stability" class="docs-nav-link">Stability</a></li><li><a href="/statekit/docs/stripe-webhook-saga" class="docs-nav-link">Stripe Webhook Saga</a></li><li><a href="/statekit/docs/tdd" class="docs-nav-link">Tdd</a></li><li><a href="/statekit/docs/testing" class="docs-nav-link is-active" aria-current="page">Testing</a></li><li><a href="/statekit/docs/visualization" class="docs-nav-link">Visualization</a></li><li><a href="/statekit/docs/xstate-migration" class="docs-nav-link">Xstate Migration</a></li></ul></aside><article class="docs-article"><header class="docs-article-header"><h1>Testing</h1></header><div class="markdown-body"><h1 id="testing-state-machines">Testing State Machines</h1>
 <p>Statekit provides dedicated testing and debugging packages to help you write comprehensive tests for your state machines.</p>
 <h2 id="installation">Installation</h2>
 <p>The testing and debug packages are included with statekit:</p>
@@ -75,52 +70,56 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertDone</span><span style="color:#E1E4E8">(t, interp)</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
 <p>Available assertions:</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Function</th><th>Description</th></tr></thead><tbody><tr><td><code>AssertState</code></td><td>Assert current state equals expected</td></tr><tr><td><code>AssertMatches</code></td><td>Assert current state matches (including ancestors)</td></tr><tr><td><code>AssertDone</code></td><td>Assert machine is in a final state</td></tr><tr><td><code>AssertNotDone</code></td><td>Assert machine is not in a final state</td></tr><tr><td><code>AssertTransitioned</code></td><td>Assert recorder captured a specific transition</td></tr><tr><td><code>AssertNoTransition</code></td><td>Assert event did not cause a transition</td></tr><tr><td><code>AssertEventSequence</code></td><td>Assert recorder captured events in order</td></tr><tr><td><code>AssertStateSequence</code></td><td>Assert recorder captured states in order</td></tr><tr><td><code>AssertContext</code></td><td>Assert context satisfies a predicate</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AssertState</code></td>
+<td>Assert current state equals expected</td>
+</tr>
+<tr>
+<td><code>AssertMatches</code></td>
+<td>Assert current state matches (including ancestors)</td>
+</tr>
+<tr>
+<td><code>AssertDone</code></td>
+<td>Assert machine is in a final state</td>
+</tr>
+<tr>
+<td><code>AssertNotDone</code></td>
+<td>Assert machine is not in a final state</td>
+</tr>
+<tr>
+<td><code>AssertTerminal</code></td>
+<td>Assert machine is in a final state and the given events do not move it</td>
+</tr>
+<tr>
+<td><code>AssertTransitioned</code></td>
+<td>Assert recorder captured a specific transition</td>
+</tr>
+<tr>
+<td><code>AssertNoTransition</code></td>
+<td>Assert event did not cause a transition</td>
+</tr>
+<tr>
+<td><code>AssertEventSequence</code></td>
+<td>Assert recorder captured events in order</td>
+</tr>
+<tr>
+<td><code>AssertStateSequence</code></td>
+<td>Assert recorder captured states in order</td>
+</tr>
+<tr>
+<td><code>AssertContext</code></td>
+<td>Assert context satisfies a predicate</td>
+</tr>
+</tbody>
+</table>
 <h3 id="fluent-assertions">Fluent Assertions</h3>
 <p>For more expressive tests, use the fluent assertion API:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestWorkflow</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
@@ -154,18 +153,80 @@ GitHub
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Send events by type only (no payload)</span></span>
 <span class="line"><span style="color:#E1E4E8">statetest.</span><span style="color:#B392F0">SendEventTypes</span><span style="color:#E1E4E8">(interp, </span><span style="color:#9ECBFF">"START"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"PAUSE"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"RESUME"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<h3 id="starting-a-test-at-a-specific-state">Starting a Test at a Specific State</h3>
+<p>Some properties belong to one state and have nothing to do with the path taken
+to reach it — “this state ignores <code>CANCEL</code>”, or the negative property every
+statechart user eventually wants to assert: <strong>a final state accepts nothing</strong>.</p>
+<p>Driving the machine event by event to get there makes such a test long and
+couples it to unrelated transitions. <code>statetest.InterpreterAt</code> positions a
+started interpreter at any state of the machine you actually ship, including a
+final one:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestArchivedIsTerminal</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">InterpreterAt</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">BuildLifecycle</span><span style="color:#E1E4E8">(), </span><span style="color:#9ECBFF">"archived"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Close</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    statetest.</span><span style="color:#B392F0">AssertTerminal</span><span style="color:#E1E4E8">(t, interp, </span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"APPROVE"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"PUBLISH"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ARCHIVE"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><code>AssertTerminal</code> asserts the interpreter is done and that none of the listed
+events move it. Pass every event the machine defines anywhere, not just the
+ones plausible for this state — the point is that none of them apply.</p>
+<p>Sweep every final state in a table:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> TestFinalStatesAreTerminal</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    machine </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> BuildLifecycle</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    allEvents </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">EventType</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"SUBMIT"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"APPROVE"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"PUBLISH"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ARCHIVE"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> _, final </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> []</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">StateID</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"archived"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"rejected"</span><span style="color:#E1E4E8">} {</span></span>
+<span class="line"><span style="color:#E1E4E8">        t.</span><span style="color:#B392F0">Run</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">(final), </span><span style="color:#F97583">func</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">t</span><span style="color:#F97583"> *</span><span style="color:#B392F0">testing</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">InterpreterAt</span><span style="color:#E1E4E8">(machine, final)</span></span>
+<span class="line"><span style="color:#F97583">            defer</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Close</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">            statetest.</span><span style="color:#B392F0">AssertTerminal</span><span style="color:#E1E4E8">(t, interp, allEvents</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Two caveats, both from the fact that the interpreter is <em>placed</em> at the state
+rather than moved into it:</p>
+<ul>
+<li><strong>Entry actions do not run</strong>, and no transition into the state is recorded.
+When the path matters, use <code>RunMachine</code> or the recorder instead.</li>
+<li><strong>The context is the machine’s configured initial context</strong>, not what a real
+run would have accumulated. Set up anything the assertion needs with
+<code>interp.UpdateContext</code>.</li>
+</ul>
+<p>Compound states resolve to their initial leaf, matching <code>Start</code>. Parallel
+states are not supported — restoring one needs per-region leaves that a single
+state ID cannot express; use <code>Interpreter.Restore</code> with an explicit
+<code>ActiveInParallel</code> map.</p>
+<h4 id="under-the-hood-and-when-to-reach-past-it">Under the hood, and when to reach past it</h4>
+<p><code>InterpreterAt</code> is a thin wrapper over <code>Interpreter.Restore</code>. The snapshot API
+is documented as a persistence and recovery mechanism, but it is equally the
+answer to “start this test at state X” — it is the only way to position an
+interpreter somewhere other than the initial state. Use <code>Restore</code> directly when
+you need more than a state ID: history maps, pending timers, parallel regions,
+or a specific context.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">interp </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewInterpreter</span><span style="color:#E1E4E8">(machine)</span></span>
+<span class="line"><span style="color:#E1E4E8">err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> interp.</span><span style="color:#B392F0">Restore</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">statekit</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Snapshot</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">]{</span></span>
+<span class="line"><span style="color:#E1E4E8">    MachineID:    machine.ID,</span></span>
+<span class="line"><span style="color:#E1E4E8">    CurrentState: </span><span style="color:#9ECBFF">"archived"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    Context:      </span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">{OrderID: </span><span style="color:#9ECBFF">"A-1"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<p>One thing that is <em>not</em> required: rebuilding the machine without the <code>Final()</code>
+marker. Starting in a final state is legal — point <code>WithInitial</code> at one and
+<code>Start</code> lands there with <code>Done()</code> reporting true. But changing the machine
+defeats the purpose of a test whose job is to prove the machine and its
+specification agree, which is exactly why <code>InterpreterAt</code> exists.</p>
 <h3 id="quick-machine-builders">Quick Machine Builders</h3>
 <p>Create simple machines for testing:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Linear machine: idle -> running -> done (NEXT transitions)</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#6A737D">// Linear machine: idle -&gt; running -&gt; done (NEXT transitions)</span></span>
 <span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">QuickMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"running"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"done"</span><span style="color:#E1E4E8">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#6A737D">// Toggle machine: off &#x3C;-> on</span></span>
+<span class="line"><span style="color:#6A737D">// Toggle machine: off &lt;-&gt; on</span></span>
 <span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">ToggleMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"off"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"on"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ON"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"OFF"</span><span style="color:#E1E4E8">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#6A737D">// Cycle machine: a -> b -> c -> a (NEXT event)</span></span>
+<span class="line"><span style="color:#6A737D">// Cycle machine: a -&gt; b -&gt; c -&gt; a (NEXT event)</span></span>
 <span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">CycleMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"c"</span><span style="color:#E1E4E8">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#6A737D">// Branch machine: start -> (a, b) based on event</span></span>
+<span class="line"><span style="color:#6A737D">// Branch machine: start -&gt; (a, b) based on event</span></span>
 <span class="line"><span style="color:#E1E4E8">machine </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statetest.</span><span style="color:#B392F0">BranchMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"start"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"a"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"b"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"GO_A"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"GO_B"</span><span style="color:#E1E4E8">)</span></span></code></pre>
 <h3 id="action-and-guard-test-helpers">Action and Guard Test Helpers</h3>
 <p>Control actions and guards in tests:</p>
@@ -246,72 +307,72 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SUBMIT would go to: </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> (transition: </span><span style="color:#79B8FF">%v</span><span style="color:#9ECBFF">)</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, target, willTransition)</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
 <p>Inspector methods:</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th>Method</th><th>Description</th></tr></thead><tbody><tr><td><code>CurrentState()</code></td><td>Get current state ID</td></tr><tr><td><code>CurrentContext()</code></td><td>Get current context</td></tr><tr><td><code>IsDone()</code></td><td>Check if in final state</td></tr><tr><td><code>MachineID()</code></td><td>Get machine ID</td></tr><tr><td><code>InitialState()</code></td><td>Get initial state ID</td></tr><tr><td><code>AllStates()</code></td><td>List all state IDs</td></tr><tr><td><code>StateInfo(id)</code></td><td>Get detailed state information</td></tr><tr><td><code>AvailableEvents()</code></td><td>List events from current state</td></tr><tr><td><code>CanTransition(event)</code></td><td>Check if event would cause transition</td></tr><tr><td><code>SimulateTransition(event)</code></td><td>Simulate without side effects</td></tr><tr><td><code>TransitionsFrom(id)</code></td><td>List transitions from a state</td></tr><tr><td><code>Path()</code></td><td>Get path from root to current state</td></tr><tr><td><code>Dump()</code></td><td>Get human-readable state dump</td></tr><tr><td><code>DumpMachine()</code></td><td>Get complete machine dump</td></tr></tbody></table>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CurrentState()</code></td>
+<td>Get current state ID</td>
+</tr>
+<tr>
+<td><code>CurrentContext()</code></td>
+<td>Get current context</td>
+</tr>
+<tr>
+<td><code>IsDone()</code></td>
+<td>Check if in final state</td>
+</tr>
+<tr>
+<td><code>MachineID()</code></td>
+<td>Get machine ID</td>
+</tr>
+<tr>
+<td><code>InitialState()</code></td>
+<td>Get initial state ID</td>
+</tr>
+<tr>
+<td><code>AllStates()</code></td>
+<td>List all state IDs</td>
+</tr>
+<tr>
+<td><code>StateInfo(id)</code></td>
+<td>Get detailed state information</td>
+</tr>
+<tr>
+<td><code>AvailableEvents()</code></td>
+<td>List events from current state</td>
+</tr>
+<tr>
+<td><code>CanTransition(event)</code></td>
+<td>Check if event would cause transition</td>
+</tr>
+<tr>
+<td><code>SimulateTransition(event)</code></td>
+<td>Simulate without side effects</td>
+</tr>
+<tr>
+<td><code>TransitionsFrom(id)</code></td>
+<td>List transitions from a state</td>
+</tr>
+<tr>
+<td><code>Path()</code></td>
+<td>Get path from root to current state</td>
+</tr>
+<tr>
+<td><code>Dump()</code></td>
+<td>Get human-readable state dump</td>
+</tr>
+<tr>
+<td><code>DumpMachine()</code></td>
+<td>Get complete machine dump</td>
+</tr>
+</tbody>
+</table>
 <h3 id="state-graph">State Graph</h3>
 <p>The <code>StateGraph</code> represents the machine as a navigable graph:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">graph </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> debug.</span><span style="color:#B392F0">NewStateGraph</span><span style="color:#E1E4E8">(machine)</span></span>
@@ -324,7 +385,7 @@ GitHub
 <span class="line"><span style="color:#6A737D">// Find edges</span></span>
 <span class="line"><span style="color:#E1E4E8">edges </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">GetEdgesFrom</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">)</span></span>
 <span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> _, edge </span><span style="color:#F97583">:=</span><span style="color:#F97583"> range</span><span style="color:#E1E4E8"> edges {</span></span>
-<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> -> </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> on </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, edge.From, edge.To, edge.Event)</span></span>
+<span class="line"><span style="color:#E1E4E8">    fmt.</span><span style="color:#B392F0">Printf</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"  </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> -&gt; </span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF"> on </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, edge.From, edge.To, edge.Event)</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Analysis</span></span>
@@ -345,10 +406,10 @@ GitHub
 <span class="line"><span style="color:#E1E4E8">mermaid </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">ToMermaid</span><span style="color:#E1E4E8">()</span></span>
 <span class="line"><span style="color:#6A737D">// Output:</span></span>
 <span class="line"><span style="color:#6A737D">// stateDiagram-v2</span></span>
-<span class="line"><span style="color:#6A737D">//     [*] --> idle</span></span>
-<span class="line"><span style="color:#6A737D">//     idle --> running : START</span></span>
-<span class="line"><span style="color:#6A737D">//     running --> done : COMPLETE</span></span>
-<span class="line"><span style="color:#6A737D">//     done --> [*]</span></span>
+<span class="line"><span style="color:#6A737D">//     [*] --&gt; idle</span></span>
+<span class="line"><span style="color:#6A737D">//     idle --&gt; running : START</span></span>
+<span class="line"><span style="color:#6A737D">//     running --&gt; done : COMPLETE</span></span>
+<span class="line"><span style="color:#6A737D">//     done --&gt; [*]</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// GraphViz DOT (for visualization tools)</span></span>
 <span class="line"><span style="color:#E1E4E8">dot </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> graph.</span><span style="color:#B392F0">ToDOT</span><span style="color:#E1E4E8">()</span></span>
@@ -357,10 +418,10 @@ GitHub
 <span class="line"><span style="color:#6A737D">//     rankdir=LR;</span></span>
 <span class="line"><span style="color:#6A737D">//     node [shape=box, style=rounded];</span></span>
 <span class="line"><span style="color:#6A737D">//     __start__ [shape=point, width=0.1];</span></span>
-<span class="line"><span style="color:#6A737D">//     __start__ -> idle;</span></span>
+<span class="line"><span style="color:#6A737D">//     __start__ -&gt; idle;</span></span>
 <span class="line"><span style="color:#6A737D">//     done [shape=doublecircle];</span></span>
-<span class="line"><span style="color:#6A737D">//     idle -> running [label="START"];</span></span>
-<span class="line"><span style="color:#6A737D">//     running -> done [label="COMPLETE"];</span></span>
+<span class="line"><span style="color:#6A737D">//     idle -&gt; running [label="START"];</span></span>
+<span class="line"><span style="color:#6A737D">//     running -&gt; done [label="COMPLETE"];</span></span>
 <span class="line"><span style="color:#6A737D">// }</span></span></code></pre>
 <p>Use the exports with:</p>
 <ul>
@@ -473,4 +534,5 @@ GitHub
 <li>
 <p><strong>Analyze for issues</strong>: Run <code>graph.Analyze()</code> to detect unreachable states and dead ends during testing.</p>
 </li>
-</ol> </div> </article> </div> </div> </body></html>
+</ol>
+</div></article></div></div></body></html>
