@@ -9,6 +9,7 @@ import (
 )
 
 func TestNativeExporter_SimpleMachine(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("traffic_light").
 		WithInitial("green").
 		State("green").
@@ -60,6 +61,7 @@ func TestNativeExporter_SimpleMachine(t *testing.T) {
 }
 
 func TestNativeExporter_WithEntryExitActions(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		WithAction("onEnter", func(ctx *struct{}, e statekit.Event) {}).
@@ -89,6 +91,7 @@ func TestNativeExporter_WithEntryExitActions(t *testing.T) {
 }
 
 func TestNativeExporter_WithTransitionActions(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		WithAction("doAction", func(ctx *struct{}, e statekit.Event) {}).
@@ -129,6 +132,7 @@ func TestNativeExporter_WithTransitionActions(t *testing.T) {
 }
 
 func TestNativeExporter_HierarchicalStates(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").
@@ -177,6 +181,7 @@ func TestNativeExporter_HierarchicalStates(t *testing.T) {
 }
 
 func TestNativeExporter_JSONOutput(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").

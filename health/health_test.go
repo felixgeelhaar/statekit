@@ -28,6 +28,7 @@ func buildTestMachine() *statekit.MachineConfig[struct{}] {
 }
 
 func TestNewChecker(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	if c == nil {
 		t.Error("NewChecker should return non-nil")
@@ -38,6 +39,7 @@ func TestNewChecker(t *testing.T) {
 }
 
 func TestChecker_Register(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -56,6 +58,7 @@ func TestChecker_Register(t *testing.T) {
 }
 
 func TestChecker_Unregister(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -70,6 +73,7 @@ func TestChecker_Unregister(t *testing.T) {
 }
 
 func TestChecker_Liveness_NoInterpreters(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	result := c.Liveness()
 
@@ -82,6 +86,7 @@ func TestChecker_Liveness_NoInterpreters(t *testing.T) {
 }
 
 func TestChecker_Liveness_Healthy(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -99,6 +104,7 @@ func TestChecker_Liveness_Healthy(t *testing.T) {
 }
 
 func TestChecker_Liveness_NilInterpreter(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	c.Register("test-1", nil)
 
@@ -113,6 +119,7 @@ func TestChecker_Liveness_NilInterpreter(t *testing.T) {
 }
 
 func TestChecker_Readiness_NoInterpreters(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	result := c.Readiness()
 
@@ -122,6 +129,7 @@ func TestChecker_Readiness_NoInterpreters(t *testing.T) {
 }
 
 func TestChecker_Readiness_Healthy(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -136,6 +144,7 @@ func TestChecker_Readiness_Healthy(t *testing.T) {
 }
 
 func TestChecker_Readiness_FinalState(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -152,6 +161,7 @@ func TestChecker_Readiness_FinalState(t *testing.T) {
 }
 
 func TestChecker_Readiness_Degraded(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 
@@ -175,6 +185,7 @@ func TestChecker_Readiness_Degraded(t *testing.T) {
 }
 
 func TestChecker_Readiness_WithReadyStates(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -198,6 +209,7 @@ func TestChecker_Readiness_WithReadyStates(t *testing.T) {
 }
 
 func TestChecker_CheckMachine_NotFound(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	result := c.CheckMachine("nonexistent")
 
@@ -210,6 +222,7 @@ func TestChecker_CheckMachine_NotFound(t *testing.T) {
 }
 
 func TestChecker_CheckMachine_NilInterpreter(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	c.Register("test-1", nil)
 
@@ -224,6 +237,7 @@ func TestChecker_CheckMachine_NilInterpreter(t *testing.T) {
 }
 
 func TestChecker_CheckMachine_Healthy(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -244,6 +258,7 @@ func TestChecker_CheckMachine_Healthy(t *testing.T) {
 }
 
 func TestChecker_CheckMachine_NotReady(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -263,6 +278,7 @@ func TestChecker_CheckMachine_NotReady(t *testing.T) {
 }
 
 func TestChecker_LivenessHandler(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -290,6 +306,7 @@ func TestChecker_LivenessHandler(t *testing.T) {
 }
 
 func TestChecker_ReadinessHandler(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -317,6 +334,7 @@ func TestChecker_ReadinessHandler(t *testing.T) {
 }
 
 func TestChecker_ReadinessHandler_Unhealthy(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 
 	handler := c.ReadinessHandler()
@@ -331,6 +349,7 @@ func TestChecker_ReadinessHandler_Unhealthy(t *testing.T) {
 }
 
 func TestChecker_HealthHandler_AllHealthy(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
@@ -364,6 +383,7 @@ func TestChecker_HealthHandler_AllHealthy(t *testing.T) {
 }
 
 func TestChecker_HealthHandler_LivenessUnhealthy(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	// No interpreters = liveness fails
 
@@ -388,6 +408,7 @@ func TestChecker_HealthHandler_LivenessUnhealthy(t *testing.T) {
 }
 
 func TestChecker_HealthHandler_Degraded(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 
@@ -424,6 +445,7 @@ func TestChecker_HealthHandler_Degraded(t *testing.T) {
 }
 
 func TestChecker_MachineIDs_Order(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	machine := buildTestMachine()
 
@@ -447,6 +469,7 @@ func TestChecker_MachineIDs_Order(t *testing.T) {
 }
 
 func TestChecker_Readiness_NilInterpreter(t *testing.T) {
+	t.Parallel()
 	c := health.NewChecker[struct{}]()
 	c.Register("test-1", nil)
 
@@ -461,6 +484,7 @@ func TestChecker_Readiness_NilInterpreter(t *testing.T) {
 }
 
 func TestChecker_SetReadyStates_MatchesAncestor(t *testing.T) {
+	t.Parallel()
 	// Build a hierarchical machine
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("active").

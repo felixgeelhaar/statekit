@@ -7,6 +7,7 @@ import (
 )
 
 func TestPedestrianLight_InitialState(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -42,6 +43,7 @@ func TestPedestrianLight_InitialState(t *testing.T) {
 }
 
 func TestPedestrianLight_FullCrossingCycle(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -85,6 +87,7 @@ func TestPedestrianLight_FullCrossingCycle(t *testing.T) {
 }
 
 func TestPedestrianLight_EntryExitOrdering(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -138,6 +141,7 @@ func TestPedestrianLight_EntryExitOrdering(t *testing.T) {
 }
 
 func TestPedestrianLight_MaintenanceMode(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -213,6 +217,7 @@ func TestPedestrianLight_MaintenanceMode(t *testing.T) {
 }
 
 func TestPedestrianLight_EventBubblingFromDeepState(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -255,6 +260,7 @@ func TestPedestrianLight_EventBubblingFromDeepState(t *testing.T) {
 }
 
 func TestPedestrianLight_MultipleCycles(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -278,6 +284,7 @@ func TestPedestrianLight_MultipleCycles(t *testing.T) {
 }
 
 func TestPedestrianLight_IgnoreButtonInWalk(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)
@@ -300,6 +307,7 @@ func TestPedestrianLight_IgnoreButtonInWalk(t *testing.T) {
 }
 
 func TestPedestrianLight_MatchesCompoundStates(t *testing.T) {
+	t.Parallel()
 	machine, err := NewPedestrianLight()
 	if err != nil {
 		t.Fatalf("failed to create pedestrian light: %v", err)

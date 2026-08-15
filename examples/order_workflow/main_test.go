@@ -7,6 +7,7 @@ import (
 )
 
 func TestOrderWorkflow_HappyPath(t *testing.T) {
+	t.Parallel()
 	registry := statekit.NewActionRegistry[OrderContext]().
 		WithAction("logPending", func(ctx *OrderContext, e statekit.Event) {}).
 		WithAction("validateOrder", func(ctx *OrderContext, e statekit.Event) {}).
@@ -75,6 +76,7 @@ func TestOrderWorkflow_HappyPath(t *testing.T) {
 }
 
 func TestOrderWorkflow_EmptyCartBlocked(t *testing.T) {
+	t.Parallel()
 	registry := statekit.NewActionRegistry[OrderContext]().
 		WithAction("logPending", func(ctx *OrderContext, e statekit.Event) {}).
 		WithAction("validateOrder", func(ctx *OrderContext, e statekit.Event) {}).
@@ -106,6 +108,7 @@ func TestOrderWorkflow_EmptyCartBlocked(t *testing.T) {
 }
 
 func TestOrderWorkflow_Cancellation(t *testing.T) {
+	t.Parallel()
 	registry := statekit.NewActionRegistry[OrderContext]().
 		WithAction("logPending", func(ctx *OrderContext, e statekit.Event) {}).
 		WithAction("validateOrder", func(ctx *OrderContext, e statekit.Event) {}).
@@ -140,6 +143,7 @@ func TestOrderWorkflow_Cancellation(t *testing.T) {
 }
 
 func TestOrderWorkflow_PaymentRetry(t *testing.T) {
+	t.Parallel()
 	registry := statekit.NewActionRegistry[OrderContext]().
 		WithAction("logPending", func(ctx *OrderContext, e statekit.Event) {}).
 		WithAction("validateOrder", func(ctx *OrderContext, e statekit.Event) {}).

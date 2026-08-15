@@ -15,6 +15,7 @@ type (
 )
 
 func TestParseMachineStruct_Simple(t *testing.T) {
+	t.Parallel()
 	type SimpleMachine struct {
 		MachineDef `id:"simple" initial:"idle"`
 		Idle       StateNode `on:"START->running"`
@@ -56,6 +57,7 @@ func TestParseMachineStruct_Simple(t *testing.T) {
 }
 
 func TestParseMachineStruct_WithActions(t *testing.T) {
+	t.Parallel()
 	type ActionMachine struct {
 		MachineDef `id:"actions" initial:"idle"`
 		Idle       StateNode `on:"START->running" entry:"logStart" exit:"logExit"`
@@ -85,6 +87,7 @@ func TestParseMachineStruct_WithActions(t *testing.T) {
 }
 
 func TestParseMachineStruct_WithGuards(t *testing.T) {
+	t.Parallel()
 	type GuardMachine struct {
 		MachineDef `id:"guards" initial:"idle"`
 		Idle       StateNode `on:"START->running:canStart"`
@@ -106,6 +109,7 @@ func TestParseMachineStruct_WithGuards(t *testing.T) {
 }
 
 func TestParseMachineStruct_WithTransitionActions(t *testing.T) {
+	t.Parallel()
 	type TransActionMachine struct {
 		MachineDef `id:"transactions" initial:"idle"`
 		Idle       StateNode `on:"START->running/logTransition;notify"`
@@ -131,6 +135,7 @@ func TestParseMachineStruct_WithTransitionActions(t *testing.T) {
 }
 
 func TestParseMachineStruct_MultipleTransitions(t *testing.T) {
+	t.Parallel()
 	type MultiTransMachine struct {
 		MachineDef `id:"multi" initial:"idle"`
 		Idle       StateNode `on:"START->running,SKIP->done"`
@@ -157,6 +162,7 @@ func TestParseMachineStruct_MultipleTransitions(t *testing.T) {
 }
 
 func TestParseMachineStruct_FinalState(t *testing.T) {
+	t.Parallel()
 	type FinalMachine struct {
 		MachineDef `id:"final" initial:"active"`
 		Active     StateNode `on:"COMPLETE->done"`
@@ -182,6 +188,7 @@ func TestParseMachineStruct_FinalState(t *testing.T) {
 }
 
 func TestParseMachineStruct_Hierarchical(t *testing.T) {
+	t.Parallel()
 	type ChildState struct {
 		StateNode `on:"NEXT->sibling"`
 	}
@@ -236,6 +243,7 @@ func TestParseMachineStruct_Hierarchical(t *testing.T) {
 }
 
 func TestParseMachineStruct_MissingMachineDef(t *testing.T) {
+	t.Parallel()
 	type InvalidMachine struct {
 		Idle    StateNode `on:"START->running"`
 		Running StateNode `on:"STOP->idle"`
@@ -248,6 +256,7 @@ func TestParseMachineStruct_MissingMachineDef(t *testing.T) {
 }
 
 func TestParseMachineStruct_MissingID(t *testing.T) {
+	t.Parallel()
 	type InvalidMachine struct {
 		MachineDef `initial:"idle"`
 		Idle       StateNode
@@ -260,6 +269,7 @@ func TestParseMachineStruct_MissingID(t *testing.T) {
 }
 
 func TestParseMachineStruct_MissingInitial(t *testing.T) {
+	t.Parallel()
 	type InvalidMachine struct {
 		MachineDef `id:"test"`
 		Idle       StateNode
@@ -272,6 +282,7 @@ func TestParseMachineStruct_MissingInitial(t *testing.T) {
 }
 
 func TestParseTransition_InvalidFormat(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name  string
 		input string
@@ -292,6 +303,7 @@ func TestParseTransition_InvalidFormat(t *testing.T) {
 }
 
 func TestToSnakeCase(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input    string
 		expected string
@@ -319,6 +331,7 @@ func TestToSnakeCase(t *testing.T) {
 }
 
 func TestParseTransition_ComplexFormat(t *testing.T) {
+	t.Parallel()
 	// Test: EVENT->target/action1;action2:guard
 	trans, err := parseTransition("SUBMIT->processing/validate;log:isValid")
 	if err != nil {
@@ -340,6 +353,7 @@ func TestParseTransition_ComplexFormat(t *testing.T) {
 }
 
 func TestParseMachineStruct_PointerType(t *testing.T) {
+	t.Parallel()
 	type SimpleMachine struct {
 		MachineDef `id:"ptr" initial:"idle"`
 		Idle       StateNode `on:"START->running"`
@@ -358,6 +372,7 @@ func TestParseMachineStruct_PointerType(t *testing.T) {
 }
 
 func TestParseMachineStruct_NonStruct(t *testing.T) {
+	t.Parallel()
 	_, err := ParseMachineStruct(reflect.TypeOf(42))
 	if err == nil {
 		t.Fatal("expected error for non-struct type")
@@ -365,6 +380,7 @@ func TestParseMachineStruct_NonStruct(t *testing.T) {
 }
 
 func TestParseTransition_Whitespace(t *testing.T) {
+	t.Parallel()
 	// Test with extra whitespace
 	trans, err := parseTransition("  EVENT  ->  target  ")
 	if err != nil {
@@ -380,6 +396,7 @@ func TestParseTransition_Whitespace(t *testing.T) {
 }
 
 func TestParseMachineStruct_StateWithNoTags(t *testing.T) {
+	t.Parallel()
 	type MinimalMachine struct {
 		MachineDef `id:"minimal" initial:"idle"`
 		Idle       StateNode
@@ -405,6 +422,7 @@ func TestParseMachineStruct_StateWithNoTags(t *testing.T) {
 }
 
 func TestParseMachineStruct_DeeplyNested(t *testing.T) {
+	t.Parallel()
 	// Level 3: Leaf states
 	type LeafA struct {
 		StateNode `on:"TO_B->leaf_b"`
@@ -464,6 +482,7 @@ func TestParseMachineStruct_DeeplyNested(t *testing.T) {
 }
 
 func TestSplitTrim_EdgeCases(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input    string
 		sep      string
@@ -493,6 +512,7 @@ func TestSplitTrim_EdgeCases(t *testing.T) {
 }
 
 func TestParseTransitions_ErrorContext(t *testing.T) {
+	t.Parallel()
 	// Test that error messages include transition index
 	_, err := parseTransitions("VALID->target, INVALID, ANOTHER->target")
 	if err == nil {

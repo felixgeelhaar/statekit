@@ -47,6 +47,7 @@ func createHierarchicalMachine() *MachineConfig[struct{}] {
 }
 
 func TestStateConfig_IsCompound(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	if !m.States["active"].IsCompound() {
@@ -64,6 +65,7 @@ func TestStateConfig_IsCompound(t *testing.T) {
 }
 
 func TestStateConfig_IsAtomic(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	if !m.States["idle"].IsAtomic() {
@@ -78,6 +80,7 @@ func TestStateConfig_IsAtomic(t *testing.T) {
 }
 
 func TestStateConfig_IsFinal(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	if !m.States["done"].IsFinal() {
@@ -89,6 +92,7 @@ func TestStateConfig_IsFinal(t *testing.T) {
 }
 
 func TestMachineConfig_GetAncestors(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	// loading -> working -> active
@@ -117,6 +121,7 @@ func TestMachineConfig_GetAncestors(t *testing.T) {
 }
 
 func TestMachineConfig_GetPath(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	// Path to loading: active -> working -> loading
@@ -139,6 +144,7 @@ func TestMachineConfig_GetPath(t *testing.T) {
 }
 
 func TestMachineConfig_GetInitialLeaf(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	// active -> idle (active's initial)
@@ -161,6 +167,7 @@ func TestMachineConfig_GetInitialLeaf(t *testing.T) {
 }
 
 func TestMachineConfig_IsDescendantOf(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	// loading is descendant of working
@@ -195,6 +202,7 @@ func TestMachineConfig_IsDescendantOf(t *testing.T) {
 }
 
 func TestMachineConfig_FindLCA(t *testing.T) {
+	t.Parallel()
 	m := createHierarchicalMachine()
 
 	// LCA of loading and processing is working

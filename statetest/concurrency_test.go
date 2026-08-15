@@ -9,6 +9,7 @@ import (
 )
 
 func TestActionCounter_Concurrent(t *testing.T) {
+	t.Parallel()
 	counter := statetest.NewActionCounter()
 	action := statetest.ActionFor[struct{}](counter, "concurrent")
 
@@ -34,6 +35,7 @@ func TestActionCounter_Concurrent(t *testing.T) {
 }
 
 func TestActionCounter_ConcurrentMultipleActions(t *testing.T) {
+	t.Parallel()
 	counter := statetest.NewActionCounter()
 	action1 := statetest.ActionFor[struct{}](counter, "action1")
 	action2 := statetest.ActionFor[struct{}](counter, "action2")
@@ -72,6 +74,7 @@ func TestActionCounter_ConcurrentMultipleActions(t *testing.T) {
 }
 
 func TestGuardResult_Concurrent(t *testing.T) {
+	t.Parallel()
 	guards := statetest.NewGuardResult()
 	guard := statetest.GuardFor[struct{}](guards, "canProceed")
 
@@ -106,6 +109,7 @@ func TestGuardResult_Concurrent(t *testing.T) {
 }
 
 func TestRecorder_ConcurrentRead(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetest.NewRecorder(interp)
@@ -143,6 +147,7 @@ func TestRecorder_ConcurrentRead(t *testing.T) {
 }
 
 func TestRecorder_ConcurrentSendAndRead(t *testing.T) {
+	t.Parallel()
 	machine := buildCycleMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetest.NewRecorder(interp)

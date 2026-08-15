@@ -12,6 +12,7 @@ import (
 )
 
 func TestMachineHandler_GetState(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
@@ -44,6 +45,7 @@ func TestMachineHandler_GetState(t *testing.T) {
 }
 
 func TestMachineHandler_SendEvent(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
@@ -80,6 +82,7 @@ func TestMachineHandler_SendEvent(t *testing.T) {
 }
 
 func TestMachineHandler_SendEvent_NoTransition(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
@@ -109,6 +112,7 @@ func TestMachineHandler_SendEvent_NoTransition(t *testing.T) {
 }
 
 func TestMachineHandler_SendEvent_InvalidBody(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -131,6 +135,7 @@ func TestMachineHandler_SendEvent_InvalidBody(t *testing.T) {
 }
 
 func TestMachineHandler_SendEvent_MissingType(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -153,6 +158,7 @@ func TestMachineHandler_SendEvent_MissingType(t *testing.T) {
 }
 
 func TestMachineHandler_GetContext(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		Count int    `json:"count"`
 		Name  string `json:"name"`
@@ -190,6 +196,7 @@ func TestMachineHandler_GetContext(t *testing.T) {
 }
 
 func TestMachineHandler_ServeHTTP(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("GO").Target("done").Done().
@@ -236,6 +243,7 @@ func TestMachineHandler_ServeHTTP(t *testing.T) {
 }
 
 func TestMachineRegistry(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -285,6 +293,7 @@ func TestMachineRegistry(t *testing.T) {
 }
 
 func TestWithMachine_MachineFromContext(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -306,6 +315,7 @@ func TestWithMachine_MachineFromContext(t *testing.T) {
 }
 
 func TestMachineMiddleware(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -334,6 +344,7 @@ func TestMachineMiddleware(t *testing.T) {
 }
 
 func TestRegistryMiddleware(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -384,6 +395,7 @@ func TestRegistryMiddleware(t *testing.T) {
 }
 
 func TestNewServeMux(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").Done().
@@ -405,6 +417,7 @@ func TestNewServeMux(t *testing.T) {
 }
 
 func TestMachineHandler_FinalState(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("active").
 		State("active").On("COMPLETE").Target("done").Done().
@@ -435,6 +448,7 @@ func TestMachineHandler_FinalState(t *testing.T) {
 }
 
 func TestMachineHandler_WithPayload(t *testing.T) {
+	t.Parallel()
 	type Context struct {
 		Value string
 	}

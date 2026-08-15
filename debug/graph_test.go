@@ -32,6 +32,7 @@ func buildGraphTestMachine() *statekit.MachineConfig[struct{}] {
 }
 
 func TestStateGraph_NewStateGraph(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -53,6 +54,7 @@ func TestStateGraph_NewStateGraph(t *testing.T) {
 }
 
 func TestStateGraph_GetNode(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -71,6 +73,7 @@ func TestStateGraph_GetNode(t *testing.T) {
 }
 
 func TestStateGraph_GetEdgesFrom(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -81,6 +84,7 @@ func TestStateGraph_GetEdgesFrom(t *testing.T) {
 }
 
 func TestStateGraph_GetEdgesTo(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -91,6 +95,7 @@ func TestStateGraph_GetEdgesTo(t *testing.T) {
 }
 
 func TestStateGraph_RootNodes(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -101,6 +106,7 @@ func TestStateGraph_RootNodes(t *testing.T) {
 }
 
 func TestStateGraph_LeafNodes(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -111,6 +117,7 @@ func TestStateGraph_LeafNodes(t *testing.T) {
 }
 
 func TestStateGraph_FinalNodes(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -125,6 +132,7 @@ func TestStateGraph_FinalNodes(t *testing.T) {
 }
 
 func TestStateGraph_GetPath(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -135,6 +143,7 @@ func TestStateGraph_GetPath(t *testing.T) {
 }
 
 func TestStateGraph_Reachable(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -145,6 +154,7 @@ func TestStateGraph_Reachable(t *testing.T) {
 }
 
 func TestStateGraph_UnreachableStates(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -155,6 +165,7 @@ func TestStateGraph_UnreachableStates(t *testing.T) {
 }
 
 func TestStateGraph_DeadEndStates(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -166,6 +177,7 @@ func TestStateGraph_DeadEndStates(t *testing.T) {
 }
 
 func TestStateGraph_String(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -189,6 +201,7 @@ func TestStateGraph_String(t *testing.T) {
 }
 
 func TestStateGraph_ToMermaid(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -212,6 +225,7 @@ func TestStateGraph_ToMermaid(t *testing.T) {
 }
 
 func TestStateGraph_ToDOT(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -235,6 +249,7 @@ func TestStateGraph_ToDOT(t *testing.T) {
 }
 
 func TestStateGraph_Analyze(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 
@@ -267,6 +282,7 @@ func TestStateGraph_Analyze(t *testing.T) {
 }
 
 func TestStateGraph_HierarchicalMachine(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("nested").
 		WithInitial("active").
 		State("active").
@@ -318,6 +334,7 @@ func TestStateGraph_HierarchicalMachine(t *testing.T) {
 }
 
 func TestStateGraph_WithUnreachableState(t *testing.T) {
+	t.Parallel()
 	// Build machine with an unreachable state
 	machine, err := statekit.NewMachine[struct{}]("unreachable_test").
 		WithInitial("a").
@@ -342,6 +359,7 @@ func TestStateGraph_WithUnreachableState(t *testing.T) {
 }
 
 func TestStateGraph_WithDeadEnd(t *testing.T) {
+	t.Parallel()
 	// Build machine with a dead end (non-final state with no outgoing transitions)
 	machine, err := statekit.NewMachine[struct{}]("deadend_test").
 		WithInitial("a").
@@ -364,6 +382,7 @@ func TestStateGraph_WithDeadEnd(t *testing.T) {
 }
 
 func TestAnalysis_String(t *testing.T) {
+	t.Parallel()
 	machine := buildGraphTestMachine()
 	graph := debug.NewStateGraph(machine)
 	analysis := graph.Analyze()

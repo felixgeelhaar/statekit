@@ -29,6 +29,7 @@ When you know what you want, here's how.
 - [Observability](./how-to/observability.md) — Prometheus metrics, health checks, structured logging
 - [OpenTelemetry](./how-to/opentelemetry.md) — distributed tracing
 - [Static Analysis (Lint)](./how-to/lint.md) — catching structural issues at build time
+- [Transition budgets](./how-to/transition-budget.md) — halt after N retries with context + guards
 - [Plugin System](./how-to/plugin-system.md) — observing and modifying interpreter behavior
 - [Machine Composition](./how-to/machine-composition.md) — invoking child machines
 - [Actor Persistence](./how-to/actor-persistence.md) — snapshots and restoration

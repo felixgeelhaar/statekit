@@ -65,6 +65,7 @@ func hierarchicalMachine() *viz.VizMachine {
 }
 
 func TestTreeView_ExpandCollapseToggle(t *testing.T) {
+	t.Parallel()
 	tv := NewTreeView(hierarchicalMachine(), DefaultStyles())
 	if len(tv.Root) == 0 {
 		t.Fatal("expected root nodes")
@@ -122,6 +123,7 @@ func TestTreeView_ExpandCollapseToggle(t *testing.T) {
 }
 
 func TestTreeView_SelectedAndIndicators(t *testing.T) {
+	t.Parallel()
 	tv := NewTreeView(hierarchicalMachine(), DefaultStyles())
 	tv.cursor = -1
 	if tv.Selected() != nil {
@@ -141,6 +143,7 @@ func TestTreeView_SelectedAndIndicators(t *testing.T) {
 }
 
 func TestModel_Update_TreeKeys(t *testing.T) {
+	t.Parallel()
 	model := New(hierarchicalMachine())
 	model.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
 
@@ -177,6 +180,7 @@ func TestModel_Update_TreeKeys(t *testing.T) {
 }
 
 func TestKeyMap_HelpAndMatches(t *testing.T) {
+	t.Parallel()
 	km := DefaultKeyMap()
 	if !km.Matches(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'q'}}, km.Quit) {
 		t.Error("expected q to match Quit")
@@ -190,6 +194,7 @@ func TestKeyMap_HelpAndMatches(t *testing.T) {
 	}
 }
 func TestModel_DetailPanelRichState(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "rich",
 		Initial: "loading",

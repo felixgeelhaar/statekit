@@ -8,6 +8,7 @@ import (
 )
 
 func TestRenderer_Render(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",

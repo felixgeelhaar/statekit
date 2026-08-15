@@ -227,15 +227,13 @@ machine, _ := statekit.NewMachine[struct{}]("nested").
     WithInitial("active").
     State("active").
         WithInitial("idle").
-        On("GLOBAL_RESET").Target("done").End().  // Parent handles this event
+        On("GLOBAL_RESET").Target("done").Up(). // Parent handles this event
         State("idle").
-            On("START").Target("working").
-        End().  // Return to idle StateBuilder
-        End().  // Return to active StateBuilder
-        State("working").
-            On("STOP").Target("idle").
+            On("START").Target("working").Up().
         End().
-    End().
+        State("working").
+            On("STOP").Target("idle").Up().
+        End().
     Done().
     State("done").Final().
     Done().
@@ -403,8 +401,8 @@ machine, _ := statekit.NewMachine[struct{}]("history_example").
         On("PAUSE").Target("paused").End().
         History("hist").Shallow().Default("idle").End().  // Shallow history
         History("deepHist").Deep().Default("idle").End(). // Deep history
-        State("idle").On("START").Target("working").End().End().
-        State("working").On("NEXT").Target("done").End().End().
+        State("idle").On("START").Target("working").Up().End().
+        State("working").On("NEXT").Target("done").Up().End().
         State("done").End().
     Done().
     State("paused").

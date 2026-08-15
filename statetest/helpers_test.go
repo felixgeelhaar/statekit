@@ -8,6 +8,7 @@ import (
 )
 
 func TestSendEvents(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -23,6 +24,7 @@ func TestSendEvents(t *testing.T) {
 }
 
 func TestSendEventTypes(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -35,6 +37,7 @@ func TestSendEventTypes(t *testing.T) {
 }
 
 func TestMakeEvent(t *testing.T) {
+	t.Parallel()
 	e := statetesting.MakeEvent("TEST")
 	if e.Type != "TEST" {
 		t.Errorf("expected type 'TEST', got %q", e.Type)
@@ -50,6 +53,7 @@ func TestMakeEvent(t *testing.T) {
 }
 
 func TestMakeEvents(t *testing.T) {
+	t.Parallel()
 	events := statetesting.MakeEvents("A", "B", "C")
 	if len(events) != 3 {
 		t.Fatalf("expected 3 events, got %d", len(events))
@@ -60,6 +64,7 @@ func TestMakeEvents(t *testing.T) {
 }
 
 func TestStartAndSend(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -74,6 +79,7 @@ func TestStartAndSend(t *testing.T) {
 }
 
 func TestStartAndSendTypes(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -85,6 +91,7 @@ func TestStartAndSendTypes(t *testing.T) {
 }
 
 func TestRunMachine(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 
 	interp := statetesting.RunMachine(machine, statekit.Event{Type: "START"})
@@ -95,6 +102,7 @@ func TestRunMachine(t *testing.T) {
 }
 
 func TestRunMachineTypes(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 
 	interp := statetesting.RunMachineTypes(machine, "START", "PAUSE")
@@ -105,6 +113,7 @@ func TestRunMachineTypes(t *testing.T) {
 }
 
 func TestRecordMachine(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 
 	rec := statetesting.RecordMachine(machine)
@@ -120,6 +129,7 @@ func TestRecordMachine(t *testing.T) {
 }
 
 func TestRecordAndRun(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 
 	rec := statetesting.RecordAndRun(machine,
@@ -138,6 +148,7 @@ func TestRecordAndRun(t *testing.T) {
 }
 
 func TestRecordAndRunTypes(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 
 	rec := statetesting.RecordAndRunTypes(machine, "START", "STOP")
@@ -148,6 +159,7 @@ func TestRecordAndRunTypes(t *testing.T) {
 }
 
 func TestMustBuild(t *testing.T) {
+	t.Parallel()
 	builder := statekit.NewMachine[struct{}]("test").
 		WithInitial("a").
 		State("a").Done()
@@ -159,6 +171,7 @@ func TestMustBuild(t *testing.T) {
 }
 
 func TestMustBuild_Panics(t *testing.T) {
+	t.Parallel()
 	defer func() {
 		if r := recover(); r == nil {
 			t.Error("expected MustBuild to panic on invalid machine")
@@ -173,6 +186,7 @@ func TestMustBuild_Panics(t *testing.T) {
 }
 
 func TestQuickMachine(t *testing.T) {
+	t.Parallel()
 	machine := statetesting.QuickMachine[struct{}]("a", "b", "c")
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -197,6 +211,7 @@ func TestQuickMachine(t *testing.T) {
 }
 
 func TestQuickMachine_Panics(t *testing.T) {
+	t.Parallel()
 	defer func() {
 		if r := recover(); r == nil {
 			t.Error("expected QuickMachine to panic with no states")
@@ -207,6 +222,7 @@ func TestQuickMachine_Panics(t *testing.T) {
 }
 
 func TestQuickMachineWithEvents(t *testing.T) {
+	t.Parallel()
 	machine := statetesting.QuickMachineWithEvents[struct{}](
 		[]string{"idle", "loading", "done"},
 		[]statekit.EventType{"LOAD", "COMPLETE"},
@@ -226,6 +242,7 @@ func TestQuickMachineWithEvents(t *testing.T) {
 }
 
 func TestToggleMachine(t *testing.T) {
+	t.Parallel()
 	machine := statetesting.ToggleMachine[struct{}]("off", "on", "TURN_ON", "TURN_OFF")
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -246,6 +263,7 @@ func TestToggleMachine(t *testing.T) {
 }
 
 func TestCycleMachine(t *testing.T) {
+	t.Parallel()
 	machine := statetesting.CycleMachine[struct{}]("red", "yellow", "green")
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -268,6 +286,7 @@ func TestCycleMachine(t *testing.T) {
 }
 
 func TestCycleMachine_Panics(t *testing.T) {
+	t.Parallel()
 	defer func() {
 		if r := recover(); r == nil {
 			t.Error("expected CycleMachine to panic with less than 2 states")
@@ -278,6 +297,7 @@ func TestCycleMachine_Panics(t *testing.T) {
 }
 
 func TestBranchMachine(t *testing.T) {
+	t.Parallel()
 	machine := statetesting.BranchMachine[struct{}]("deciding", "success", "failure", "APPROVE", "REJECT")
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -297,6 +317,7 @@ func TestBranchMachine(t *testing.T) {
 }
 
 func TestActionCounter(t *testing.T) {
+	t.Parallel()
 	counter := statetesting.NewActionCounter()
 
 	action := statetesting.ActionFor[struct{}](counter, "myAction")
@@ -318,6 +339,7 @@ func TestActionCounter(t *testing.T) {
 }
 
 func TestActionCounter_WithMachine(t *testing.T) {
+	t.Parallel()
 	counter := statetesting.NewActionCounter()
 
 	machine, _ := statekit.NewMachine[struct{}]("test").
@@ -347,6 +369,7 @@ func TestActionCounter_WithMachine(t *testing.T) {
 }
 
 func TestGuardResult(t *testing.T) {
+	t.Parallel()
 	guards := statetesting.NewGuardResult()
 
 	guard := statetesting.GuardFor[struct{}](guards, "canProceed")
@@ -368,6 +391,7 @@ func TestGuardResult(t *testing.T) {
 }
 
 func TestGuardResult_WithMachine(t *testing.T) {
+	t.Parallel()
 	guards := statetesting.NewGuardResult()
 	guards.Set("allowed", false)
 
@@ -398,6 +422,7 @@ func TestGuardResult_WithMachine(t *testing.T) {
 }
 
 func TestGuardResult_SetAll(t *testing.T) {
+	t.Parallel()
 	guards := statetesting.NewGuardResult()
 	guards.Set("a", true)
 	guards.Set("b", true)
@@ -416,6 +441,7 @@ func TestGuardResult_SetAll(t *testing.T) {
 }
 
 func TestGuardResult_Reset(t *testing.T) {
+	t.Parallel()
 	guards := statetesting.NewGuardResult()
 	guards.Set("test", false)
 

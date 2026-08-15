@@ -24,6 +24,7 @@ func buildFeatureMachine(t *testing.T) *statekit.MachineConfig[struct{}] {
 }
 
 func TestNativeExport_IncludesAlwaysTagsRaise(t *testing.T) {
+	t.Parallel()
 	m := buildFeatureMachine(t)
 	vm := export.NewNativeExporter(m).Export()
 
@@ -47,6 +48,7 @@ func TestNativeExport_IncludesAlwaysTagsRaise(t *testing.T) {
 }
 
 func TestXStateExport_IncludesAlwaysTagsRaise(t *testing.T) {
+	t.Parallel()
 	m := buildFeatureMachine(t)
 	out := export.NewXStateExporter(m).Export()
 

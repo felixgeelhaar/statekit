@@ -7,7 +7,6 @@ import "testing"
 // EndMachine() terminator behaves identically to Done().
 func TestBuilderAliases(t *testing.T) {
 	t.Parallel()
-
 	// Type-equivalence checks via direct assignment — these compile
 	// only if the aliases resolve to the same underlying type.
 	var (
@@ -27,7 +26,6 @@ func TestBuilderAliases(t *testing.T) {
 
 func TestStateBuilder_EndMachineEquivalentToDone(t *testing.T) {
 	t.Parallel()
-
 	machineDone, err := NewMachine[struct{}]("done").
 		WithInitial("a").
 		State("a").On("X").Target("b").Done().

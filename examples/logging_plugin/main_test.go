@@ -56,6 +56,7 @@ func (p *TestPlugin[C]) AfterAction(_ plugin.Context[C], _ plugin.ActionType, _ 
 }
 
 func TestPlugin_HooksAreCalled(t *testing.T) {
+	t.Parallel()
 	machine := buildOrderMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -92,6 +93,7 @@ func TestPlugin_HooksAreCalled(t *testing.T) {
 }
 
 func TestPlugin_MultiplePlugins(t *testing.T) {
+	t.Parallel()
 	machine := buildOrderMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -120,6 +122,7 @@ func TestPlugin_MultiplePlugins(t *testing.T) {
 }
 
 func TestPlugin_EventTransformation(t *testing.T) {
+	t.Parallel()
 	// Create a simple machine that accepts uppercase events
 	machine, err := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
@@ -152,6 +155,7 @@ func TestPlugin_EventTransformation(t *testing.T) {
 }
 
 func TestPlugin_MetricsTracking(t *testing.T) {
+	t.Parallel()
 	machine := buildOrderMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -178,6 +182,7 @@ func TestPlugin_MetricsTracking(t *testing.T) {
 }
 
 func TestLoggingPlugin_Name(t *testing.T) {
+	t.Parallel()
 	lp := NewLoggingPlugin[OrderContext]()
 	if lp.Name() != "logging" {
 		t.Errorf("Expected name 'logging', got %s", lp.Name())
@@ -185,6 +190,7 @@ func TestLoggingPlugin_Name(t *testing.T) {
 }
 
 func TestMetricsPlugin_Name(t *testing.T) {
+	t.Parallel()
 	mp := NewMetricsPlugin[OrderContext]()
 	if mp.Name() != "metrics" {
 		t.Errorf("Expected name 'metrics', got %s", mp.Name())
@@ -192,6 +198,7 @@ func TestMetricsPlugin_Name(t *testing.T) {
 }
 
 func TestEventTransformer_Name(t *testing.T) {
+	t.Parallel()
 	et := NewEventTransformer[OrderContext]()
 	if et.Name() != "event-transformer" {
 		t.Errorf("Expected name 'event-transformer', got %s", et.Name())

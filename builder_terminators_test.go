@@ -13,6 +13,7 @@ type termCtx struct{}
 // "Closing the builder" section, so the documented terminator sequences are
 // verified rather than merely asserted in prose.
 func TestTerminatorShapes(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name       string
 		build      func() (*statekit.MachineConfig[termCtx], error)
@@ -123,6 +124,7 @@ func TestTerminatorShapes(t *testing.T) {
 // TestTerminatorLoopShape covers the case from issue #99: a flat machine built
 // in a loop, where the terminator sequence is not visible in the source.
 func TestTerminatorLoopShape(t *testing.T) {
+	t.Parallel()
 	type transition struct{ event, target string }
 	states := []string{"draft", "review", "published", "archived"}
 	transitions := map[string][]transition{
@@ -173,6 +175,7 @@ func TestTerminatorLoopShape(t *testing.T) {
 // TestTerminatorEquivalence pins the pairs that must stay interchangeable.
 // EndMachine is deprecated in favour of Done but keeps working.
 func TestTerminatorEquivalence(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name  string
 		build func() (*statekit.MachineConfig[termCtx], error)
@@ -262,6 +265,7 @@ func describe[C any](m *statekit.MachineConfig[C], leaf statekit.StateID) string
 // destination now fails at the mistake with a message naming the fix, instead
 // of returning a nil builder that panics opaquely at some later call.
 func TestTerminatorMisusePanics(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		run     func()
@@ -335,6 +339,7 @@ func TestTerminatorMisusePanics(t *testing.T) {
 // TestNestedEndUnwindsOneLevel distinguishes End from Done on a nested state:
 // End steps up one level, Done goes all the way to the machine root.
 func TestNestedEndUnwindsOneLevel(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[termCtx]("deep").
 		WithInitial("l1").
 		State("l1").

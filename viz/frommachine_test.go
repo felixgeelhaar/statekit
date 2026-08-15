@@ -111,6 +111,7 @@ func gateMachine(t *testing.T) *statekit.MachineConfig[vizCtx] {
 // rendering a compiled machine directly must produce the same diagram as
 // rendering it after a trip through statekit's native JSON.
 func TestFromMachine_MatchesJSONRoundTrip(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		machine func(*testing.T) *statekit.MachineConfig[vizCtx]
@@ -153,6 +154,7 @@ func TestFromMachine_MatchesJSONRoundTrip(t *testing.T) {
 // TestFromMachine_Structure checks the translation field by field, so a
 // regression points at the field rather than at a diff of rendered text.
 func TestFromMachine_Structure(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		machine func(*testing.T) *statekit.MachineConfig[vizCtx]
@@ -346,6 +348,7 @@ func TestFromMachine_Structure(t *testing.T) {
 // TestFromMachine_EventlessAndTags covers the v1.x additions: eventless
 // ("always") transitions and state tags.
 func TestFromMachine_EventlessAndTags(t *testing.T) {
+	t.Parallel()
 	machine := gateMachine(t)
 
 	vm := viz.FromMachine(machine)
@@ -367,6 +370,7 @@ func TestFromMachine_EventlessAndTags(t *testing.T) {
 // TestFromMachine_MatchesNativeExporter pins FromMachine and the existing
 // exporter to the same output, since the exporter now delegates to it.
 func TestFromMachine_MatchesNativeExporter(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		machine func(*testing.T) *statekit.MachineConfig[vizCtx]
@@ -391,6 +395,7 @@ func TestFromMachine_MatchesNativeExporter(t *testing.T) {
 }
 
 func TestFromMachine_Nil(t *testing.T) {
+	t.Parallel()
 	if got := viz.FromMachine[vizCtx](nil); got != nil {
 		t.Errorf("FromMachine(nil) = %+v, want nil", got)
 	}
@@ -399,6 +404,7 @@ func TestFromMachine_Nil(t *testing.T) {
 // TestFromMachine_Snapshot confirms the returned model does not alias the
 // machine: mutating it must not disturb a later render.
 func TestFromMachine_Snapshot(t *testing.T) {
+	t.Parallel()
 	machine := flatMachine(t)
 
 	first := viz.FromMachine(machine)

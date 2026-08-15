@@ -37,6 +37,7 @@ func (m *mockT) Error(args ...any) {
 }
 
 func TestAssertState(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -57,6 +58,7 @@ func TestAssertState(t *testing.T) {
 }
 
 func TestAssertMatches(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -77,6 +79,7 @@ func TestAssertMatches(t *testing.T) {
 }
 
 func TestAssertDone(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -101,6 +104,7 @@ func TestAssertDone(t *testing.T) {
 }
 
 func TestAssertNotDone(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -125,6 +129,7 @@ func TestAssertNotDone(t *testing.T) {
 }
 
 func TestAssertTransitioned(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -145,6 +150,7 @@ func TestAssertTransitioned(t *testing.T) {
 }
 
 func TestAssertNoTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "INVALID"})
@@ -167,6 +173,7 @@ func TestAssertNoTransition(t *testing.T) {
 }
 
 func TestAssertEventSequence(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -195,6 +202,7 @@ func TestAssertEventSequence(t *testing.T) {
 }
 
 func TestAssertStateSequence(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -216,6 +224,7 @@ func TestAssertStateSequence(t *testing.T) {
 }
 
 func TestAssertContext(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -240,6 +249,7 @@ func TestAssertContext(t *testing.T) {
 }
 
 func TestAssertTransitionCount(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -261,6 +271,7 @@ func TestAssertTransitionCount(t *testing.T) {
 }
 
 func TestAssertVisitedState(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -281,6 +292,7 @@ func TestAssertVisitedState(t *testing.T) {
 }
 
 func TestAssertNotVisitedState(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -301,6 +313,7 @@ func TestAssertNotVisitedState(t *testing.T) {
 }
 
 func TestRequireState(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -321,6 +334,7 @@ func TestRequireState(t *testing.T) {
 }
 
 func TestStateAssertion_Fluent(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -337,6 +351,7 @@ func TestStateAssertion_Fluent(t *testing.T) {
 }
 
 func TestRecorderAssertion_Fluent(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -357,6 +372,7 @@ func TestRecorderAssertion_Fluent(t *testing.T) {
 }
 
 func TestRecorderAssertion_Dump(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -370,6 +386,7 @@ func TestRecorderAssertion_Dump(t *testing.T) {
 }
 
 func TestAssertEventCausedTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "START"})
@@ -391,6 +408,7 @@ func TestAssertEventCausedTransition(t *testing.T) {
 }
 
 func TestAssertEventDidNotCauseTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	rec := statetesting.RecordMachine(machine)
 	rec.Send(statekit.Event{Type: "INVALID"})

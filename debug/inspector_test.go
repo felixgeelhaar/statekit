@@ -46,6 +46,7 @@ func buildTestMachine() *ir.MachineConfig[TestContext] {
 }
 
 func TestInspector_CurrentState(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -64,6 +65,7 @@ func TestInspector_CurrentState(t *testing.T) {
 }
 
 func TestInspector_CurrentContext(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -78,6 +80,7 @@ func TestInspector_CurrentContext(t *testing.T) {
 }
 
 func TestInspector_IsDone(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -96,6 +99,7 @@ func TestInspector_IsDone(t *testing.T) {
 }
 
 func TestInspector_MachineInfo(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -112,6 +116,7 @@ func TestInspector_MachineInfo(t *testing.T) {
 }
 
 func TestInspector_AllStates(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -133,6 +138,7 @@ func TestInspector_AllStates(t *testing.T) {
 }
 
 func TestInspector_StateInfo(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -163,6 +169,7 @@ func TestInspector_StateInfo(t *testing.T) {
 }
 
 func TestInspector_AvailableEvents(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -181,6 +188,7 @@ func TestInspector_AvailableEvents(t *testing.T) {
 }
 
 func TestInspector_CanTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -209,6 +217,7 @@ func TestInspector_CanTransition(t *testing.T) {
 }
 
 func TestInspector_SimulateTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -240,6 +249,7 @@ func TestInspector_SimulateTransition(t *testing.T) {
 }
 
 func TestInspector_TransitionsFrom(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -253,6 +263,7 @@ func TestInspector_TransitionsFrom(t *testing.T) {
 }
 
 func TestInspector_Path(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -267,6 +278,7 @@ func TestInspector_Path(t *testing.T) {
 }
 
 func TestInspector_Dump(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -288,6 +300,7 @@ func TestInspector_Dump(t *testing.T) {
 }
 
 func TestInspector_DumpMachine(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -317,6 +330,7 @@ func TestInspector_DumpMachine(t *testing.T) {
 }
 
 func TestInspector_HierarchicalMachine(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("nested").
 		WithInitial("active").
 		State("active").

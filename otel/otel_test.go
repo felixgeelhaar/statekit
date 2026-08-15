@@ -12,6 +12,7 @@ import (
 )
 
 func TestTracingInterpreter_Basic(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("test").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
@@ -67,6 +68,7 @@ func TestTracingInterpreter_Basic(t *testing.T) {
 }
 
 func TestTracingInterpreter_TransitionAttributes(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("attrs-test").
 		WithInitial("a").
 		State("a").On("NEXT").Target("b").Done().
@@ -108,6 +110,7 @@ func TestTracingInterpreter_TransitionAttributes(t *testing.T) {
 }
 
 func TestTracingInterpreter_NoTransition(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("no-trans").
 		WithInitial("idle").
 		State("idle").On("START").Target("running").Done().
@@ -144,6 +147,7 @@ func TestTracingInterpreter_NoTransition(t *testing.T) {
 }
 
 func TestTracingInterpreter_FinalState(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("final-test").
 		WithInitial("active").
 		State("active").On("DONE").Target("completed").Done().
@@ -194,6 +198,7 @@ func TestTracingInterpreter_FinalState(t *testing.T) {
 }
 
 func TestTracingInterpreter_SendAll(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("sendall").
 		WithInitial("a").
 		State("a").On("NEXT").Target("b").Done().
@@ -234,6 +239,7 @@ func TestTracingInterpreter_SendAll(t *testing.T) {
 }
 
 func TestTracingInterpreter_Matches(t *testing.T) {
+	t.Parallel()
 	machine, _ := statekit.NewMachine[struct{}]("matches").
 		WithInitial("parent").
 		State("parent").
@@ -258,6 +264,7 @@ func TestTracingInterpreter_Matches(t *testing.T) {
 }
 
 func TestTracingHook(t *testing.T) {
+	t.Parallel()
 	exporter := tracetest.NewInMemoryExporter()
 	tp := trace.NewTracerProvider(trace.WithSyncer(exporter))
 	tracer := tp.Tracer(TracerName)
@@ -285,6 +292,7 @@ func TestTracingHook(t *testing.T) {
 }
 
 func TestStateAttributes(t *testing.T) {
+	t.Parallel()
 	attrs := StateAttributes("machine-1", "running")
 
 	if len(attrs) != 2 {
@@ -296,6 +304,7 @@ func TestStateAttributes(t *testing.T) {
 }
 
 func TestEventAttributes(t *testing.T) {
+	t.Parallel()
 	attrs := EventAttributes("machine-1", statekit.Event{Type: "START"})
 
 	if len(attrs) != 2 {
@@ -307,6 +316,7 @@ func TestEventAttributes(t *testing.T) {
 }
 
 func TestTransitionAttributes(t *testing.T) {
+	t.Parallel()
 	attrs := TransitionAttributes("machine-1", statekit.Event{Type: "START"}, "idle", "running")
 
 	checkAttribute(t, attrs, "statekit.machine.id", "machine-1")

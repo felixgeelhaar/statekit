@@ -32,6 +32,7 @@ func createTestMachine() *viz.VizMachine {
 }
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 
@@ -53,6 +54,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestModel_Init(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 
@@ -63,6 +65,7 @@ func TestModel_Init(t *testing.T) {
 }
 
 func TestModel_Update_WindowSize(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 
@@ -83,6 +86,7 @@ func TestModel_Update_WindowSize(t *testing.T) {
 }
 
 func TestModel_Update_Navigation(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 
@@ -112,6 +116,7 @@ func TestModel_Update_Navigation(t *testing.T) {
 }
 
 func TestModel_Update_Quit(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 
@@ -125,6 +130,7 @@ func TestModel_Update_Quit(t *testing.T) {
 }
 
 func TestModel_View_NotReady(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 
@@ -135,6 +141,7 @@ func TestModel_View_NotReady(t *testing.T) {
 }
 
 func TestModel_View_Ready(t *testing.T) {
+	t.Parallel()
 	machine := createTestMachine()
 	model := New(machine)
 

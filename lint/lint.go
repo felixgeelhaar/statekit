@@ -170,6 +170,7 @@ func CheckTyped[C any](l *Linter, machine *ir.MachineConfig[C]) *Result {
 	checkUnusedGuards(l, machine, result)
 	checkInvokeMissingOnError(l, machine, result)
 	checkInvokeIDCollision(l, machine, result)
+	checkActorIDCollision(l, machine, result)
 	checkAutoForwardRedundancy(l, machine, result)
 	checkDeepNesting(l, machine, result)
 	checkHistoryWithoutSiblings(l, machine, result)
@@ -511,6 +512,52 @@ func checkInvokeIDCollision[C any](l *Linter, machine *ir.MachineConfig[C], resu
 	}
 }
 
+// checkActorIDCollision detects the same MachineInvocation ID declared in
+// multiple states. Child done/error events are keyed by ID
+// (`xstate.done.actor.<id>`); reusing an ID across states makes routing
+// ambiguous when parallel regions or overlapping lifecycles are active.
+func checkActorIDCollision[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules[RuleActorIDCollision] {
+		return
+	}
+
+	type occurrence struct {
+		state ir.StateID
+	}
+	byID := make(map[string][]occurrence)
+	for id, state := range machine.States {
+		for _, inv := range state.MachineInvocations {
+			if inv.ID == "" {
+				continue
+			}
+			byID[inv.ID] = append(byID[inv.ID], occurrence{state: id})
+		}
+	}
+	for invID, occs := range byID {
+		if len(occs) < 2 {
+			continue
+		}
+		// Deduplicate state IDs (same state already covered by invoke-id-collision).
+		states := make(map[ir.StateID]struct{}, len(occs))
+		for _, o := range occs {
+			states[o.state] = struct{}{}
+		}
+		if len(states) < 2 {
+			continue
+		}
+		var stateList []string
+		for s := range states {
+			stateList = append(stateList, string(s))
+		}
+		sort.Strings(stateList)
+		result.Diagnostics = append(result.Diagnostics, Diagnostic{
+			Severity: SeverityWarning,
+			Rule:     RuleActorIDCollision,
+			Message:  fmt.Sprintf("machine invocation ID %q is reused across states %v — done/error events are keyed by ID and may collide", invID, stateList),
+		})
+	}
+}
+
 // checkAutoForwardRedundancy warns when a state's invoked-machine
 // AutoForward list includes an event the same state declares a
 // transition for. The parent's transition fires first and consumes
@@ -753,6 +800,7 @@ const (
 	RuleHistoryWithoutSiblings = "history-without-siblings"
 	RuleGuardedOnlyEntry       = "guarded-only-entry"
 	RuleAutoForwardLoop        = "auto-forward-loop"
+	RuleActorIDCollision       = "actor-id-collision"
 )
 
 // AllRules returns all available rule names.
@@ -772,5 +820,6 @@ func AllRules() []string {
 		RuleHistoryWithoutSiblings,
 		RuleGuardedOnlyEntry,
 		RuleAutoForwardLoop,
+		RuleActorIDCollision,
 	}
 }
