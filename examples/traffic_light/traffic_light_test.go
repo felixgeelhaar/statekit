@@ -7,6 +7,7 @@ import (
 )
 
 func TestTrafficLight_FullCycle(t *testing.T) {
+	t.Parallel()
 	machine, err := NewTrafficLight()
 	if err != nil {
 		t.Fatalf("failed to create traffic light: %v", err)
@@ -46,6 +47,7 @@ func TestTrafficLight_FullCycle(t *testing.T) {
 }
 
 func TestTrafficLight_MultipleCycles(t *testing.T) {
+	t.Parallel()
 	machine, err := NewTrafficLight()
 	if err != nil {
 		t.Fatalf("failed to create traffic light: %v", err)
@@ -68,6 +70,7 @@ func TestTrafficLight_MultipleCycles(t *testing.T) {
 }
 
 func TestTrafficLight_EntryActions(t *testing.T) {
+	t.Parallel()
 	machine, err := NewTrafficLight()
 	if err != nil {
 		t.Fatalf("failed to create traffic light: %v", err)
@@ -98,6 +101,7 @@ func TestTrafficLight_EntryActions(t *testing.T) {
 }
 
 func TestTrafficLight_ResetFromGreen(t *testing.T) {
+	t.Parallel()
 	machine, err := NewTrafficLight()
 	if err != nil {
 		t.Fatalf("failed to create traffic light: %v", err)
@@ -120,6 +124,7 @@ func TestTrafficLight_ResetFromGreen(t *testing.T) {
 }
 
 func TestTrafficLight_IgnoreUnknownEvents(t *testing.T) {
+	t.Parallel()
 	machine, err := NewTrafficLight()
 	if err != nil {
 		t.Fatalf("failed to create traffic light: %v", err)
@@ -136,6 +141,7 @@ func TestTrafficLight_IgnoreUnknownEvents(t *testing.T) {
 }
 
 func TestTrafficLight_NotDone(t *testing.T) {
+	t.Parallel()
 	machine, err := NewTrafficLight()
 	if err != nil {
 		t.Fatalf("failed to create traffic light: %v", err)

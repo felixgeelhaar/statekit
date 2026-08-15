@@ -10,6 +10,7 @@ import (
 )
 
 func TestLint_CleanMachine(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("clean").
 		WithInitial("idle").
 		State("idle").
@@ -38,6 +39,7 @@ func TestLint_CleanMachine(t *testing.T) {
 }
 
 func TestLint_UnreachableState(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("unreachable").
 		WithInitial("idle").
 		State("idle").
@@ -71,6 +73,7 @@ func TestLint_UnreachableState(t *testing.T) {
 }
 
 func TestLint_DeadEndState(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("deadend").
 		WithInitial("idle").
 		State("idle").
@@ -100,6 +103,7 @@ func TestLint_DeadEndState(t *testing.T) {
 }
 
 func TestLint_DeadEnd_FinalStateIsOK(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("final-ok").
 		WithInitial("idle").
 		State("idle").
@@ -123,6 +127,7 @@ func TestLint_DeadEnd_FinalStateIsOK(t *testing.T) {
 }
 
 func TestLint_NonDeterminism(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("nondeterministic").
 		WithInitial("idle").
 		State("idle").
@@ -156,6 +161,7 @@ func TestLint_NonDeterminism(t *testing.T) {
 }
 
 func TestLint_NonDeterminism_WithGuardsIsOK(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("guarded").
 		WithInitial("idle").
 		WithGuard("checkA", func(_ struct{}, _ statekit.Event) bool { return true }).
@@ -182,6 +188,7 @@ func TestLint_NonDeterminism_WithGuardsIsOK(t *testing.T) {
 }
 
 func TestLint_CompoundWithoutInitial(t *testing.T) {
+	t.Parallel()
 	// This should actually fail at build time, but let's test the linter anyway
 	// We'll need to construct the machine differently or test via internal package
 	// For now, just verify the rule exists
@@ -199,6 +206,7 @@ func TestLint_CompoundWithoutInitial(t *testing.T) {
 }
 
 func TestLint_SelfTransitionWithEntry(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("self-transition").
 		WithInitial("counting").
 		WithAction("increment", func(_ *struct{}, _ statekit.Event) {}).
@@ -234,6 +242,7 @@ func TestLint_SelfTransitionWithEntry(t *testing.T) {
 }
 
 func TestLint_UnusedAction(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("unused-action").
 		WithInitial("idle").
 		WithAction("used", func(_ *struct{}, _ statekit.Event) {}).
@@ -265,6 +274,7 @@ func TestLint_UnusedAction(t *testing.T) {
 }
 
 func TestLint_UnusedGuard(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("unused-guard").
 		WithInitial("idle").
 		WithGuard("used", func(_ struct{}, _ statekit.Event) bool { return true }).
@@ -295,6 +305,7 @@ func TestLint_UnusedGuard(t *testing.T) {
 }
 
 func TestLinter_Ignore(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[struct{}]("ignore-test").
 		WithInitial("idle").
 		State("idle").
@@ -324,6 +335,7 @@ func TestLinter_Ignore(t *testing.T) {
 }
 
 func TestResult_HasErrors(t *testing.T) {
+	t.Parallel()
 	result := &lint.Result{
 		Diagnostics: []lint.Diagnostic{
 			{Severity: lint.SeverityInfo, Message: "info"},
@@ -345,6 +357,7 @@ func TestResult_HasErrors(t *testing.T) {
 }
 
 func TestResult_String(t *testing.T) {
+	t.Parallel()
 	result := &lint.Result{
 		MachineID: "test",
 		Diagnostics: []lint.Diagnostic{
@@ -362,6 +375,7 @@ func TestResult_String(t *testing.T) {
 }
 
 func TestSeverity_String(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		s    lint.Severity
 		want string
@@ -380,6 +394,7 @@ func TestSeverity_String(t *testing.T) {
 }
 
 func TestAllRules(t *testing.T) {
+	t.Parallel()
 	rules := lint.AllRules()
 	if len(rules) < 5 {
 		t.Errorf("expected at least 5 rules, got %d", len(rules))
@@ -406,6 +421,7 @@ func TestAllRules(t *testing.T) {
 }
 
 func TestResult_Errors(t *testing.T) {
+	t.Parallel()
 	result := &lint.Result{
 		Diagnostics: []lint.Diagnostic{
 			{Severity: lint.SeverityInfo, Message: "info"},
@@ -422,6 +438,7 @@ func TestResult_Errors(t *testing.T) {
 }
 
 func TestResult_Warnings(t *testing.T) {
+	t.Parallel()
 	result := &lint.Result{
 		Diagnostics: []lint.Diagnostic{
 			{Severity: lint.SeverityInfo, Message: "info"},
@@ -438,6 +455,7 @@ func TestResult_Warnings(t *testing.T) {
 }
 
 func TestResult_HasWarnings_NoWarnings(t *testing.T) {
+	t.Parallel()
 	result := &lint.Result{
 		Diagnostics: []lint.Diagnostic{
 			{Severity: lint.SeverityInfo, Message: "info"},
@@ -450,6 +468,7 @@ func TestResult_HasWarnings_NoWarnings(t *testing.T) {
 }
 
 func TestDiagnostic_String_NoState(t *testing.T) {
+	t.Parallel()
 	d := lint.Diagnostic{
 		Severity: lint.SeverityWarning,
 		Rule:     "test-rule",
@@ -464,6 +483,7 @@ func TestDiagnostic_String_NoState(t *testing.T) {
 }
 
 func TestLint_DeadEnd_ParentHasTransitions(t *testing.T) {
+	t.Parallel()
 	// Child state has no transitions but parent does (event bubbling)
 	machine, err := statekit.NewMachine[struct{}]("parent-escape").
 		WithInitial("active").
@@ -491,6 +511,7 @@ func TestLint_DeadEnd_ParentHasTransitions(t *testing.T) {
 }
 
 func TestLint_InvokeMissingOnError(t *testing.T) {
+	t.Parallel()
 	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
 	machine, err := statekit.NewMachine[struct{}]("svc").
 		WithInitial("loading").
@@ -522,6 +543,7 @@ func TestLint_InvokeMissingOnError(t *testing.T) {
 }
 
 func TestLint_InvokeIDCollision(t *testing.T) {
+	t.Parallel()
 	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
 	machine, err := statekit.NewMachine[struct{}]("collision").
 		WithInitial("loading").
@@ -592,6 +614,7 @@ func TestLint_ActorIDCollision(t *testing.T) {
 }
 
 func TestLint_InvokeWithOnError_NoWarning(t *testing.T) {
+	t.Parallel()
 	noop := func(ctx statekit.ServiceContext[struct{}]) error { return nil }
 	machine, err := statekit.NewMachine[struct{}]("svc-ok").
 		WithInitial("loading").
@@ -618,6 +641,7 @@ func TestLint_InvokeWithOnError_NoWarning(t *testing.T) {
 }
 
 func TestLint_AllRulesIncludesNew(t *testing.T) {
+	t.Parallel()
 	rules := lint.AllRules()
 	expected := []string{
 		lint.RuleInvokeMissingOnError,
@@ -750,7 +774,6 @@ func TestLint_DeepNesting(t *testing.T) {
 
 func TestLint_HistoryWithoutSiblings(t *testing.T) {
 	t.Parallel()
-
 	// Hand-built IR: history is the only child of its compound parent.
 	// Build() would reject this shape; lint still catches the modelling mistake
 	// when machines are assembled from other paths.
@@ -780,7 +803,6 @@ func TestLint_HistoryWithoutSiblings(t *testing.T) {
 
 func TestLint_GuardedOnlyEntry(t *testing.T) {
 	t.Parallel()
-
 	machine, err := statekit.NewMachine[struct{}]("gated").
 		WithInitial("idle").
 		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
@@ -808,7 +830,6 @@ func TestLint_GuardedOnlyEntry(t *testing.T) {
 
 func TestLint_GuardedOnlyEntry_UnguardedInboundOK(t *testing.T) {
 	t.Parallel()
-
 	machine, err := statekit.NewMachine[struct{}]("mixed").
 		WithInitial("idle").
 		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
@@ -832,7 +853,6 @@ func TestLint_GuardedOnlyEntry_UnguardedInboundOK(t *testing.T) {
 
 func TestLint_AutoForwardLoop(t *testing.T) {
 	t.Parallel()
-
 	childMachine, err := statekit.NewMachine[struct{}]("child").
 		WithInitial("a").
 		State("a").Done().
@@ -870,7 +890,6 @@ func TestLint_AutoForwardLoop(t *testing.T) {
 
 func TestLint_HistoryWithSiblings_NoWarning(t *testing.T) {
 	t.Parallel()
-
 	machine, err := statekit.NewMachine[struct{}]("ok-hist").
 		WithInitial("active").
 		State("active").

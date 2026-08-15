@@ -22,6 +22,7 @@ import (
 // guarded alternatives on one event collapse to an array and the parser
 // accepted only an object, yielding zero transitions with no error at all.
 func TestXStateExportParsesBack(t *testing.T) {
+	t.Parallel()
 	m, err := statekit.NewMachine[struct{}]("orders").
 		WithInitial("triage").
 		WithGuard("isClean", func(_ struct{}, _ statekit.Event) bool { return true }).
@@ -106,6 +107,7 @@ func TestXStateExportParsesBack(t *testing.T) {
 // transition shape the builder can emit so a future parser/exporter drift
 // fails here instead of drawing a silently incomplete diagram.
 func TestNativeExportParsesBack_AllTransitionShapes(t *testing.T) {
+	t.Parallel()
 	m, err := statekit.NewMachine[struct{}]("shapes").
 		WithInitial("gate").
 		WithAction("bump", func(_ *struct{}, _ statekit.Event) {}).

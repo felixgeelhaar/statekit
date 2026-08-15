@@ -30,6 +30,7 @@ func (m *mockExporter) Export() *viz.VizMachine {
 }
 
 func TestExportAll(t *testing.T) {
+	t.Parallel()
 	exporters := map[string]MachineExporter{
 		"machine1": &mockExporter{id: "machine1"},
 		"machine2": &mockExporter{id: "machine2"},
@@ -84,6 +85,7 @@ func TestExportAll(t *testing.T) {
 }
 
 func TestRunCLI_List(t *testing.T) {
+	t.Parallel()
 	// Redirect stdout
 	oldStdout := os.Stdout
 	r, w, _ := os.Pipe()
@@ -118,6 +120,7 @@ func TestRunCLI_List(t *testing.T) {
 }
 
 func TestRunCLI_Export(t *testing.T) {
+	t.Parallel()
 	exporters := map[string]MachineExporter{
 		"machine1": &mockExporter{id: "machine1"},
 	}

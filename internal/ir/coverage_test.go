@@ -86,7 +86,6 @@ func TestMachineConfig_WithContext(t *testing.T) {
 
 func TestValidationError_Error_EmptyAndSingle(t *testing.T) {
 	t.Parallel()
-
 	t.Run("empty", func(t *testing.T) {
 		t.Parallel()
 		e := &ValidationError{}
@@ -362,7 +361,6 @@ func TestMachineConfig_GetInitialLeaf_UnknownState(t *testing.T) {
 
 func TestValidationError_Error_EmptyAndMultiple(t *testing.T) {
 	t.Parallel()
-
 	empty := &ValidationError{}
 	if got := empty.Error(); got != "validation failed" {
 		t.Errorf("empty Error() = %q, want validation failed", got)
@@ -432,7 +430,6 @@ func TestValidate_HistoryMissingDefault(t *testing.T) {
 
 func TestValidate_InternalTransitionTarget(t *testing.T) {
 	t.Parallel()
-
 	t.Run("empty target ok", func(t *testing.T) {
 		t.Parallel()
 		m := NewMachineConfig[struct{}]("i", "s", struct{}{})
@@ -471,7 +468,6 @@ func TestValidate_InternalTransitionTarget(t *testing.T) {
 
 func TestValidate_AlwaysTransitions(t *testing.T) {
 	t.Parallel()
-
 	t.Run("missing target", func(t *testing.T) {
 		t.Parallel()
 		m := NewMachineConfig[struct{}]("a", "s", struct{}{})

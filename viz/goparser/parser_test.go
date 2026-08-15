@@ -7,6 +7,7 @@ import (
 )
 
 func TestParser_ParsePackage_StatekitReflectTest(t *testing.T) {
+	t.Parallel()
 	// Parse the actual statekit package to find machine definitions in reflect_test.go
 	parser := NewParser()
 	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
@@ -34,6 +35,7 @@ func TestParser_ParsePackage_StatekitReflectTest(t *testing.T) {
 }
 
 func TestParser_ParsePackage_WithTypeFilter(t *testing.T) {
+	t.Parallel()
 	parser := NewParser().WithTypeFilter("SimpleReflectMachine")
 	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
@@ -50,6 +52,7 @@ func TestParser_ParsePackage_WithTypeFilter(t *testing.T) {
 }
 
 func TestParser_VerifyMachineStructure(t *testing.T) {
+	t.Parallel()
 	parser := NewParser().WithTypeFilter("SimpleReflectMachine")
 	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
@@ -100,6 +103,7 @@ func TestParser_VerifyMachineStructure(t *testing.T) {
 }
 
 func TestParser_MachineWithActions(t *testing.T) {
+	t.Parallel()
 	parser := NewParser().WithTypeFilter("ActionReflectMachine")
 	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
@@ -125,6 +129,7 @@ func TestParser_MachineWithActions(t *testing.T) {
 }
 
 func TestParser_MachineWithGuards(t *testing.T) {
+	t.Parallel()
 	parser := NewParser().WithTypeFilter("GuardReflectMachine")
 	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
@@ -150,6 +155,7 @@ func TestParser_MachineWithGuards(t *testing.T) {
 }
 
 func TestParser_FinalState(t *testing.T) {
+	t.Parallel()
 	parser := NewParser().WithTypeFilter("FinalReflectMachine")
 	machines, err := parser.ParsePackage("go.klarlabs.de/statekit")
 	if err != nil {
@@ -172,6 +178,7 @@ func TestParser_FinalState(t *testing.T) {
 }
 
 func TestToSnakeCase(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input    string
 		expected string
@@ -199,6 +206,7 @@ func TestToSnakeCase(t *testing.T) {
 }
 
 func TestParseTransition(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input   string
 		event   string
@@ -247,6 +255,7 @@ func TestParseTransition(t *testing.T) {
 }
 
 func TestParseTransitions(t *testing.T) {
+	t.Parallel()
 	transitions, err := parseTransitions("START->running,STOP->idle")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

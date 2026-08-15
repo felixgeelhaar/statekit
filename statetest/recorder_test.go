@@ -39,6 +39,7 @@ func buildTestMachine() *statekit.MachineConfig[TestContext] {
 }
 
 func TestRecorder_Start(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -64,6 +65,7 @@ func TestRecorder_Start(t *testing.T) {
 }
 
 func TestRecorder_Send(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -94,6 +96,7 @@ func TestRecorder_Send(t *testing.T) {
 }
 
 func TestRecorder_SendAll(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -116,6 +119,7 @@ func TestRecorder_SendAll(t *testing.T) {
 }
 
 func TestRecorder_States(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -141,6 +145,7 @@ func TestRecorder_States(t *testing.T) {
 }
 
 func TestRecorder_UniqueStates(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -167,6 +172,7 @@ func TestRecorder_UniqueStates(t *testing.T) {
 }
 
 func TestRecorder_Events(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -193,6 +199,7 @@ func TestRecorder_Events(t *testing.T) {
 }
 
 func TestRecorder_EventTypes(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -218,6 +225,7 @@ func TestRecorder_EventTypes(t *testing.T) {
 }
 
 func TestRecorder_LastTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -241,6 +249,7 @@ func TestRecorder_LastTransition(t *testing.T) {
 }
 
 func TestRecorder_FindTransition(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -267,6 +276,7 @@ func TestRecorder_FindTransition(t *testing.T) {
 }
 
 func TestRecorder_TransitionsFrom(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -285,6 +295,7 @@ func TestRecorder_TransitionsFrom(t *testing.T) {
 }
 
 func TestRecorder_ActualTransitions(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -304,6 +315,7 @@ func TestRecorder_ActualTransitions(t *testing.T) {
 }
 
 func TestRecorder_Reset(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -319,6 +331,7 @@ func TestRecorder_Reset(t *testing.T) {
 }
 
 func TestRecorder_ContextCapture(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -337,6 +350,7 @@ func TestRecorder_ContextCapture(t *testing.T) {
 }
 
 func TestRecorder_Matches(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -355,6 +369,7 @@ func TestRecorder_Matches(t *testing.T) {
 }
 
 func TestRecorder_Done(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -374,6 +389,7 @@ func TestRecorder_Done(t *testing.T) {
 }
 
 func TestRecorder_TotalDuration(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)
@@ -388,6 +404,7 @@ func TestRecorder_TotalDuration(t *testing.T) {
 }
 
 func TestRecorder_Interpreter(t *testing.T) {
+	t.Parallel()
 	machine := buildTestMachine()
 	interp := statekit.NewInterpreter(machine)
 	rec := statetesting.NewRecorder(interp)

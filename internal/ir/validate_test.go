@@ -9,6 +9,7 @@ import (
 type testCtx struct{}
 
 func TestValidate_ValidMachine(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 	machine.States["idle"] = NewStateConfig("idle", StateTypeAtomic)
 	machine.States["running"] = NewStateConfig("running", StateTypeAtomic)
@@ -23,6 +24,7 @@ func TestValidate_ValidMachine(t *testing.T) {
 }
 
 func TestValidate_MissingInitial(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "", testCtx{})
 	machine.States["idle"] = NewStateConfig("idle", StateTypeAtomic)
 
@@ -37,6 +39,7 @@ func TestValidate_MissingInitial(t *testing.T) {
 }
 
 func TestValidate_InitialNotFound(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "nonexistent", testCtx{})
 	machine.States["idle"] = NewStateConfig("idle", StateTypeAtomic)
 
@@ -51,6 +54,7 @@ func TestValidate_InitialNotFound(t *testing.T) {
 }
 
 func TestValidate_NoStates(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 
 	err := Validate(machine)
@@ -64,6 +68,7 @@ func TestValidate_NoStates(t *testing.T) {
 }
 
 func TestValidate_InvalidTransitionTarget(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 	machine.States["idle"] = NewStateConfig("idle", StateTypeAtomic)
 
@@ -81,6 +86,7 @@ func TestValidate_InvalidTransitionTarget(t *testing.T) {
 }
 
 func TestValidate_MissingGuard(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 	machine.States["idle"] = NewStateConfig("idle", StateTypeAtomic)
 	machine.States["running"] = NewStateConfig("running", StateTypeAtomic)
@@ -100,6 +106,7 @@ func TestValidate_MissingGuard(t *testing.T) {
 }
 
 func TestValidate_MissingEntryAction(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 	state := NewStateConfig("idle", StateTypeAtomic)
 	state.Entry = []ActionType{"nonexistentAction"}
@@ -116,6 +123,7 @@ func TestValidate_MissingEntryAction(t *testing.T) {
 }
 
 func TestValidate_MissingExitAction(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 	state := NewStateConfig("idle", StateTypeAtomic)
 	state.Exit = []ActionType{"nonexistentAction"}
@@ -132,6 +140,7 @@ func TestValidate_MissingExitAction(t *testing.T) {
 }
 
 func TestValidate_MissingTransitionAction(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 	machine.States["idle"] = NewStateConfig("idle", StateTypeAtomic)
 	machine.States["running"] = NewStateConfig("running", StateTypeAtomic)
@@ -151,6 +160,7 @@ func TestValidate_MissingTransitionAction(t *testing.T) {
 }
 
 func TestValidate_MultipleErrors(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "nonexistent", testCtx{})
 	// Add a state with multiple issues
 	state := NewStateConfig("idle", StateTypeAtomic)
@@ -170,6 +180,7 @@ func TestValidate_MultipleErrors(t *testing.T) {
 }
 
 func TestValidate_WithDefinedActionsAndGuards(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testCtx]("test", "idle", testCtx{})
 
 	// Define action and guard
@@ -196,6 +207,7 @@ func TestValidate_WithDefinedActionsAndGuards(t *testing.T) {
 }
 
 func TestValidationError_String(t *testing.T) {
+	t.Parallel()
 	err := &ValidationError{}
 	err.AddIssue("TEST_CODE", "test message", "path", "to", "issue")
 
@@ -221,6 +233,7 @@ func containsCode(err *ValidationError, code string) bool {
 }
 
 func TestValidationError_Is(t *testing.T) {
+	t.Parallel()
 	err := &ValidationError{}
 	err.AddIssue("TEST_CODE", "test message", "path")
 

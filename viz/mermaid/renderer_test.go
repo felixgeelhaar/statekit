@@ -8,6 +8,7 @@ import (
 )
 
 func TestRenderer_SimpleTrafficLight(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "traffic_light",
 		Initial: "green",
@@ -62,6 +63,7 @@ func TestRenderer_SimpleTrafficLight(t *testing.T) {
 }
 
 func TestRenderer_FinalState(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "running",
@@ -89,6 +91,7 @@ func TestRenderer_FinalState(t *testing.T) {
 }
 
 func TestRenderer_WithGuardAndActions(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",
@@ -121,6 +124,7 @@ func TestRenderer_WithGuardAndActions(t *testing.T) {
 }
 
 func TestRenderer_Direction(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "a",
@@ -147,6 +151,7 @@ func TestRenderer_Direction(t *testing.T) {
 }
 
 func TestRenderer_CompoundState(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "active",
@@ -182,6 +187,7 @@ func TestRenderer_CompoundState(t *testing.T) {
 }
 
 func TestRenderer_ParallelHistoryAndEntry(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "rich",
 		Initial: "editor",
@@ -263,6 +269,7 @@ func TestRenderer_ParallelHistoryAndEntry(t *testing.T) {
 }
 
 func TestRenderer_HideGuardsAndActions(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",

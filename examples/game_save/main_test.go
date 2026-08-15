@@ -8,6 +8,7 @@ import (
 )
 
 func TestGameSave_BasicSnapshot(t *testing.T) {
+	t.Parallel()
 	machine := buildGameMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.UpdateContext(func(ctx *GameContext) {
@@ -38,6 +39,7 @@ func TestGameSave_BasicSnapshot(t *testing.T) {
 }
 
 func TestGameSave_JSONSerialization(t *testing.T) {
+	t.Parallel()
 	machine := buildGameMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.UpdateContext(func(ctx *GameContext) {
@@ -76,6 +78,7 @@ func TestGameSave_JSONSerialization(t *testing.T) {
 }
 
 func TestGameSave_RestoreState(t *testing.T) {
+	t.Parallel()
 	machine := buildGameMachine()
 
 	// Play original game
@@ -126,6 +129,7 @@ func TestGameSave_RestoreState(t *testing.T) {
 }
 
 func TestGameSave_RestoreMachineMismatch(t *testing.T) {
+	t.Parallel()
 	machine := buildGameMachine()
 
 	// Create snapshot from first interpreter
@@ -148,6 +152,7 @@ func TestGameSave_RestoreMachineMismatch(t *testing.T) {
 }
 
 func TestGameSave_ContextPreservation(t *testing.T) {
+	t.Parallel()
 	machine := buildGameMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.UpdateContext(func(ctx *GameContext) {
@@ -188,6 +193,7 @@ func TestGameSave_ContextPreservation(t *testing.T) {
 }
 
 func TestGameSave_HistoryPreservation(t *testing.T) {
+	t.Parallel()
 	machine := buildGameMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()

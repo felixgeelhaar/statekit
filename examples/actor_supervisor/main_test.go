@@ -7,6 +7,7 @@ import (
 )
 
 func TestWorkerMachine(t *testing.T) {
+	t.Parallel()
 	machine := buildWorkerMachine()
 
 	interp := statekit.NewInterpreter(machine)
@@ -34,6 +35,7 @@ func TestWorkerMachine(t *testing.T) {
 }
 
 func TestSupervisorMachine(t *testing.T) {
+	t.Parallel()
 	machine := buildSupervisor()
 
 	interp := statekit.NewInterpreter(machine)

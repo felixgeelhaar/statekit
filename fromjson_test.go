@@ -18,7 +18,6 @@ type jsonCtx struct {
 // actions and guards execute against the typed context.
 func TestFromJSON_TypedRoundTrip(t *testing.T) {
 	t.Parallel()
-
 	// Build a machine with the fluent builder, including a guard, transition
 	// action, and an entry action so the round trip exercises wiring.
 	original, err := NewMachine[jsonCtx]("counter").
@@ -102,7 +101,6 @@ func TestFromJSON_TypedRoundTrip(t *testing.T) {
 // installing a no-op (which would mask authoring errors in typed consumers).
 func TestFromJSON_UnknownActionRejected(t *testing.T) {
 	t.Parallel()
-
 	data := []byte(`{"id":"m","initial":"a","states":{"a":{"on":{"GO":{"target":"b","actions":["missing"]}}},"b":{}}}`)
 
 	_, err := FromJSON[jsonCtx](data, NewActionRegistry[jsonCtx]())
@@ -115,7 +113,6 @@ func TestFromJSON_UnknownActionRejected(t *testing.T) {
 // machine references no actions or guards (pure structural state charts).
 func TestFromJSON_NilRegistryNoReferences(t *testing.T) {
 	t.Parallel()
-
 	data := []byte(`{"id":"m","initial":"a","states":{"a":{"on":{"GO":"b"}},"b":{"type":"final"}}}`)
 
 	m, err := FromJSON[jsonCtx](data, nil)

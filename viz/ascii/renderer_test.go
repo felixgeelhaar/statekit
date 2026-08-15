@@ -8,6 +8,7 @@ import (
 )
 
 func TestRenderer_SimpleOutput(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",
@@ -49,6 +50,7 @@ func TestRenderer_SimpleOutput(t *testing.T) {
 }
 
 func TestRenderer_UnicodeVsASCII(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",
@@ -82,6 +84,7 @@ func TestRenderer_UnicodeVsASCII(t *testing.T) {
 }
 
 func TestRenderer_FinalState(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "running",
@@ -100,6 +103,7 @@ func TestRenderer_FinalState(t *testing.T) {
 }
 
 func TestRenderer_CompoundState(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "active",
@@ -127,6 +131,7 @@ func TestRenderer_CompoundState(t *testing.T) {
 }
 
 func TestRenderer_WithActions(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",
@@ -161,6 +166,7 @@ func TestRenderer_WithActions(t *testing.T) {
 }
 
 func TestRenderer_TransitionsWithGuard(t *testing.T) {
+	t.Parallel()
 	machine := &viz.VizMachine{
 		ID:      "test",
 		Initial: "idle",

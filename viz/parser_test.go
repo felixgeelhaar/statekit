@@ -6,6 +6,7 @@ import (
 )
 
 func TestParseNativeJSON_Simple(t *testing.T) {
+	t.Parallel()
 	// Construct a VizMachine manually and marshal it to JSON
 	vm := &VizMachine{
 		ID:      "test",

@@ -8,6 +8,7 @@ import (
 )
 
 func TestExport_WildcardAndInternal(t *testing.T) {
+	t.Parallel()
 	m, err := statekit.NewMachine[struct{}]("w").
 		WithInitial("a").
 		WithAction("noop", func(_ *struct{}, _ statekit.Event) {}).

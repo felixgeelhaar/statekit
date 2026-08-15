@@ -7,6 +7,7 @@ import (
 )
 
 func TestTextEditor_InitialState(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -42,6 +43,7 @@ func TestTextEditor_InitialState(t *testing.T) {
 }
 
 func TestTextEditor_ToggleBold(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -70,6 +72,7 @@ func TestTextEditor_ToggleBold(t *testing.T) {
 }
 
 func TestTextEditor_IndependentRegions(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -98,6 +101,7 @@ func TestTextEditor_IndependentRegions(t *testing.T) {
 }
 
 func TestTextEditor_AlignmentExclusive(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -128,6 +132,7 @@ func TestTextEditor_AlignmentExclusive(t *testing.T) {
 }
 
 func TestTextEditor_FontSizeExclusive(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -152,6 +157,7 @@ func TestTextEditor_FontSizeExclusive(t *testing.T) {
 }
 
 func TestTextEditor_Matches(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -183,6 +189,7 @@ func TestTextEditor_Matches(t *testing.T) {
 }
 
 func TestTextEditor_Save(t *testing.T) {
+	t.Parallel()
 	machine := buildEditorMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()

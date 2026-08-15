@@ -42,6 +42,7 @@ func lifecycleMachine(t *testing.T) *statekit.MachineConfig[lifecycleCtx] {
 }
 
 func TestInterpreterAt(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		state    statekit.StateID
@@ -74,6 +75,7 @@ func TestInterpreterAt(t *testing.T) {
 // TestInterpreterAt_FinalStatesAreTerminal is the property from issue #100:
 // every final state of the shipping machine accepts nothing.
 func TestInterpreterAt_FinalStatesAreTerminal(t *testing.T) {
+	t.Parallel()
 	machine := lifecycleMachine(t)
 	allEvents := []statekit.EventType{"SUBMIT", "APPROVE", "REJECT", "ARCHIVE", "UNKNOWN"}
 
@@ -90,6 +92,7 @@ func TestInterpreterAt_FinalStatesAreTerminal(t *testing.T) {
 // TestInterpreterAt_AcceptsEventsInNonFinalState confirms the positioned
 // interpreter is live, not merely parked: a non-final state still transitions.
 func TestInterpreterAt_AcceptsEventsInNonFinalState(t *testing.T) {
+	t.Parallel()
 	interp := statetesting.InterpreterAt(lifecycleMachine(t), "review")
 	defer func() { _ = interp.Close() }()
 
@@ -102,6 +105,7 @@ func TestInterpreterAt_AcceptsEventsInNonFinalState(t *testing.T) {
 }
 
 func TestInterpreterAt_CompoundResolvesToInitialLeaf(t *testing.T) {
+	t.Parallel()
 	machine, err := statekit.NewMachine[lifecycleCtx]("nested").
 		WithInitial("idle").
 		State("idle").On("RUN").Target("running").Done().
@@ -133,6 +137,7 @@ func TestInterpreterAt_CompoundResolvesToInitialLeaf(t *testing.T) {
 // TestInterpreterAt_DoesNotRunEntryActions pins the documented caveat: the
 // interpreter is placed at the state, not moved into it.
 func TestInterpreterAt_DoesNotRunEntryActions(t *testing.T) {
+	t.Parallel()
 	interp := statetesting.InterpreterAt(lifecycleMachine(t), "published")
 	defer func() { _ = interp.Close() }()
 
@@ -142,6 +147,7 @@ func TestInterpreterAt_DoesNotRunEntryActions(t *testing.T) {
 }
 
 func TestInterpreterAt_Panics(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		run     func(*testing.T)
@@ -211,6 +217,7 @@ func parallelTestMachine(t *testing.T) *statekit.MachineConfig[lifecycleCtx] {
 }
 
 func TestAssertTerminal(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name       string
 		state      statekit.StateID
@@ -260,6 +267,7 @@ func TestAssertTerminal(t *testing.T) {
 // TestAssertTerminal_DetectsAcceptedEvent covers the case AssertTerminal
 // exists for: a state that is final but wrongly reachable out of.
 func TestAssertTerminal_DetectsAcceptedEvent(t *testing.T) {
+	t.Parallel()
 	// A "final" state that still declares an outgoing transition. Build-time
 	// validation permits this; the machine is simply wrong.
 	machine, err := statekit.NewMachine[lifecycleCtx]("leaky").

@@ -6,6 +6,7 @@ import (
 )
 
 func TestGenerator_SimpleStateMachine(t *testing.T) {
+	t.Parallel()
 	json := `{
 		"id": "traffic-light",
 		"initial": "green",
@@ -74,6 +75,7 @@ func TestGenerator_SimpleStateMachine(t *testing.T) {
 }
 
 func TestGenerator_WithActions(t *testing.T) {
+	t.Parallel()
 	json := `{
 		"id": "counter",
 		"initial": "idle",
@@ -132,6 +134,7 @@ func TestGenerator_WithActions(t *testing.T) {
 }
 
 func TestGenerator_WithGuards(t *testing.T) {
+	t.Parallel()
 	json := `{
 		"id": "door",
 		"initial": "closed",
@@ -177,6 +180,7 @@ func TestGenerator_WithGuards(t *testing.T) {
 }
 
 func TestGenerator_FinalState(t *testing.T) {
+	t.Parallel()
 	json := `{
 		"id": "workflow",
 		"initial": "active",
@@ -208,6 +212,7 @@ func TestGenerator_FinalState(t *testing.T) {
 }
 
 func TestGenerator_HierarchicalStates(t *testing.T) {
+	t.Parallel()
 	json := `{
 		"id": "nested",
 		"initial": "parent",
@@ -258,6 +263,7 @@ func TestGenerator_HierarchicalStates(t *testing.T) {
 }
 
 func TestGenerator_MultipleTransitionActions(t *testing.T) {
+	t.Parallel()
 	json := `{
 		"id": "multi",
 		"initial": "a",
@@ -292,6 +298,7 @@ func TestGenerator_MultipleTransitionActions(t *testing.T) {
 }
 
 func TestToGoIdentifier(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input    string
 		expected string
@@ -313,6 +320,7 @@ func TestToGoIdentifier(t *testing.T) {
 }
 
 func TestGenerator_DefaultValues(t *testing.T) {
+	t.Parallel()
 	gen := NewGenerator("", "", "")
 
 	if gen.PackageName != "main" {

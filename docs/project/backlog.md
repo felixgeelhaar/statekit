@@ -49,7 +49,7 @@ internal/ir at 66.9% — foundation package (validation, hierarchy LCA, transiti
 
 ## Extend lint package with production-hazard rules
 
-**Done:** invoke-missing-onerror, invoke-id-collision, auto-forward-redundancy, deep-nesting, history-without-siblings, guarded-only-entry, auto-forward-loop.
+**Done:** invoke-missing-onerror, invoke-id-collision, auto-forward-redundancy, deep-nesting, history-without-siblings, guarded-only-entry, auto-forward-loop, actor-id-collision.
 
 Current 7 rules solid but miss production bugs: (1) missing-OnError-on-Invoke (silent failure path), (2) history-without-children (no-op), (3) actor-id-collision, (4) auto-forward-loop (parent-child event ping-pong), (5) unreachable-via-guard (always-false guard combos), (6) delayed-transition-shorter-than-action-duration warning. Lint is user-facing quality multiplier — biggest leverage. Source: Quality review.
 
@@ -95,11 +95,15 @@ Dedicated AI plugin pack atop existing plugin system. Components: token + cost c
 
 ## Migration guides FROM looplab/fsm and qmuntal/stateless
 
+**Done** — see `docs/tutorials/migration-from-looplab-fsm.md` and `docs/tutorials/migration-from-qmuntal-stateless.md` (+ README "Coming from another FSM library?").
+
 Direct rivals = incumbent Go FSM libs. Migration guide = direct conversion path for users already using them. Side-by-side equivalents, "before/after" tables, automated conversion script if feasible. Lowers switching cost dramatically. Source: Product review.
 
 ---
 
 ## DX polish — defer interp.Stop() pattern, fuzz tests, naming fixes
+
+**Done (partial):** `Interpreter.Close()` (`io.Closer`) + README/`defer interp.Close()`; InvokeMachine/InvokeService aliases. Fuzz coverage still thin outside parser/viz. Breaking Done→EndMachine rename deferred (v1).
 
 Misc DX/quality cleanups: (1) Make interpreter implement io.Closer; document defer interp.Stop() in every example for muscle memory (timer cleanup buried in README:132 today). (2) Rename Done() returning *MachineBuilder from nested state to EndMachine() — silently teleports caller out of nested context (builder.go:329-333). (3) Rename InvokeBuilder/MachineInvokeBuilder to InvokeService/InvokeMachine for self-documenting (builder.go:46,57). (4) Add fuzz tests for builder, event payload, JSON exporter (only 1 fuzz file today in internal/parser). Source: UX + Quality reviews.
 
@@ -112,6 +116,8 @@ Critical assumption to validate before further feature work: Go teams currently 
 ---
 
 ## Synthetic clock injection for delayed transitions + supervision timers
+
+**Done:** `Clock` / `FakeClock` / `WithClock`; `delayed_test.go` uses FakeClock.
 
 Followup to goleak task. Add Clock interface (jonboulle/clockwork or own) injectable via NewInterpreter option, default to wall clock for backward compat. Replace time.AfterFunc in interpreter.go:759 + actor supervision timers. Update delayed_test.go (5 wall-clock sleeps 30-100ms) to use synthetic clock. Eliminates CI flake risk on delayed transitions, parallel state, supervision strategies. Source: Quality review.
 
@@ -127,6 +133,8 @@ Followup batch from lint extension. (1) auto-forward-loop — parent auto-forwar
 
 ## t.Parallel sweep across full test suite
 
+**Done:** leaf unit tests across core, export, lint, internal, http/otel/metrics/health, viz, and examples (except wall-clock `session_timeout`).
+
 Followup to ir coverage task. Add t.Parallel() to all leaf unit tests across actor_test, builder_test, interpreter_test, history_test, parallel_test, persist_test, distributed_test, plugin_test, etc. Touches ~50 test files. Surfaces parallel-safety bugs in package-level state. Do not parallelize benchmark or property tests. Source: Quality review.
 
 ---
@@ -138,6 +146,8 @@ Followup to DX polish. Two name footguns require breaking changes: (1) Done() re
 ---
 
 ## Refactor delayed_test.go to use FakeClock
+
+**Done.**
 
 Followup to synthetic clock injection. Now that Clock interface + FakeClock + WithClock option exist, convert delayed_test.go (5 wall-clock sleeps 30-100ms) and supervision tests in actor_test.go to use FakeClock.Advance(). Eliminates flake risk on shared CI runners. Mechanical change per file. Source: Quality review followup to commit 66ac9cf.
 
@@ -151,17 +161,23 @@ ICP signal: dstotijn/go-xstate and CorrectRoadH/XState-For-Golang already occupy
 
 ## README "Coming from looplab/fsm or qmuntal/stateless?" callout
 
+**Done** — README section + migration tutorials.
+
 ICP signal: looplab #40 (persistence pain), looplab #86 (generics request), looplab #115 (context cancellation bug), qmuntal #77 (halt FSM pain), qmuntal #94 (Mermaid export missing), qmuntal #98/#99 (OnEntry hierarchy bugs). Add a 5-bullet README section: "Tired of FSM that can't persist? Tired of InTransitionError after context cancellation? Tired of broken self-transitions?" — directly addressing the verbatim pain. Link to existing migration guides. Source: ICP signal sweep — top open issues across both incumbents.
 
 ---
 
 ## Verify context-cancellation correctness — counter-test for looplab #115
 
+**Done** — `cancellation_recovery_test.go`.
+
 looplab/fsm #115 reports a bug where ctx.Err leaves FSM in InTransitionError state with no recovery path. Add an explicit test in interpreter_test.go that exercises this scenario in statekit and confirms our interpreter recovers correctly: send event with cancelled context, verify subsequent events still process. Test doubles as a public differentiator and a regression guard. Source: ICP signal sweep — direct quote from looplab #115.
 
 ---
 
 ## Verify Snapshot is gob/JSON-encodable — counter-test for looplab #40
+
+**Done** — `snapshot_serialization_test.go`.
 
 looplab/fsm #40 reports that the FSM type has no exported fields, blocking gob encoding for production persistence. Add an explicit test that takes interp.Snapshot(), serializes it via json.Marshal AND encoding/gob, deserializes, and Restore()s into a fresh interpreter. Demonstrates that statekit's snapshot is publicly serializable. Lifts the result to a docs/snapshot-serialization.md or a section in api-reference.md. Source: ICP signal sweep — direct quote from looplab #40.
 

@@ -7,6 +7,7 @@ import (
 )
 
 func TestFormWizard_BasicFlow(t *testing.T) {
+	t.Parallel()
 	machine := buildWizardMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -56,6 +57,7 @@ func TestFormWizard_BasicFlow(t *testing.T) {
 }
 
 func TestFormWizard_ShallowHistory(t *testing.T) {
+	t.Parallel()
 	machine := buildWizardMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -86,6 +88,7 @@ func TestFormWizard_ShallowHistory(t *testing.T) {
 }
 
 func TestFormWizard_DeepHistory(t *testing.T) {
+	t.Parallel()
 	machine := buildWizardMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -113,6 +116,7 @@ func TestFormWizard_DeepHistory(t *testing.T) {
 }
 
 func TestFormWizard_HistoryDefault(t *testing.T) {
+	t.Parallel()
 	machine := buildWizardMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -131,6 +135,7 @@ func TestFormWizard_HistoryDefault(t *testing.T) {
 }
 
 func TestFormWizard_Cancel(t *testing.T) {
+	t.Parallel()
 	machine := buildWizardMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()
@@ -150,6 +155,7 @@ func TestFormWizard_Cancel(t *testing.T) {
 }
 
 func TestFormWizard_SubmitGuard(t *testing.T) {
+	t.Parallel()
 	machine := buildWizardMachine()
 	interp := statekit.NewInterpreter(machine)
 	interp.Start()

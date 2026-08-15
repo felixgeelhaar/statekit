@@ -5,6 +5,7 @@ import "testing"
 // --- Choose (conditional action combinator) ---
 
 func TestChoose_RunsFirstMatchingBranch(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		N    int
 		Tier string
@@ -43,6 +44,7 @@ func TestChoose_RunsFirstMatchingBranch(t *testing.T) {
 }
 
 func TestChoose_NoBranchMatchesIsNoop(t *testing.T) {
+	t.Parallel()
 	type Ctx struct{ Hit bool }
 	pick := Choose(ChooseBranch[Ctx]{
 		When: func(c Ctx, _ Event) bool { return false },
@@ -56,6 +58,7 @@ func TestChoose_NoBranchMatchesIsNoop(t *testing.T) {
 }
 
 func TestChoose_WiresIntoTransition(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		Score int
 		Label string
@@ -87,6 +90,7 @@ func TestChoose_WiresIntoTransition(t *testing.T) {
 // --- Wildcard event ---
 
 func TestWildcard_MatchesUnhandledEvent(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{}]("wild").
 		WithInitial("a").
 		State("a").
@@ -108,6 +112,7 @@ func TestWildcard_MatchesUnhandledEvent(t *testing.T) {
 }
 
 func TestWildcard_ExactMatchTakesPriority(t *testing.T) {
+	t.Parallel()
 	m, _ := NewMachine[struct{}]("wild2").
 		WithInitial("a").
 		State("a").
@@ -126,6 +131,7 @@ func TestWildcard_ExactMatchTakesPriority(t *testing.T) {
 }
 
 func TestWildcard_RespectsGuard(t *testing.T) {
+	t.Parallel()
 	m, _ := NewMachine[struct{ Allow bool }]("wild3").
 		WithInitial("a").
 		WithGuard("allow", func(c struct{ Allow bool }, _ Event) bool { return c.Allow }).
@@ -144,6 +150,7 @@ func TestWildcard_RespectsGuard(t *testing.T) {
 // --- Internal transitions ---
 
 func TestInternal_NoExitEntryOrStateChange(t *testing.T) {
+	t.Parallel()
 	type Ctx struct {
 		Entries int
 		Exits   int
@@ -184,6 +191,7 @@ func TestInternal_NoExitEntryOrStateChange(t *testing.T) {
 }
 
 func TestInternal_ContrastsWithExternalSelfTransition(t *testing.T) {
+	t.Parallel()
 	type Ctx struct{ Entries, Exits int }
 	m, _ := NewMachine[Ctx]("ext").
 		WithInitial("active").
@@ -205,6 +213,7 @@ func TestInternal_ContrastsWithExternalSelfTransition(t *testing.T) {
 }
 
 func TestInternal_AllowsEmptyTarget(t *testing.T) {
+	t.Parallel()
 	type Ctx struct{ Count int }
 	m, err := NewMachine[Ctx]("internal2").
 		WithInitial("s").

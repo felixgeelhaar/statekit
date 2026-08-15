@@ -20,7 +20,6 @@ import (
 // calls must continue to drive the machine normally.
 func TestCancellation_ServiceCancelledOnExit_NoStuckTransition(t *testing.T) {
 	t.Parallel()
-
 	// Service that returns an error — exercises the OnError path which
 	// is the looplab-equivalent "transition encountered context error"
 	// scenario.
@@ -80,7 +79,6 @@ func TestCancellation_ServiceCancelledOnExit_NoStuckTransition(t *testing.T) {
 // "stuck" state from the previous cycle.
 func TestCancellation_StopAndRestart_NewLifecycle(t *testing.T) {
 	t.Parallel()
-
 	machine, err := NewMachine[struct{}]("restart").
 		WithInitial("loading").
 		State("loading").

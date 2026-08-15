@@ -10,6 +10,7 @@ type testContext struct {
 }
 
 func TestNewMachineConfig(t *testing.T) {
+	t.Parallel()
 	ctx := testContext{Count: 0}
 	machine := NewMachineConfig("test", "initial", ctx)
 
@@ -34,6 +35,7 @@ func TestNewMachineConfig(t *testing.T) {
 }
 
 func TestNewStateConfig(t *testing.T) {
+	t.Parallel()
 	state := NewStateConfig("green", StateTypeAtomic)
 
 	if state.ID != "green" {
@@ -45,6 +47,7 @@ func TestNewStateConfig(t *testing.T) {
 }
 
 func TestNewTransitionConfig(t *testing.T) {
+	t.Parallel()
 	trans := NewTransitionConfig("TIMER", "yellow")
 
 	if trans.Event != "TIMER" {
@@ -59,6 +62,7 @@ func TestNewTransitionConfig(t *testing.T) {
 }
 
 func TestMachineConfig_GetState(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testContext]("test", "initial", testContext{})
 	state := NewStateConfig("green", StateTypeAtomic)
 	machine.States["green"] = state
@@ -75,6 +79,7 @@ func TestMachineConfig_GetState(t *testing.T) {
 }
 
 func TestMachineConfig_GetAction(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testContext]("test", "initial", testContext{})
 	action := func(ctx *testContext, e Event) {
 		ctx.Count++
@@ -100,6 +105,7 @@ func TestMachineConfig_GetAction(t *testing.T) {
 }
 
 func TestMachineConfig_GetGuard(t *testing.T) {
+	t.Parallel()
 	machine := NewMachineConfig[testContext]("test", "initial", testContext{})
 	guard := func(ctx testContext, e Event) bool {
 		return ctx.Count > 0
@@ -126,6 +132,7 @@ func TestMachineConfig_GetGuard(t *testing.T) {
 }
 
 func TestStateConfig_FindTransition(t *testing.T) {
+	t.Parallel()
 	state := NewStateConfig("green", StateTypeAtomic)
 	trans1 := NewTransitionConfig("TIMER", "yellow")
 	trans2 := NewTransitionConfig("RESET", "green")
@@ -148,6 +155,7 @@ func TestStateConfig_FindTransition(t *testing.T) {
 }
 
 func TestStateType_String(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		st   StateType
 		want string
@@ -170,6 +178,7 @@ func TestStateType_String(t *testing.T) {
 }
 
 func TestHistoryType_String(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		ht   HistoryType
 		want string
@@ -189,6 +198,7 @@ func TestHistoryType_String(t *testing.T) {
 }
 
 func TestTransitionConfig_IsDelayed(t *testing.T) {
+	t.Parallel()
 	t.Run("not delayed", func(t *testing.T) {
 		trans := NewTransitionConfig("GO", "target")
 		if trans.IsDelayed() {
@@ -206,6 +216,7 @@ func TestTransitionConfig_IsDelayed(t *testing.T) {
 }
 
 func TestStateConfig_IsHistory(t *testing.T) {
+	t.Parallel()
 	t.Run("history state", func(t *testing.T) {
 		state := NewStateConfig("hist", StateTypeHistory)
 		if !state.IsHistory() {
@@ -222,6 +233,7 @@ func TestStateConfig_IsHistory(t *testing.T) {
 }
 
 func TestStateConfig_IsParallel(t *testing.T) {
+	t.Parallel()
 	t.Run("parallel state", func(t *testing.T) {
 		state := NewStateConfig("parallel", StateTypeParallel)
 		if !state.IsParallel() {
@@ -238,6 +250,7 @@ func TestStateConfig_IsParallel(t *testing.T) {
 }
 
 func TestStateConfig_GetDelayedTransitions(t *testing.T) {
+	t.Parallel()
 	state := NewStateConfig("waiting", StateTypeAtomic)
 
 	// Add mix of normal and delayed transitions
@@ -263,6 +276,7 @@ func TestStateConfig_GetDelayedTransitions(t *testing.T) {
 }
 
 func TestStateConfig_GetDelayedTransitions_None(t *testing.T) {
+	t.Parallel()
 	state := NewStateConfig("active", StateTypeAtomic)
 	state.Transitions = []*TransitionConfig{
 		NewTransitionConfig("GO", "target1"),

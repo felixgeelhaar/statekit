@@ -5,6 +5,7 @@ import "testing"
 // --- Tags ---
 
 func TestTags_HasTagForActiveAndAncestors(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{}]("tags").
 		WithInitial("active").
 		State("active").
@@ -45,6 +46,7 @@ func TestTags_HasTagForActiveAndAncestors(t *testing.T) {
 // --- Always (eventless transitions) ---
 
 func TestAlways_FiresOnEntryWhenGuardPasses(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{ Ok bool }]("always").
 		WithInitial("check").
 		WithGuard("ok", func(c struct{ Ok bool }, e Event) bool { return c.Ok }).
@@ -68,6 +70,7 @@ func TestAlways_FiresOnEntryWhenGuardPasses(t *testing.T) {
 }
 
 func TestAlways_FallbackWhenGuardFails(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{ Ok bool }]("always").
 		WithInitial("check").
 		WithGuard("ok", func(c struct{ Ok bool }, e Event) bool { return c.Ok }).
@@ -91,6 +94,7 @@ func TestAlways_FallbackWhenGuardFails(t *testing.T) {
 }
 
 func TestAlways_ChainsThroughMultipleStates(t *testing.T) {
+	t.Parallel()
 	// a -> b -> c all via eventless transitions in a single macrostep
 	m, err := NewMachine[struct{}]("chain").
 		WithInitial("a").
@@ -110,6 +114,7 @@ func TestAlways_ChainsThroughMultipleStates(t *testing.T) {
 }
 
 func TestAlways_FiresAfterEventTransition(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{}]("evt").
 		WithInitial("idle").
 		State("idle").On("GO").Target("transient").End().Done().
@@ -134,6 +139,7 @@ func TestAlways_FiresAfterEventTransition(t *testing.T) {
 // --- Raise (internal self-event) ---
 
 func TestRaise_ProcessedInSameMacrostep(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{}]("raise").
 		WithInitial("idle").
 		State("idle").On("START").Target("middle").Raise("NEXT").End().Done().
@@ -153,6 +159,7 @@ func TestRaise_ProcessedInSameMacrostep(t *testing.T) {
 }
 
 func TestRaise_FromAlwaysTransition(t *testing.T) {
+	t.Parallel()
 	m, err := NewMachine[struct{}]("raise2").
 		WithInitial("start").
 		State("start").Always().Target("waiting").Raise("PING").End().Done().
@@ -173,6 +180,7 @@ func TestRaise_FromAlwaysTransition(t *testing.T) {
 // --- Validation ---
 
 func TestAlways_RequiresTarget(t *testing.T) {
+	t.Parallel()
 	_, err := NewMachine[struct{}]("bad").
 		WithInitial("a").
 		State("a").Always().End().Done().

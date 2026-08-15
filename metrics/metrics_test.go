@@ -27,6 +27,7 @@ func buildTestMachine() *statekit.MachineConfig[struct{}] {
 }
 
 func TestNewMetrics(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -54,6 +55,7 @@ func TestNewMetrics(t *testing.T) {
 }
 
 func TestNewMetrics_NilRegistry(t *testing.T) {
+	t.Parallel()
 	// Should not panic with nil registry
 	m := metrics.NewMetrics(nil)
 	if m == nil {
@@ -62,6 +64,7 @@ func TestNewMetrics_NilRegistry(t *testing.T) {
 }
 
 func TestDefaultMetrics(t *testing.T) {
+	t.Parallel()
 	// This will register with default registry - skip in parallel tests
 	// Just verify it doesn't panic
 	defer func() {
@@ -76,6 +79,7 @@ func TestDefaultMetrics(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Start(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -99,6 +103,7 @@ func TestMetricsInterpreter_Start(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Send_NoTransition(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -123,6 +128,7 @@ func TestMetricsInterpreter_Send_NoTransition(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Send_WithTransition(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -158,6 +164,7 @@ func TestMetricsInterpreter_Send_WithTransition(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Send_ToFinalState(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -183,6 +190,7 @@ func TestMetricsInterpreter_Send_ToFinalState(t *testing.T) {
 }
 
 func TestMetricsInterpreter_SendAll(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -210,6 +218,7 @@ func TestMetricsInterpreter_SendAll(t *testing.T) {
 }
 
 func TestMetricsInterpreter_State(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -226,6 +235,7 @@ func TestMetricsInterpreter_State(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Done(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -247,6 +257,7 @@ func TestMetricsInterpreter_Done(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Matches(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -264,6 +275,7 @@ func TestMetricsInterpreter_Matches(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Stop(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -288,6 +300,7 @@ func TestMetricsInterpreter_Stop(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Stop_AlreadyDone(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -309,6 +322,7 @@ func TestMetricsInterpreter_Stop_AlreadyDone(t *testing.T) {
 }
 
 func TestMetricsInterpreter_RecordError(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -332,6 +346,7 @@ func TestMetricsInterpreter_RecordError(t *testing.T) {
 }
 
 func TestMetricsInterpreter_Interpreter(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -346,6 +361,7 @@ func TestMetricsInterpreter_Interpreter(t *testing.T) {
 }
 
 func TestMetricsInterpreter_TransitionDuration(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
@@ -364,6 +380,7 @@ func TestMetricsInterpreter_TransitionDuration(t *testing.T) {
 }
 
 func TestMetricsInterpreter_MultipleInstances(t *testing.T) {
+	t.Parallel()
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 

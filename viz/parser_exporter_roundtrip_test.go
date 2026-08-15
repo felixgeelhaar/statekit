@@ -18,6 +18,7 @@ import (
 // transitions and a state that looked genuinely terminal. A diagram missing an
 // edge reads exactly like a machine that has no such edge.
 func TestParseNativeJSONAcceptsEveryShapeTheExporterEmits(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name  string
 		json  string
@@ -121,6 +122,7 @@ func TestParseNativeJSONAcceptsEveryShapeTheExporterEmits(t *testing.T) {
 // parse of nothing — but a single bad entry must not discard its siblings
 // either.
 func TestParseNativeJSONSkipsOnlyTheUnusableEntry(t *testing.T) {
+	t.Parallel()
 	const in = `{"id":"m","initial":"a","states":{"a":{"on":{"GO":[{"target":"b"},42]}},"b":{}}}`
 	vm, err := ParseNativeJSON([]byte(in))
 	if err != nil {
@@ -173,6 +175,7 @@ func keys(m map[string]*VizState) []string {
 // parser gap. VizTransition has carried IsDelayed and DelayMs the whole time
 // — nothing ever set them.
 func TestParseNativeJSONReadsAfter(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		json string

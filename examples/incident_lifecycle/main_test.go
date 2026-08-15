@@ -7,6 +7,7 @@ import (
 )
 
 func TestIncidentLifecycle_HappyPath(t *testing.T) {
+	t.Parallel()
 	machine := buildMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -59,6 +60,7 @@ func TestIncidentLifecycle_HappyPath(t *testing.T) {
 }
 
 func TestIncidentLifecycle_Cancellation(t *testing.T) {
+	t.Parallel()
 	machine := buildMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -79,6 +81,7 @@ func TestIncidentLifecycle_Cancellation(t *testing.T) {
 }
 
 func TestIncidentLifecycle_Escalation(t *testing.T) {
+	t.Parallel()
 	machine := buildMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -104,6 +107,7 @@ func TestIncidentLifecycle_Escalation(t *testing.T) {
 }
 
 func TestIncidentLifecycle_Reopen(t *testing.T) {
+	t.Parallel()
 	machine := buildMachine()
 	interp := statekit.NewInterpreter(machine)
 
@@ -127,6 +131,7 @@ func TestIncidentLifecycle_Reopen(t *testing.T) {
 }
 
 func TestIncidentLifecycle_MatchesActive(t *testing.T) {
+	t.Parallel()
 	machine := buildMachine()
 	interp := statekit.NewInterpreter(machine)
 
