@@ -138,6 +138,7 @@ func runDemo(machine *ir.MachineConfig[IncidentContext]) {
 
 	// Create interpreter with context
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 	interp.UpdateContext(func(c *IncidentContext) {
 		*c = ctx
 	})

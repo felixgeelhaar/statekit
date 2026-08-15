@@ -171,6 +171,7 @@ func buildWizardMachine() *statekit.MachineConfig[FormContext] {
 
 func runDemo(machine *statekit.MachineConfig[FormContext]) {
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 
 	// Set some initial data
 	interp.UpdateContext(func(ctx *FormContext) {

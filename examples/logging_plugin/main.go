@@ -34,6 +34,7 @@ func main() {
 
 	// Create interpreter with multiple plugins
 	interp := statekit.NewInterpreter(machine)
+	defer func() { _ = interp.Close() }()
 
 	// Add plugins
 	logger := NewLoggingPlugin[OrderContext]()
@@ -61,7 +62,6 @@ func main() {
 	interp.Send(statekit.Event{Type: "SHIP"})
 
 	fmt.Println("\n--- Stopping Interpreter ---")
-	interp.Stop()
 
 	// Print metrics summary
 	fmt.Println("\n--- Metrics Summary ---")

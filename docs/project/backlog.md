@@ -1,7 +1,7 @@
 
 ## Reposition README — kill "execution engine," lead with concrete pain
 
-**Done (partial, v1-safe):** README hero rewritten around concrete workflow pain; Tier 2 demoted to Advanced with experimental banner. Viz GIF still outstanding (needs a real asset).
+**Done (v1-safe):** README hero rewritten around concrete workflow pain; Why/feature list trimmed; Tier 2 demoted; XState framed as optional export. Viz GIF still outstanding (needs a real asset).
 
 Rewrite README hero. Drop "Go-native statechart execution engine" abstract framing. Lead with concrete pain: stop modeling order/payment/incident lifecycles with switch statements + bug-prone enum FSMs. Add 30-sec viz GIF above the fold. Trim 16-bullet feature list (Fitts/Miller violation) — lead with "type-safe statecharts in 10 lines." Demote distributed/event-sourcing/actor sections to "advanced." Source: GTM + Product + UX reviews — top consensus action.
 
@@ -103,7 +103,7 @@ Direct rivals = incumbent Go FSM libs. Migration guide = direct conversion path 
 
 ## DX polish — defer interp.Stop() pattern, fuzz tests, naming fixes
 
-**Done (partial):** `Interpreter.Close()` (`io.Closer`) + README/`defer interp.Close()`; InvokeMachine/InvokeService aliases. Fuzz coverage still thin outside parser/viz. Breaking Done→EndMachine rename deferred (v1).
+**Done (partial):** `Interpreter.Close()` + README/`defer interp.Close()` in examples; InvokeMachine/InvokeService aliases; export Native JSON fuzz. Breaking Done→EndMachine rename deferred (v1).
 
 Misc DX/quality cleanups: (1) Make interpreter implement io.Closer; document defer interp.Stop() in every example for muscle memory (timer cleanup buried in README:132 today). (2) Rename Done() returning *MachineBuilder from nested state to EndMachine() — silently teleports caller out of nested context (builder.go:329-333). (3) Rename InvokeBuilder/MachineInvokeBuilder to InvokeService/InvokeMachine for self-documenting (builder.go:46,57). (4) Add fuzz tests for builder, event payload, JSON exporter (only 1 fuzz file today in internal/parser). Source: UX + Quality reviews.
 
@@ -154,6 +154,8 @@ Followup to synthetic clock injection. Now that Clock interface + FakeClock + Wi
 ---
 
 ## Reposition away from "XState for Go" — two ports already exist
+
+**Done (README):** hero leads with Go workflow pain; XState/Stately mentioned as optional export, not identity.
 
 ICP signal: dstotijn/go-xstate and CorrectRoadH/XState-For-Golang already occupy the "XState port" framing. Update README hero from "XState compatibility" lead to "statecharts for Go" lead. Frame XState/Stately compat as a feature (round-trip via XStateExporter), not as the identity. Show HN headline candidate: "Statekit — Go statecharts with hierarchy, parallel states, visual debugger" not "XState for Go". Source: ICP signal sweep — competing ports already exist with the same framing.
 
