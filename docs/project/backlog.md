@@ -1,11 +1,15 @@
 
 ## Reposition README — kill "execution engine," lead with concrete pain
 
+**Done (partial, v1-safe):** README hero rewritten around concrete workflow pain; Tier 2 demoted to Advanced with experimental banner. Viz GIF still outstanding (needs a real asset).
+
 Rewrite README hero. Drop "Go-native statechart execution engine" abstract framing. Lead with concrete pain: stop modeling order/payment/incident lifecycles with switch statements + bug-prone enum FSMs. Add 30-sec viz GIF above the fold. Trim 16-bullet feature list (Fitts/Miller violation) — lead with "type-safe statecharts in 10 lines." Demote distributed/event-sourcing/actor sections to "advanced." Source: GTM + Product + UX reviews — top consensus action.
 
 ---
 
 ## Demote distributed/event-sourcing/actor packages to experimental x/ tier
+
+**Done (docs banner, stay on v1):** Tier 2 marked experimental in godoc + `docs/reference/stability.md` + README. Physical `x/` package move deferred (breaking).
 
 v1.0 froze API on speculative scope. DistributedInterpreter, PersistentInterpreter, Actor model compete poorly with Temporal/Cadence and overlap each other (Spawn vs InvokeMachine). Move to experimental tier (x/ subpackage or "Experimental — API may change" docs banner). Protects core API stability promise. Source: Product + GTM reviews — feature surface too broad for solo maintainer.
 
@@ -29,11 +33,15 @@ Four terminators with subtle semantics. README hierarchical example shows .End()
 
 ## Adopt go.uber.org/goleak + synthetic clock in tests
 
+**Done:** `goleak.VerifyTestMain` in root + `distributed`; `FakeClock` / `WithClock` for delayed transitions; async tests prefer `waitUntil` over fixed Sleeps.
+
 Two quality risks killed in one sweep. (1) Add goleak.VerifyNone in TestMain across actor, persist, distributed, invoke packages — currently no goroutine-leak detection despite many spawn paths (lock renewer, services, actors). (2) Inject clock interface (jonboulle/clockwork) into delayed transitions + supervision timers. delayed_test.go uses 50ms wall-clock windows + 30ms sleep → CI flake bomb. Source: Quality review — top 2 risks.
 
 ---
 
 ## Lift internal/ir coverage to 90%+ and add t.Parallel
+
+**Done:** `internal/ir` at 100% statement coverage; leaf tests use `t.Parallel()` widely.
 
 internal/ir at 66.9% — foundation package (validation, hierarchy LCA, transition resolution) under-tested while CLAUDE.md claims "90%+ on critical business logic." Worst place for coverage gap given v1.0 API stability commitment. Also: zero t.Parallel() in entire test suite — misses parallel-safety bugs in package-level state. Add t.Parallel() to all leaf unit tests. Coverctl threshold for ir: raise from 80% to 90%. Source: Quality review.
 
