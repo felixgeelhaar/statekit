@@ -16,9 +16,19 @@
 <td>a <strong>top-level</strong> state</td>
 </tr>
 <tr>
+<td><code>Up()</code></td>
+<td>enclosing <code>StateBuilder</code></td>
+<td>after a transition on a <strong>nested</strong> state (≡ <code>End().End()</code>)</td>
+</tr>
+<tr>
 <td><code>End()</code></td>
 <td>enclosing <code>StateBuilder</code></td>
-<td>a <strong>child</strong> of a compound state</td>
+<td>step up <strong>one</strong> level (or return to the state after a transition)</td>
+</tr>
+<tr>
+<td><code>EndTo(id)</code></td>
+<td>named ancestor <code>StateBuilder</code></td>
+<td>unwind deep nesting without counting <code>End</code>s</td>
 </tr>
 <tr>
 <td><code>EndState()</code></td>
@@ -35,8 +45,9 @@
 <p><code>EndMachine()</code> is a deprecated alias of <code>Done()</code>. Prefer <code>Done()</code>.</p>
 <p>Wrong terminators often still compile because several of them return chainable types. Two hard guard rails catch the common mistakes at call time:</p>
 <ul>
-<li><code>End()</code> on a top-level state <strong>panics</strong> — use <code>Done()</code>.</li>
+<li><code>End()</code> / <code>Up()</code> on a top-level state <strong>panics</strong> — use <code>Done()</code>.</li>
 <li><code>EndState()</code> outside a region <strong>panics</strong> — use <code>End()</code> or <code>Done()</code>.</li>
+<li><code>EndTo(id)</code> <strong>panics</strong> if <code>id</code> is not an ancestor.</li>
 </ul>
 <h2 id="flat-machine--only-done">Flat machine — only <code>Done</code></h2>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"order"</span><span style="color:#E1E4E8">).</span></span>
@@ -44,18 +55,22 @@
 <span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"cart"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CHECKOUT"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"paid"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
 <span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"paid"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Final</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Done</span><span style="color:#E1E4E8">().</span></span>
 <span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
-<h2 id="nested-machine--end-per-level-then-done">Nested machine — <code>End</code> per level, then <code>Done</code></h2>
+<h2 id="nested-machine--prefer-up-then-done">Nested machine — prefer <code>Up</code>, then <code>Done</code></h2>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"editor"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">        WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span></span>
-<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TYPE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"dirty"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
-<span class="line"><span style="color:#6A737D">        //                                       ^      ^ back to "editing"</span></span>
-<span class="line"><span style="color:#6A737D">        //                                       close transition, then state</span></span>
-<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"dirty"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CLEAR"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">End</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TYPE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"dirty"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Up</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"dirty"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CLEAR"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Up</span><span style="color:#E1E4E8">().</span></span>
 <span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">().</span></span>
 <span class="line"><span style="color:#B392F0">    Build</span><span style="color:#E1E4E8">()</span></span></code></pre>
-<p>The doubled <code>End</code> reads as “close the transition, then close the state.”</p>
+<p><code>Up()</code> is exactly <code>End().End()</code>: close the transition, then the nested state. The older doubled-<code>End</code> form still works.</p>
+<h3 id="deep-nesting--endto">Deep nesting — <code>EndTo</code></h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#B392F0">State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"app"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"editor"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"TYPE"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"dirty"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Up</span><span style="color:#E1E4E8">().</span></span>
+<span class="line"><span style="color:#B392F0">        State</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"dirty"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">On</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"CLEAR"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Target</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"idle"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">EndTo</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"app"</span><span style="color:#E1E4E8">).</span></span>
+<span class="line"><span style="color:#B392F0">    Done</span><span style="color:#E1E4E8">()</span></span></code></pre>
 <h2 id="parallel-machine--endstate--endregion--done">Parallel machine — <code>EndState</code> → <code>EndRegion</code> → <code>Done</code></h2>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Ctx</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"editor"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"editing"</span><span style="color:#E1E4E8">).</span></span>

@@ -67,6 +67,8 @@ func main() {
 | `auto-forward-redundancy` | Warning | AutoForward event is also handled by the parent |
 | `deep-nesting` | Info | State nests five or more levels deep |
 | `history-without-siblings` | Warning | History state has no non-history siblings to remember |
+| `guarded-only-entry` | Warning | State is only entered via guarded transitions |
+| `auto-forward-loop` | Warning | State auto-forwards and raises the same event (ping-pong risk) |
 
 ### Rule Details
 

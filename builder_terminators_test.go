@@ -47,6 +47,38 @@ func TestTerminatorShapes(t *testing.T) {
 			wantLeaf:   "idle",
 		},
 		{
+			name: "nested prefers Up after a transition (≡ End.End)",
+			build: func() (*statekit.MachineConfig[termCtx], error) {
+				return statekit.NewMachine[termCtx]("editor_up").
+					WithInitial("editing").
+					State("editing").
+					WithInitial("idle").
+					State("idle").On("TYPE").Target("dirty").Up().
+					State("dirty").On("CLEAR").Target("idle").Up().
+					Done().
+					Build()
+			},
+			wantStates: []statekit.StateID{"editing", "idle", "dirty"},
+			wantLeaf:   "idle",
+		},
+		{
+			name: "EndTo unwinds to a named ancestor",
+			build: func() (*statekit.MachineConfig[termCtx], error) {
+				return statekit.NewMachine[termCtx]("deep").
+					WithInitial("app").
+					State("app").
+					WithInitial("editor").
+					State("editor").
+					WithInitial("idle").
+					State("idle").On("TYPE").Target("dirty").Up().
+					State("dirty").On("CLEAR").Target("idle").EndTo("app").
+					Done().
+					Build()
+			},
+			wantStates: []statekit.StateID{"app", "editor", "idle", "dirty"},
+			wantLeaf:   "idle",
+		},
+		{
 			name: "parallel closes region states with EndState",
 			build: func() (*statekit.MachineConfig[termCtx], error) {
 				return statekit.NewMachine[termCtx]("styles").
@@ -257,6 +289,24 @@ func TestTerminatorMisusePanics(t *testing.T) {
 			},
 			wantMsg: "not inside a parallel region",
 		},
+		{
+			name: "Up on a top-level transition",
+			run: func() {
+				statekit.NewMachine[termCtx]("m").WithInitial("a").
+					State("a").On("X").Target("b").Up()
+			},
+			wantMsg: `End called on top-level state "a"`,
+		},
+		{
+			name: "EndTo missing ancestor",
+			run: func() {
+				statekit.NewMachine[termCtx]("m").WithInitial("a").
+					State("a").
+					WithInitial("b").
+					State("b").EndTo("ghost")
+			},
+			wantMsg: `EndTo("ghost")`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -273,7 +323,7 @@ func TestTerminatorMisusePanics(t *testing.T) {
 				if !strings.Contains(msg, tt.wantMsg) {
 					t.Errorf("panic = %q, want it to contain %q", msg, tt.wantMsg)
 				}
-				if !strings.Contains(msg, "use ") {
+				if !strings.Contains(msg, "use ") && !strings.Contains(msg, "EndTo") {
 					t.Errorf("panic = %q, want it to name the terminator to use instead", msg)
 				}
 			}()

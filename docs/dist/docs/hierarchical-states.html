@@ -9,7 +9,7 @@
 <li>Model “is-a” relationships (e.g., “Walking is an Active state”)</li>
 </ul>
 <h2 id="creating-nested-states">Creating Nested States</h2>
-<p>Children close with <code>End()</code> (one level up). The top-level parent closes with <code>Done()</code>. See <a href="./builder-terminators.md">Builder Terminators</a> for the full table, including parallel regions.</p>
+<p>Children close with <code>Up()</code> after a transition (or <code>End()</code> one level at a time). The top-level parent closes with <code>Done()</code>. See <a href="./builder-terminators.md">Builder Terminators</a> for the full table, including <code>EndTo</code> and parallel regions.</p>
 <h3 id="fluent-builder-api">Fluent Builder API</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#E1E4E8">machine, _ </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> statekit.</span><span style="color:#B392F0">NewMachine</span><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">](</span><span style="color:#9ECBFF">"pedestrian_signal"</span><span style="color:#E1E4E8">).</span></span>
 <span class="line"><span style="color:#B392F0">    WithInitial</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"active"</span><span style="color:#E1E4E8">).</span></span>

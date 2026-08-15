@@ -31,7 +31,7 @@ machine, _ := statekit.NewMachine[Order]("checkout").
 - You want compile-time errors on typos in state IDs and event types (use named constants for these).
 - You're embedding a small or medium-sized machine in a service.
 
-Terminator cheat sheet (`Done` / `End` / `EndState`): [Builder Terminators](./builder-terminators.md).
+Terminator cheat sheet (`Done` / `Up` / `End` / `EndTo` / `EndState`): [Builder Terminators](./builder-terminators.md).
 
 ### 2. Reflection DSL
 

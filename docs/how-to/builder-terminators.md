@@ -5,7 +5,9 @@ Every `State(...)` you open must be closed. Which terminator you use depends on 
 | Terminator | Returns to | Use for |
 |---|---|---|
 | `Done()` | `MachineBuilder` | a **top-level** state |
-| `End()` | enclosing `StateBuilder` | a **child** of a compound state |
+| `Up()` | enclosing `StateBuilder` | after a transition on a **nested** state (≡ `End().End()`) |
+| `End()` | enclosing `StateBuilder` | step up **one** level (or return to the state after a transition) |
+| `EndTo(id)` | named ancestor `StateBuilder` | unwind deep nesting without counting `End`s |
 | `EndState()` | enclosing `RegionBuilder` | a state inside a **parallel region** |
 | `EndRegion()` | parallel `StateBuilder` | closing a region (not a state) |
 
@@ -13,8 +15,9 @@ Every `State(...)` you open must be closed. Which terminator you use depends on 
 
 Wrong terminators often still compile because several of them return chainable types. Two hard guard rails catch the common mistakes at call time:
 
-- `End()` on a top-level state **panics** — use `Done()`.
+- `End()` / `Up()` on a top-level state **panics** — use `Done()`.
 - `EndState()` outside a region **panics** — use `End()` or `Done()`.
+- `EndTo(id)` **panics** if `id` is not an ancestor.
 
 ## Flat machine — only `Done`
 
@@ -26,22 +29,30 @@ statekit.NewMachine[Ctx]("order").
     Build()
 ```
 
-## Nested machine — `End` per level, then `Done`
+## Nested machine — prefer `Up`, then `Done`
 
 ```go
 statekit.NewMachine[Ctx]("editor").
     WithInitial("editing").
     State("editing").
         WithInitial("idle").
-        State("idle").On("TYPE").Target("dirty").End().End().
-        //                                       ^      ^ back to "editing"
-        //                                       close transition, then state
-        State("dirty").On("CLEAR").Target("idle").End().End().
+        State("idle").On("TYPE").Target("dirty").Up().
+        State("dirty").On("CLEAR").Target("idle").Up().
     Done().
     Build()
 ```
 
-The doubled `End` reads as "close the transition, then close the state."
+`Up()` is exactly `End().End()`: close the transition, then the nested state. The older doubled-`End` form still works.
+
+### Deep nesting — `EndTo`
+
+```go
+State("app").
+    State("editor").
+        State("idle").On("TYPE").Target("dirty").Up().
+        State("dirty").On("CLEAR").Target("idle").EndTo("app").
+    Done()
+```
 
 ## Parallel machine — `EndState` → `EndRegion` → `Done`
 

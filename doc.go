@@ -48,20 +48,21 @@
 //		State("paid").Final().Done().
 //		Build()
 //
-// Nested — children close with End, one call per level, and the top-level
-// parent closes with Done:
+// Nested — prefer Up after a transition on a child (one call instead of
+// End().End()), and close the top-level parent with Done:
 //
 //	statekit.NewMachine[Ctx]("editor").
 //		WithInitial("editing").
 //		State("editing").
 //			WithInitial("idle").
-//			State("idle").On("TYPE").Target("dirty").End().End().
-//			State("dirty").On("CLEAR").Target("idle").End().End().
+//			State("idle").On("TYPE").Target("dirty").Up().
+//			State("dirty").On("CLEAR").Target("idle").Up().
 //		Done().
 //		Build()
 //
-// The doubled End reads as "close the transition, then close the state". The
-// first returns to the state, the second to its parent.
+// Up is exactly End().End(): close the transition, then the nested state.
+// For deeper compounds, EndTo("ancestor") unwinds until that parent without
+// counting Ends. End / EndState / Done remain supported and unchanged.
 //
 // Parallel — states inside a region close with EndState, the region with
 // EndRegion, the parallel state with Done:

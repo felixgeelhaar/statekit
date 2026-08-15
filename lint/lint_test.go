@@ -582,6 +582,8 @@ func TestLint_AllRulesIncludesNew(t *testing.T) {
 		lint.RuleInvokeMissingOnError,
 		lint.RuleInvokeIDCollision,
 		lint.RuleHistoryWithoutSiblings,
+		lint.RuleGuardedOnlyEntry,
+		lint.RuleAutoForwardLoop,
 	}
 	for _, want := range expected {
 		found := false
@@ -731,6 +733,96 @@ func TestLint_HistoryWithoutSiblings(t *testing.T) {
 	}
 	if !found {
 		t.Fatalf("expected history-without-siblings for hist, got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_GuardedOnlyEntry(t *testing.T) {
+	t.Parallel()
+
+	machine, err := statekit.NewMachine[struct{}]("gated").
+		WithInitial("idle").
+		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
+		State("idle").
+		On("GO").Target("special").Guard("ok").End().
+		Done().
+		State("special").Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleGuardedOnlyEntry && d.State == "special" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected guarded-only-entry for special, got: %v", result.Diagnostics)
+	}
+}
+
+func TestLint_GuardedOnlyEntry_UnguardedInboundOK(t *testing.T) {
+	t.Parallel()
+
+	machine, err := statekit.NewMachine[struct{}]("mixed").
+		WithInitial("idle").
+		WithGuard("ok", func(_ struct{}, _ statekit.Event) bool { return true }).
+		State("idle").
+		On("GO").Target("special").Guard("ok").End().
+		On("FORCE").Target("special").End().
+		Done().
+		State("special").Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleGuardedOnlyEntry {
+			t.Fatalf("unexpected guarded-only-entry: %v", d)
+		}
+	}
+}
+
+func TestLint_AutoForwardLoop(t *testing.T) {
+	t.Parallel()
+
+	childMachine, err := statekit.NewMachine[struct{}]("child").
+		WithInitial("a").
+		State("a").Done().
+		Build()
+	if err != nil {
+		t.Fatalf("child build: %v", err)
+	}
+
+	machine, err := statekit.NewMachine[struct{}]("parent").
+		WithInitial("active").
+		WithChildMachine("worker", func(_ struct{}, _ func(statekit.Event) error) ir.ChildInterpreter {
+			return statekit.NewInterpreter(childMachine)
+		}).
+		State("active").
+		On("TICK").Target("active").Raise("TICK").End().
+		InvokeMachine("worker").ID("w").AutoForward("TICK").OnDone("active").OnError("active").End().
+		Done().
+		Build()
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	result := lint.Lint(machine)
+	found := false
+	for _, d := range result.Diagnostics {
+		if d.Rule == lint.RuleAutoForwardLoop && d.Event == "TICK" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected auto-forward-loop for TICK, got: %v", result.Diagnostics)
 	}
 }
 

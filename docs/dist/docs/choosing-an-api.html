@@ -44,7 +44,7 @@
 <li>You want compile-time errors on typos in state IDs and event types (use named constants for these).</li>
 <li>You’re embedding a small or medium-sized machine in a service.</li>
 </ul>
-<p>Terminator cheat sheet (<code>Done</code> / <code>End</code> / <code>EndState</code>): <a href="./builder-terminators.md">Builder Terminators</a>.</p>
+<p>Terminator cheat sheet (<code>Done</code> / <code>Up</code> / <code>End</code> / <code>EndTo</code> / <code>EndState</code>): <a href="./builder-terminators.md">Builder Terminators</a>.</p>
 <h3 id="2-reflection-dsl">2. Reflection DSL</h3>
 <p>Define the machine as a Go struct with field tags. The shape reads as data; the registry binds named actions and guards at runtime.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> OrderMachine</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>

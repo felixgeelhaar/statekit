@@ -127,8 +127,8 @@ machine, _ := statekit.NewMachine[struct{}]("editor").
     State("editing").
         WithInitial("idle").
         On("SAVE").Target("saved").End().  // Parent handles SAVE
-        State("idle").On("TYPE").Target("dirty").End().End().
-        State("dirty").On("CLEAR").Target("idle").End().End().
+        State("idle").On("TYPE").Target("dirty").Up().
+        State("dirty").On("CLEAR").Target("idle").Up().
     Done().
     State("saved").Final().Done().
     Build()
@@ -154,8 +154,8 @@ machine, _ := statekit.NewMachine[struct{}]("player").
         WithInitial("track1").
         On("PAUSE").Target("paused").End().
         History("hist").Shallow().Default("track1").End().
-        State("track1").On("NEXT").Target("track2").End().End().
-        State("track2").On("NEXT").Target("track3").End().End().
+        State("track1").On("NEXT").Target("track2").Up().
+        State("track2").On("NEXT").Target("track3").Up().
         State("track3").End().
     Done().
     State("paused").

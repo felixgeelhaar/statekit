@@ -11,7 +11,7 @@ Hierarchical states allow you to:
 
 ## Creating Nested States
 
-Children close with `End()` (one level up). The top-level parent closes with `Done()`. See [Builder Terminators](./builder-terminators.md) for the full table, including parallel regions.
+Children close with `Up()` after a transition (or `End()` one level at a time). The top-level parent closes with `Done()`. See [Builder Terminators](./builder-terminators.md) for the full table, including `EndTo` and parallel regions.
 
 ### Fluent Builder API
 
