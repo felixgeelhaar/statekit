@@ -172,6 +172,7 @@ func CheckTyped[C any](l *Linter, machine *ir.MachineConfig[C]) *Result {
 	checkInvokeIDCollision(l, machine, result)
 	checkAutoForwardRedundancy(l, machine, result)
 	checkDeepNesting(l, machine, result)
+	checkHistoryWithoutSiblings(l, machine, result)
 
 	// Sort diagnostics by severity, then state
 	sort.Slice(result.Diagnostics, func(i, j int) bool {
@@ -569,19 +570,61 @@ func checkDeepNesting[C any](l *Linter, machine *ir.MachineConfig[C], result *Re
 	}
 }
 
+// checkHistoryWithoutSiblings warns when a history state sits in a compound
+// parent that has no other children. History remembers the last active sibling;
+// with only itself present, resume always falls through to the default — a
+// no-op that usually means the modeller forgot the real children.
+func checkHistoryWithoutSiblings[C any](l *Linter, machine *ir.MachineConfig[C], result *Result) {
+	if l.IgnoreRules[RuleHistoryWithoutSiblings] {
+		return
+	}
+
+	for id, state := range machine.States {
+		if state.Type != ir.StateTypeHistory {
+			continue
+		}
+		if state.Parent == "" {
+			continue // HISTORY_NOT_IN_COMPOUND is a build-time validation error
+		}
+		parent := machine.States[state.Parent]
+		if parent == nil {
+			continue
+		}
+		siblings := 0
+		for _, childID := range parent.Children {
+			if childID == id {
+				continue
+			}
+			child := machine.States[childID]
+			if child != nil && child.Type != ir.StateTypeHistory {
+				siblings++
+			}
+		}
+		if siblings == 0 {
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{
+				Severity: SeverityWarning,
+				Rule:     RuleHistoryWithoutSiblings,
+				State:    id,
+				Message:  fmt.Sprintf("history state %q has no non-history siblings under %q — resume will always use the default", id, state.Parent),
+			})
+		}
+	}
+}
+
 // Rule names for reference
 const (
-	RuleUnreachable           = "unreachable"
-	RuleDeadEnd               = "dead-end"
-	RuleNonDeterminism        = "non-determinism"
-	RuleCompoundInitial       = "compound-initial"
-	RuleSelfTransition        = "self-transition"
-	RuleUnusedAction          = "unused-action"
-	RuleUnusedGuard           = "unused-guard"
-	RuleInvokeMissingOnError  = "invoke-missing-onerror"
-	RuleInvokeIDCollision     = "invoke-id-collision"
-	RuleAutoForwardRedundancy = "auto-forward-redundancy"
-	RuleDeepNesting           = "deep-nesting"
+	RuleUnreachable            = "unreachable"
+	RuleDeadEnd                = "dead-end"
+	RuleNonDeterminism         = "non-determinism"
+	RuleCompoundInitial        = "compound-initial"
+	RuleSelfTransition         = "self-transition"
+	RuleUnusedAction           = "unused-action"
+	RuleUnusedGuard            = "unused-guard"
+	RuleInvokeMissingOnError   = "invoke-missing-onerror"
+	RuleInvokeIDCollision      = "invoke-id-collision"
+	RuleAutoForwardRedundancy  = "auto-forward-redundancy"
+	RuleDeepNesting            = "deep-nesting"
+	RuleHistoryWithoutSiblings = "history-without-siblings"
 )
 
 // AllRules returns all available rule names.
@@ -598,5 +641,6 @@ func AllRules() []string {
 		RuleInvokeIDCollision,
 		RuleAutoForwardRedundancy,
 		RuleDeepNesting,
+		RuleHistoryWithoutSiblings,
 	}
 }

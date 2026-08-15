@@ -74,7 +74,7 @@ Step-by-step migration guides:
 
 ## Advanced (Tier 2 — see [stability tiers](./docs/stability.md))
 
-These ship in v1.0 but reserve room to iterate within v1.x:
+**Experimental:** these ship in v1.x but may change in a future minor. Prefer core (Tier 1) primitives when they are enough; pin an exact minor if you depend on these in production.
 
 - **Actor model** — `Spawn`, supervision strategies (Escalate / Recover / Restart / Stop)
 - **Persistent interpreter** — event-sourced state, snapshot-on-final, configurable strategies

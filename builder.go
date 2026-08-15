@@ -517,6 +517,9 @@ func (b *StateBuilder[C]) Invoke(src ServiceType) *InvokeBuilder[C] {
 // InvokeMachine starts building a child machine invocation for this state (v0.14).
 // The child machine is spawned when entering the state and stopped when exiting.
 // The machineRef must match a name registered with WithChildMachine.
+//
+// Tier 2 — experimental: the composition API may change in a future v1.x minor.
+// See docs/stability.md.
 func (b *StateBuilder[C]) InvokeMachine(machineRef string) *MachineInvokeBuilder[C] {
 	mib := &MachineInvokeBuilder[C]{
 		state:      b,

@@ -1,5 +1,7 @@
 # Actor Persistence
 
+> **Tier 2 — experimental.** Actor metadata in snapshots and the `Spawn` APIs may change in a future v1.x minor. Pin a specific minor for production use. See [API Stability Tiers](./stability.md).
+
 Snapshots capture spawned actor metadata for serialization and debugging purposes.
 
 ## Overview
