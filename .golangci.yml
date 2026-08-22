@@ -23,6 +23,15 @@ linters:
     - unparam
     - gocritic     # org engineering bar — do not drop
 
+  exclusions:
+    # node_modules is not our code and is not even in git, but golangci-lint
+    # walks the filesystem rather than the module graph: one `npm install` in a
+    # docs or web subdirectory is enough for a stray vendored .go file inside a
+    # package to start failing this repo's gate. Observed exactly that from
+    # docs/node_modules/flatted/golang/.
+    paths:
+      - node_modules
+
 formatters:
   enable:
     - gofmt
