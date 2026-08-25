@@ -2,9 +2,13 @@
 # Any dev with warden installed gets the same checks CI runs, pre-commit/pre-push.
 hooks: { pre_commit: true, pre_push: true }
 commands:
+  # The gate that found the fleet-wide toolchain problem. It ran only in
+  # GitHub Actions, and this repository no longer requires those checks —
+  # so without this line, switching to warden/gate would delete it.
+  vulns: "go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./..."
   lint: "golangci-lint run --allow-parallel-runners ./..."
   test: "go test -race ./..."
 steps:
   pre_commit: [lint]
-  pre_push: [test, lint]
+  pre_push: [test, lint, vulns]
 parallel: true
