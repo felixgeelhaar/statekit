@@ -1,3 +1,10 @@
+# Actions cannot run here while the spending limit holds: every job reports
+# failure with zero steps executed, so a required check that depends on them
+# is permanently red. The gate below still runs; this publishes its verdict
+# as the warden/gate commit status, which branch protection requires instead.
+status:
+  enabled: true
+
 # warden gate — https://github.com/klarlabs-studio/warden
 # Any dev with warden installed gets the same checks CI runs, pre-commit/pre-push.
 hooks: { pre_commit: true, pre_push: true }
