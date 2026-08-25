@@ -124,7 +124,7 @@ func (c *Checker[C]) Readiness() CheckResult {
 		}
 
 		state := interp.State()
-		ready := c.isReady(id, interp, state.Value)
+		ready := c.isReady(id, interp)
 
 		if ready {
 			details[id] = string(state.Value)
@@ -163,7 +163,7 @@ func (c *Checker[C]) Readiness() CheckResult {
 }
 
 // isReady checks if a machine is in a ready state.
-func (c *Checker[C]) isReady(id string, interp *statekit.Interpreter[C], currentState statekit.StateID) bool {
+func (c *Checker[C]) isReady(id string, interp *statekit.Interpreter[C]) bool {
 	// If machine is done (final state), it's not ready
 	if interp.Done() {
 		return false
@@ -206,7 +206,7 @@ func (c *Checker[C]) CheckMachine(id string) CheckResult {
 	}
 
 	state := interp.State()
-	ready := c.isReady(id, interp, state.Value)
+	ready := c.isReady(id, interp)
 
 	details := map[string]string{
 		"machine": id,
