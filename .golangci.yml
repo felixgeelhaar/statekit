@@ -23,6 +23,15 @@ linters:
     - unparam
     - gocritic     # org engineering bar — do not drop
 
+  # node_modules is third-party code that happens to ship .go files — the
+  # `flatted` npm package vendors a Go implementation, and linting it failed
+  # this repo's push gate on two govet findings in code nobody here wrote.
+  # docs/node_modules IS gitignored, but golangci-lint does not read
+  # .gitignore, so ignoring it in git does not keep it out of ./...
+  exclusions:
+    paths:
+      - node_modules
+
 formatters:
   enable:
     - gofmt
